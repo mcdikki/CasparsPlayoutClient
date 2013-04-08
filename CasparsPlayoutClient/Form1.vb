@@ -48,7 +48,7 @@
             logger.log(info & "=" & media.getInfo(info))
         Next
 
-        media = New CasparCGAudio("Kalimba")
+        media = New CasparCGAudio("Enlighten")
         media.parseXML(sc.getMediaInfo(media))
         logger.log("MediaInfo (" & media.getMediaType.ToString & ") for " & media.getFullName)
         logger.log("duration at channel 1=" & sc.getMediaDuration(media, 1) & "ms")

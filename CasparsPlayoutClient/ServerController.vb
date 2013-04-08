@@ -32,7 +32,7 @@ Public Class ServerController
     ''' <remarks></remarks>
     Public Function getOriginalMediaDuration(ByRef media As CasparCGMedia) As Long
         Select Case media.getMediaType
-            Case CasparCGMedia.MediaType.COLOR, CasparCGMedia.MediaType.STILL, CasparCGMedia.MediaType.TEMPLATE, CasparCGMedia.MediaType.AUDIO
+            Case CasparCGMedia.MediaType.COLOR, CasparCGMedia.MediaType.STILL, CasparCGMedia.MediaType.TEMPLATE
                 '' These mediatyps doesn't have any durations
                 Return 0
             Case Else
@@ -61,7 +61,7 @@ Public Class ServerController
     ''' <remarks></remarks>
     Public Function getMediaDuration(ByRef media As CasparCGMedia, ByVal channel As Integer) As Long
         Select Case media.getMediaType
-            Case CasparCGMedia.MediaType.COLOR, CasparCGMedia.MediaType.STILL, CasparCGMedia.MediaType.TEMPLATE, CasparCGMedia.MediaType.AUDIO
+            Case CasparCGMedia.MediaType.COLOR, CasparCGMedia.MediaType.STILL, CasparCGMedia.MediaType.TEMPLATE
                 '' These mediatyps doesn't have any durations
                 Return 0
             Case Else
@@ -107,7 +107,11 @@ Public Class ServerController
     ''' <returns></returns>
     ''' <remarks></remarks>
     Public Function getFreeLayer(ByVal channel As Integer) As Integer
-        Return 0
+        Dim layer As Integer = 0
+        While Not isLayerFree(layer, channel)
+            layer = layer + 1
+        End While
+        Return layer
     End Function
 
     ''' <summary>
@@ -154,7 +158,7 @@ Public Class ServerController
     ''' <returns></returns>
     ''' <remarks></remarks>
     Public Function getFPS(ByVal channel As Integer) As Integer
-        Dim result = testConnection.sendCommand("info " & channel)
+        Dim result = testConnection.sendCommand(CasparCGCommandFactory.getInfo(channel))
         Dim configDoc As New MSXML2.DOMDocument
         configDoc.loadXML(result.getXMLData())
         If configDoc.hasChildNodes Then
@@ -169,8 +173,6 @@ Public Class ServerController
                             Return Integer.Parse(configDoc.selectSingleNode("channel").selectSingleNode("video-mode").nodeTypedValue.Substring(configDoc.selectSingleNode("channel").selectSingleNode("video-mode").nodeTypedValue.IndexOf("i"))) / 2
                         ElseIf configDoc.selectSingleNode("channel").selectSingleNode("video-mode").nodeTypedValue.Contains("p") Then
                             Return Integer.Parse(configDoc.selectSingleNode("channel").selectSingleNode("video-mode").nodeTypedValue.Substring(configDoc.selectSingleNode("channel").selectSingleNode("video-mode").nodeTypedValue.IndexOf("p") + 1))
-                        Else
-                            Return 0
                         End If
                 End Select
             End If
