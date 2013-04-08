@@ -12,12 +12,11 @@
     End Sub
 
     Private Sub Button2_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button2.Click
-        'logger.log("Channel fps: " & sc.getFPS(2))
-        'logger.log("Original media duration: " & sc.getOriginalMediaDuration(New CasparCGMovie("amb")) & "ms")
-        'logger.log("Media duration: " & sc.getMediaDuration(New CasparCGMovie("amb"), 1) & "ms")
         Dim media As CasparCGMedia = New CasparCGMovie("amb")
         media.parseXML(sc.getMediaInfo(media))
         logger.log("MediaInfo (" & media.getMediaType.ToString & ") for " & media.getFullName)
+        logger.log("duration at channel 1=" & sc.getMediaDuration(media, 1) & "ms")
+        logger.log("duration=" & sc.getOriginalMediaDuration(media) & "ms")
         For Each info As String In media.getInfos.Keys
             logger.log(info & "=" & media.getInfo(info))
         Next
@@ -25,6 +24,8 @@
         media = New CasparCGTemplate("caspar_media_playback_template\telegram\TELEGRAM", "")
         media.parseXML(sc.getMediaInfo(media))
         logger.log("MediaInfo (" & media.getMediaType.ToString & ") for " & media.getFullName)
+        logger.log("duration at channel 1=" & sc.getMediaDuration(media, 1) & "ms")
+        logger.log("duration=" & sc.getOriginalMediaDuration(media) & "ms")
         For Each info As String In media.getInfos.Keys
             logger.log(info & "=" & media.getInfo(info))
         Next
@@ -32,6 +33,8 @@
         media = New CasparCGStill("split")
         media.parseXML(sc.getMediaInfo(media))
         logger.log("MediaInfo (" & media.getMediaType.ToString & ") for " & media.getFullName)
+        logger.log("duration at channel 1=" & sc.getMediaDuration(media, 1) & "ms")
+        logger.log("duration=" & sc.getOriginalMediaDuration(media) & "ms")
         For Each info As String In media.getInfos.Keys
             logger.log(info & "=" & media.getInfo(info))
         Next
@@ -39,6 +42,8 @@
         media = New CasparCGColor("#FFFF00FF")
         media.parseXML(sc.getMediaInfo(media))
         logger.log("MediaInfo (" & media.getMediaType.ToString & ") for " & media.getFullName)
+        logger.log("duration at channel 1=" & sc.getMediaDuration(media, 1) & "ms")
+        logger.log("duration=" & sc.getOriginalMediaDuration(media) & "ms")
         For Each info As String In media.getInfos.Keys
             logger.log(info & "=" & media.getInfo(info))
         Next
@@ -46,6 +51,8 @@
         media = New CasparCGAudio("Kalimba")
         media.parseXML(sc.getMediaInfo(media))
         logger.log("MediaInfo (" & media.getMediaType.ToString & ") for " & media.getFullName)
+        logger.log("duration at channel 1=" & sc.getMediaDuration(media, 1) & "ms")
+        logger.log("duration=" & sc.getOriginalMediaDuration(media) & "ms")
         For Each info As String In media.getInfos.Keys
             logger.log(info & "=" & media.getInfo(info))
         Next

@@ -32,25 +32,21 @@ Public Class ServerController
     ''' <remarks></remarks>
     Public Function getOriginalMediaDuration(ByRef media As CasparCGMedia) As Long
         Select Case media.getMediaType
-            Case CasparCGMedia.MediaType.COLOR Or CasparCGMedia.MediaType.STILL Or CasparCGMedia.MediaType.TEMPLATE
+            Case CasparCGMedia.MediaType.COLOR, CasparCGMedia.MediaType.STILL, CasparCGMedia.MediaType.TEMPLATE, CasparCGMedia.MediaType.AUDIO
                 '' These mediatyps doesn't have any durations
                 Return 0
             Case Else
-                '' load media to testchannel via testconnection and check the duration
-                Dim layer = getFreeLayer(testChannel)
-                Dim response = testConnection.sendCommand(CasparCGCommandFactory.getLoadbg(testChannel, layer, media.getFullName))
-                If response.isOK Then
-                    Dim configDoc As New MSXML2.DOMDocument
-                    response = testConnection.sendCommand(CasparCGCommandFactory.getInfo(testChannel, layer, True))
-                    configDoc.loadXML(response.getXMLData())
-                    If configDoc.hasChildNodes Then
-                        Dim fps As Integer = Integer.Parse(configDoc.firstChild.selectSingleNode("destination").selectSingleNode("producer").selectSingleNode("fps").nodeTypedValue())
-                        If Not Boolean.Parse(configDoc.firstChild.selectSingleNode("destination").selectSingleNode("producer").selectSingleNode("progressive").nodeTypedValue()) Then
-                            fps = fps / 2
-                        End If
-                        Dim frames As Integer = Integer.Parse(configDoc.firstChild.selectSingleNode("destination").selectSingleNode("producer").selectSingleNode("nb-frames").nodeTypedValue())
-                        Return getTimeInMS(frames, fps * 100)
+                If media.getInfos.Count = 0 Then
+                    '' no media info is loaded
+                    '' load it now
+                    media.parseXML(getMediaInfo(media))
+                End If
+                If media.containsInfo("nb-frames") AndAlso media.containsInfo("fps") AndAlso media.containsInfo("progressive") Then
+                    Dim fps As Integer = Integer.Parse(media.getInfo("fps"))
+                    If Not Boolean.Parse(media.getInfo("progressive")) Then
+                        fps = fps / 2
                     End If
+                    Return getTimeInMS(media.getInfo("nb-frames"), fps)
                 End If
                 logger.err("Could not get media duration of " & media.getFullName & ".")
                 Return 0
@@ -65,21 +61,17 @@ Public Class ServerController
     ''' <remarks></remarks>
     Public Function getMediaDuration(ByRef media As CasparCGMedia, ByVal channel As Integer) As Long
         Select Case media.getMediaType
-            Case CasparCGMedia.MediaType.COLOR Or CasparCGMedia.MediaType.STILL Or CasparCGMedia.MediaType.TEMPLATE
+            Case CasparCGMedia.MediaType.COLOR, CasparCGMedia.MediaType.STILL, CasparCGMedia.MediaType.TEMPLATE, CasparCGMedia.MediaType.AUDIO
                 '' These mediatyps doesn't have any durations
                 Return 0
             Case Else
-                '' load media to testchannel via testconnection and check the duration
-                Dim layer = getFreeLayer(testChannel)
-                Dim response = testConnection.sendCommand(CasparCGCommandFactory.getLoadbg(testChannel, layer, media.getFullName))
-                If response.isOK Then
-                    Dim configDoc As New MSXML2.DOMDocument
-                    response = testConnection.sendCommand(CasparCGCommandFactory.getInfo(testChannel, layer, True))
-                    configDoc.loadXML(response.getXMLData())
-                    If configDoc.hasChildNodes Then
-                        Dim frames As Integer = Integer.Parse(configDoc.firstChild.selectSingleNode("destination").selectSingleNode("producer").selectSingleNode("nb-frames").nodeTypedValue())
-                        Return getTimeInMS(frames, getFPS(channel))
-                    End If
+                If media.getInfos.Count = 0 Then
+                    '' no media info is loaded
+                    '' load it now
+                    media.parseXML(getMediaInfo(media))
+                End If
+                If media.containsInfo("nb-frames") Then
+                    Return getTimeInMS(media.getInfo("nb-frames"), getFPS(channel))
                 End If
                 logger.err("Could not get media duration of " & media.getFullName & ".")
                 Return 0
