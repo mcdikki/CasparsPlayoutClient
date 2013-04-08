@@ -7,30 +7,13 @@ Public Class CasparCGConnection
     Private client As TcpClient
     Private reconnectTries = 10
     Private connectionAttemp = 0
-
-
-    Public Enum CasparReturnCode
-        UNKNOWN_RETURNCODE = 0  ' This code is not known
-        INFO = 100              ' 100 [action] - Information about an event.
-        INFO_DATA = 101         ' 101[action] - Information about an event. A line of data is being returned. 
-        OK_MULTI_DATA = 200     ' 200 [command] OK	- The command has been executed and several lines of data are being returned (terminated by an empty line).
-        OK_DATA = 201           ' 201 [command] OK	- The command has been executed and a line of data is being returned
-        OK = 202                ' 202 [command] OK	- The command has been executed 
-        ERR_CMD_UNKNOWN = 400   ' 400 ERROR	- Command not understood
-        ERR_CHANNEL = 401       ' 401 [command] ERROR	- Illegal video_channel
-        ERR_PARAMETER_MISSING = 402 ' 402 [command] ERROR	- Parameter missing
-        ERR_PARAMETER = 403     ' 403 [command] ERROR	- Illegal parameter
-        ERR_MEDIA_UNKNOWN = 404 ' 404 [command] ERROR	- Media file not found
-        ERR_SERVER = 500        ' 500 FAILED	- Internal server error
-        ERR_SERVER_DATA = 501   ' 501 [command] FAILED	- Internal server error
-        ERR_FILE_UNREADABLE = 502 ' 502 [command] FAILED	- Media file unreadable 
-    End Enum
+    Private reconnectTimeout = 1000 ' 1sec
+    Private tryConnect As Boolean = True
 
     Public Sub New(ByVal serverAddress As String, ByVal serverPort As Integer)
         Me.serveraddress = serverAddress
         Me.serverport = serverPort
-
-        client = New TcpClient(serverAddress, serverPort)
+        client = New TcpClient()
         client.NoDelay = True
     End Sub
 
@@ -39,21 +22,29 @@ Public Class CasparCGConnection
     ''' </summary>
     Public Function connect() As Boolean
         If Not client.Connected Then
-            client.Connect(serveraddress, serverport)
-            client.NoDelay = True
-            Dim i As Integer = 0
-            While Not client.Connected And i < client.ReceiveTimeout
-                i = i + 10
-                Threading.Thread.Sleep(10)
-            End While
-            If client.Connected Then
-                connectionAttemp = 0
-                Return True
-            ElseIf connectionAttemp < reconnectTries Then
-                connectionAttemp = connectionAttemp + 1
-                Return connect()
-            Else : Return False
-            End If
+            Try
+                client.Connect(serveraddress, serverport)
+                client.NoDelay = True
+                If client.Connected Then
+                    connectionAttemp = 0
+                    logger.log("Connected to " & serveraddress & ":" & serverport.ToString)
+                    Return True
+                End If
+            Catch e As Exception
+                logger.warn(e.Message)
+                If connectionAttemp < reconnectTries Then
+                    connectionAttemp = connectionAttemp + 1
+                    logger.warn("Try to reconnect " & connectionAttemp & "/" & reconnectTries)
+                    Dim i As Integer = 0
+                    Threading.Thread.Sleep(reconnectTimeout)
+                    Return connect()
+                Else
+                    logger.err("Could not connect to " & serveraddress & ":" & serverport.ToString)
+                    Return False
+                End If
+            End Try
+        Else
+            logger.log("Allready connected to " & serveraddress & ":" & serverport.ToString)
         End If
         Return client.Connected
     End Function
@@ -71,6 +62,23 @@ Public Class CasparCGConnection
         Return connect()
     End Function
 
+    ''' <summary>
+    ''' Return whether or not the CasparCGConnection is connect to the server. If tryConnect is given and true, it will try to establish a connection if not allready connected.
+    ''' </summary>
+    ''' <param name="tryConnect"></param>
+    ''' <returns></returns>
+    ''' <remarks></remarks>
+    Public Function connected(Optional ByVal tryConnect As Boolean = False) As Boolean
+        If client.Connected Then
+            Return True
+        Else
+            If tryConnect Then
+                connect()
+            End If
+            Return client.Connected
+        End If
+    End Function
+
     Public Sub close()
         If client.Connected Then
             client.Client.Close()
@@ -83,7 +91,7 @@ Public Class CasparCGConnection
     ''' <param name="cmd"></param>
     ''' <remarks></remarks>
     Public Sub sendAsyncCommand(ByVal cmd As String)
-        If client.Connected Then
+        If connected(tryConnect) Then
             logger.debug("Send command: " & cmd)
             client.GetStream.Write(System.Text.UTF8Encoding.UTF8.GetBytes(cmd & vbCrLf), 0, cmd.Length + 2)
             logger.debug("Command sent")
@@ -98,7 +106,7 @@ Public Class CasparCGConnection
     ''' </summary>
     ''' <param name="cmd"></param>
     Public Function sendCommand(ByVal cmd As String) As CasparCGResponse
-        If client.Connected Then
+        If connected(tryConnect) Then
             Dim isOk As Boolean = False
             Dim buffer() As Byte
             If client.Available > 0 Then
@@ -322,9 +330,26 @@ End Class
 
 Public Class CasparCGResponse
 
-    Private returncode As CasparCGConnection.CasparReturnCode
+    Private returncode As CasparReturnCode
     Private command As String
     Private data As String
+
+    Public Enum CasparReturnCode
+        UNKNOWN_RETURNCODE = 0  ' This code is not known
+        INFO = 100              ' 100 [action] - Information about an event.
+        INFO_DATA = 101         ' 101[action] - Information about an event. A line of data is being returned. 
+        OK_MULTI_DATA = 200     ' 200 [command] OK	- The command has been executed and several lines of data are being returned (terminated by an empty line).
+        OK_DATA = 201           ' 201 [command] OK	- The command has been executed and a line of data is being returned
+        OK = 202                ' 202 [command] OK	- The command has been executed 
+        ERR_CMD_UNKNOWN = 400   ' 400 ERROR	- Command not understood
+        ERR_CHANNEL = 401       ' 401 [command] ERROR	- Illegal video_channel
+        ERR_PARAMETER_MISSING = 402 ' 402 [command] ERROR	- Parameter missing
+        ERR_PARAMETER = 403     ' 403 [command] ERROR	- Illegal parameter
+        ERR_MEDIA_UNKNOWN = 404 ' 404 [command] ERROR	- Media file not found
+        ERR_SERVER = 500        ' 500 FAILED	- Internal server error
+        ERR_SERVER_DATA = 501   ' 501 [command] FAILED	- Internal server error
+        ERR_FILE_UNREADABLE = 502 ' 502 [command] FAILED	- Media file unreadable 
+    End Enum
 
     Public Sub New(ByVal returnmessage As String)
         Me.returncode = parseReturnCode(returnmessage)
@@ -332,18 +357,18 @@ Public Class CasparCGResponse
         Me.data = parseReturnData(returnmessage)
     End Sub
 
-    Public Sub New(ByVal returnCode As CasparCGConnection.CasparReturnCode, ByVal command As String, ByVal data As String)
+    Public Sub New(ByVal returnCode As CasparReturnCode, ByVal command As String, ByVal data As String)
         Me.returncode = returnCode
         Me.command = command
         Me.data = data
     End Sub
 
-    Public Shared Function parseReturnCode(ByVal returnmessage As String) As CasparCGConnection.CasparReturnCode
+    Public Shared Function parseReturnCode(ByVal returnmessage As String) As CasparReturnCode
         If Not IsNothing(returnmessage) Then
             returnmessage = Trim(returnmessage)
             If returnmessage.Length > 2 AndAlso IsNumeric(returnmessage.Substring(0, 3)) Then
                 Dim returncode As Integer = Integer.Parse(returnmessage.Substring(0, 3))
-                If [Enum].IsDefined(GetType(CasparCGConnection.CasparReturnCode), returncode) Then
+                If [Enum].IsDefined(GetType(CasparReturnCode), returncode) Then
                     Return returncode
                 End If
             End If
@@ -367,7 +392,7 @@ Public Class CasparCGResponse
         Return ""
     End Function
 
-    Public Function getCode() As CasparCGConnection.CasparReturnCode
+    Public Function getCode() As CasparReturnCode
         Return returncode
     End Function
 
@@ -425,7 +450,7 @@ Public Class CasparCGResponse
     End Function
 
     Public Function isUNKNOWN() As Boolean
-        If returncode = CasparCGConnection.CasparReturnCode.UNKNOWN_RETURNCODE Then
+        If returncode = CasparReturnCode.UNKNOWN_RETURNCODE Then
             Return True
         Else : Return False
         End If

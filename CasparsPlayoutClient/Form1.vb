@@ -5,9 +5,10 @@
     Private Sub Button1_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button1.Click
         logger.debug("Try to connect casparCG server..")
         con = New CasparCGConnection("localhost", 5250)
+        'con.connect()
         sc = New ServerController()
         sc.open()
-        logger.debug("Connected to server")
+        'logger.debug("Connected to server")
     End Sub
 
     Private Sub Button2_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button2.Click

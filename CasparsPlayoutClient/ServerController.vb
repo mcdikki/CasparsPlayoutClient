@@ -12,6 +12,7 @@ Public Class ServerController
     Public Sub open()
         '' nur zum testen
         testConnection = New CasparCGConnection("localhost", 5250)
+        'testConnection.connect()
     End Sub
 
     ''' <summary>
