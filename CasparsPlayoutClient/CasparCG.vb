@@ -139,7 +139,7 @@ End Class
 
 Public Class CasparCGCommandFactory
 
-    Public Function getLoadbg(ByVal channel As Integer, ByVal layer As Integer, ByVal media As String, Optional ByVal looping As Boolean = False, Optional ByVal seek As Long = 0, Optional ByVal length As Long = 0, Optional ByVal transition As CasparCGTransition = Nothing, Optional ByVal filter As String = "") As String
+    Public Shared Function getLoadbg(ByVal channel As Integer, ByVal layer As Integer, ByVal media As String, Optional ByVal looping As Boolean = False, Optional ByVal seek As Long = 0, Optional ByVal length As Long = 0, Optional ByVal transition As CasparCGTransition = Nothing, Optional ByVal filter As String = "") As String
         Dim cmd As String = "LOADBG " & getDestination(channel, layer) & " " & media
 
         If looping Then
@@ -161,7 +161,7 @@ Public Class CasparCGCommandFactory
         Return escape(cmd)
     End Function
 
-    Public Function getLoad(ByVal channel As Integer, ByVal layer As Integer, ByVal media As String, Optional ByVal looping As Boolean = False, Optional ByVal seek As Long = 0, Optional ByVal length As Long = 0, Optional ByVal transition As CasparCGTransition = Nothing, Optional ByVal filter As String = "") As String
+    Public Shared Function getLoad(ByVal channel As Integer, ByVal layer As Integer, ByVal media As String, Optional ByVal looping As Boolean = False, Optional ByVal seek As Long = 0, Optional ByVal length As Long = 0, Optional ByVal transition As CasparCGTransition = Nothing, Optional ByVal filter As String = "") As String
         Dim cmd As String = "LOAD " & getDestination(channel, layer) & " " & media
 
         If looping Then
@@ -183,7 +183,7 @@ Public Class CasparCGCommandFactory
         Return escape(cmd)
     End Function
 
-    Public Function getPlay(ByVal channel As Integer, ByVal layer As Integer, Optional ByVal media As String = "", Optional ByVal looping As Boolean = False, Optional ByVal seek As Long = 0, Optional ByVal length As Long = 0, Optional ByVal transition As CasparCGTransition = Nothing, Optional ByVal filter As String = "") As String
+    Public Shared Function getPlay(ByVal channel As Integer, ByVal layer As Integer, Optional ByVal media As String = "", Optional ByVal looping As Boolean = False, Optional ByVal seek As Long = 0, Optional ByVal length As Long = 0, Optional ByVal transition As CasparCGTransition = Nothing, Optional ByVal filter As String = "") As String
         Dim cmd As String = "PLAY " & getDestination(channel, layer)
 
         If media.Length > 0 Then
@@ -208,7 +208,7 @@ Public Class CasparCGCommandFactory
         Return escape(cmd)
     End Function
 
-    Public Function getCall(ByVal channel As Integer, ByVal layer As Integer, Optional ByVal looping As Boolean = False, Optional ByVal seek As Long = 0, Optional ByVal length As Long = 0, Optional ByVal transition As CasparCGTransition = Nothing, Optional ByVal filter As String = "") As String
+    Public Shared Function getCall(ByVal channel As Integer, ByVal layer As Integer, Optional ByVal looping As Boolean = False, Optional ByVal seek As Long = 0, Optional ByVal length As Long = 0, Optional ByVal transition As CasparCGTransition = Nothing, Optional ByVal filter As String = "") As String
         Dim cmd As String = "CALL " & getDestination(channel, layer)
 
         If looping Then
@@ -230,23 +230,23 @@ Public Class CasparCGCommandFactory
         Return cmd
     End Function
 
-    Public Function getSwap(ByVal channelA As Integer, ByVal channelB As Integer) As String
+    Public Shared Function getSwap(ByVal channelA As Integer, ByVal channelB As Integer) As String
         Return "SWAP " & channelA & " " & channelB
     End Function
 
-    Public Function getSwap(ByVal channelA As Integer, ByVal channelB As Integer, ByVal layerA As Integer, ByVal layerB As Integer) As String
+    Public Shared Function getSwap(ByVal channelA As Integer, ByVal channelB As Integer, ByVal layerA As Integer, ByVal layerB As Integer) As String
         Return "SWAP " & channelA & "-" & layerA & " " & channelB & "-" & layerB
     End Function
 
-    Public Function getStop(ByVal channel As Integer, ByVal layer As Integer) As String
+    Public Shared Function getStop(ByVal channel As Integer, ByVal layer As Integer) As String
         Return "STOP " & getDestination(channel, layer)
     End Function
 
-    Public Function getPause(ByVal channel As Integer, ByVal layer As Integer) As String
+    Public Shared Function getPause(ByVal channel As Integer, ByVal layer As Integer) As String
         Return "PAUSE " & getDestination(channel, layer)
     End Function
 
-    Public Function getClear(Optional ByVal channel As Integer = -1, Optional ByVal layer As Integer = -1) As String
+    Public Shared Function getClear(Optional ByVal channel As Integer = -1, Optional ByVal layer As Integer = -1) As String
         Dim cmd As String = "CLEAR"
         If channel > -1 Then
             cmd = cmd & getDestination(channel, layer)
@@ -256,7 +256,7 @@ Public Class CasparCGCommandFactory
 
 
     '' CG CMD für Flashtemplates
-    Public Function getCGAdd(ByVal channel As Integer, ByVal layer As Integer, ByVal template As CasparCGTemplate, ByVal flashlayer As Integer, Optional ByVal playOnLoad As Boolean = False) As String
+    Public Shared Function getCGAdd(ByVal channel As Integer, ByVal layer As Integer, ByVal template As CasparCGTemplate, ByVal flashlayer As Integer, Optional ByVal playOnLoad As Boolean = False) As String
         Dim cmd As String = "CG " & getDestination(channel, layer) & " ADD " & flashlayer & " " & template.getFullName
 
         If playOnLoad Then
@@ -268,35 +268,35 @@ Public Class CasparCGCommandFactory
         Return escape(cmd)
     End Function
 
-    Public Function getCGRemove(ByVal channel As Integer, ByVal layer As Integer, ByVal flashlayer As Integer) As String
+    Public Shared Function getCGRemove(ByVal channel As Integer, ByVal layer As Integer, ByVal flashlayer As Integer) As String
         Return "CG " & getDestination(channel, layer) & " REMOVE " & flashlayer
     End Function
 
-    Public Function getCGPlay(ByVal channel As Integer, ByVal layer As Integer, ByVal flashlayer As Integer) As String
+    Public Shared Function getCGPlay(ByVal channel As Integer, ByVal layer As Integer, ByVal flashlayer As Integer) As String
         Return "CG " & getDestination(channel, layer) & " PLAY " & flashlayer
     End Function
 
-    Public Function getCGStop(ByVal channel As Integer, ByVal layer As Integer, ByVal flashlayer As Integer) As String
+    Public Shared Function getCGStop(ByVal channel As Integer, ByVal layer As Integer, ByVal flashlayer As Integer) As String
         Return "CG " & getDestination(channel, layer) & " STOP " & flashlayer
     End Function
 
-    Public Function getCGNext(ByVal channel As Integer, ByVal layer As Integer, ByVal flashlayer As Integer) As String
+    Public Shared Function getCGNext(ByVal channel As Integer, ByVal layer As Integer, ByVal flashlayer As Integer) As String
         Return "CG " & getDestination(channel, layer) & " NEXT " & flashlayer
     End Function
 
-    Public Function getCGUpdate(ByVal channel As Integer, ByVal layer As Integer, ByVal flashlayer As Integer, ByRef data As CasparCGTemplateData) As String
+    Public Shared Function getCGUpdate(ByVal channel As Integer, ByVal layer As Integer, ByVal flashlayer As Integer, ByRef data As CasparCGTemplateData) As String
         Return "CG " & getDestination(channel, layer) & " UPDATE " & flashlayer & " " & escape(data.toXML)
     End Function
 
-    Public Function getCGInvoke(ByVal channel As Integer, ByVal layer As Integer, ByVal flashlayer As Integer, ByVal method As String) As String
+    Public Shared Function getCGInvoke(ByVal channel As Integer, ByVal layer As Integer, ByVal flashlayer As Integer, ByVal method As String) As String
         Return "CG " & getDestination(channel, layer) & " INVOKE " & flashlayer & " " & method
     End Function
 
-    Public Function getCGClear(ByVal channel As Integer, ByVal layer As Integer) As String
+    Public Shared Function getCGClear(ByVal channel As Integer, ByVal layer As Integer) As String
         Return "CG " & getDestination(channel, layer) & " CLEAR"
     End Function
 
-    Private Function getDestination(ByVal channel As Integer, ByVal layer As Integer) As String
+    Private Shared Function getDestination(ByVal channel As Integer, ByVal layer As Integer) As String
         Dim cmd As String
         If channel > -1 Then
             cmd = channel
