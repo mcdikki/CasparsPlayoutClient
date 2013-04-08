@@ -508,6 +508,8 @@ Public MustInherit Class CasparCGMedia
         parseXML(xml)
     End Sub
 
+    Public MustOverride Function clone() As CasparCGMedia
+
     Public Function parseName(ByVal nameWithPath As String) As String
         If nameWithPath.Contains("\") Then
             Return nameWithPath.Substring(nameWithPath.LastIndexOf("\") + 1)
@@ -583,6 +585,14 @@ Public Class CasparCGColor
         MyBase.New(name, xml)
     End Sub
 
+    Public Overrides Function clone() As CasparCGMedia
+        Dim media As New CasparCGColor(getFullName)
+        For Each info As String In getInfos.Keys
+            media.addInfo(info, getInfo(info))
+        Next
+        Return media
+    End Function
+
     Public Overrides Function getMediaType() As CasparCGMedia.MediaType
         Return MediaType.COLOR
     End Function
@@ -598,6 +608,14 @@ Public Class CasparCGMovie
     Public Sub New(ByVal name As String, ByVal xml As String)
         MyBase.New(name, xml)
     End Sub
+
+    Public Overrides Function clone() As CasparCGMedia
+        Dim media As New CasparCGMovie(getFullName)
+        For Each info As String In getInfos.Keys
+            media.addInfo(info, getInfo(info))
+        Next
+        Return media
+    End Function
 
     Public Overrides Function getMediaType() As CasparCGMedia.MediaType
         Return MediaType.MOVIE
@@ -616,6 +634,14 @@ Public Class CasparCGStill
         MyBase.New(name, xml)
     End Sub
 
+    Public Overrides Function clone() As CasparCGMedia
+        Dim media As New CasparCGStill(getFullName)
+        For Each info As String In getInfos.Keys
+            media.addInfo(info, getInfo(info))
+        Next
+        Return media
+    End Function
+
     Public Overrides Function getMediaType() As CasparCGMedia.MediaType
         Return MediaType.STILL
     End Function
@@ -632,6 +658,14 @@ Public Class CasparCGAudio
         MyBase.New(name, xml)
     End Sub
 
+    Public Overrides Function clone() As CasparCGMedia
+        Dim media As New CasparCGAudio(getFullName)
+        For Each info As String In getInfos.Keys
+            media.addInfo(info, getInfo(info))
+        Next
+        Return media
+    End Function
+
     Public Overrides Function getMediaType() As CasparCGMedia.MediaType
         Return MediaType.AUDIO
     End Function
@@ -644,11 +678,28 @@ Public Class CasparCGTemplate
     Private components As Dictionary(Of String, CasparCGTemplateComponent)
     Private data As CasparCGTemplateData
 
+    Public Sub New(ByVal name As String)
+        MyBase.New(name)
+        components = New Dictionary(Of String, CasparCGTemplateComponent)
+    End Sub
+
     Public Sub New(ByVal name As String, ByVal xml As String)
         MyBase.New(name)
         components = New Dictionary(Of String, CasparCGTemplateComponent)
         parseXML(xml)
     End Sub
+
+    Public Overrides Function clone() As CasparCGMedia
+        Dim media As New CasparCGTemplate(getFullName)
+        For Each info As String In getInfos.Keys
+            media.addInfo(info, getInfo(info))
+        Next
+        For Each comp As CasparCGTemplateComponent In components.Values
+            media.addComponent(comp)
+        Next
+        media.data = getData.clone
+        Return media
+    End Function
 
     Public Overrides Function getMediaType() As CasparCGMedia.MediaType
         Return MediaType.TEMPLATE
@@ -720,6 +771,14 @@ Public Class CasparCGTemplateData
             addInstance(instance)
         Next
     End Sub
+
+    Public Function clone() As CasparCGTemplateData
+        Dim data As New CasparCGTemplateData()
+        For Each instance In instances.Values
+            data.addInstance(instance.clone)
+        Next
+        Return data
+    End Function
 
     Public Sub addInstance(ByRef instance As CasparCGTemplateInstance)
         If Not IsNothing(instance) AndAlso Not contains(instance.getName) Then
@@ -853,6 +912,14 @@ Public Class CasparCGTemplateInstance
             values.Add(prop, "")
         Next
     End Sub
+
+    Public Function clone() As CasparCGTemplateInstance
+        Dim instance As New CasparCGTemplateInstance(name, component)
+        For Each value In values.Keys
+            instance.setData(value, getData(value))
+        Next
+        Return instance
+    End Function
 
     Public Sub setData(ByRef componentProperty As CasparCGTemplateComponentProperty, ByVal value As String)
         If values.ContainsKey(componentProperty) Then

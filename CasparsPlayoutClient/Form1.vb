@@ -59,7 +59,6 @@
     End Sub
 
     Private Sub Form1_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
-        logger.removeLogAction(logger.stdLogAction)
         logger.addLogAction(New consoleLogger(4))
         logger.log("Console Logger startet")
     End Sub

@@ -48,7 +48,7 @@ Public Class ServerController
                     End If
                     Return getTimeInMS(media.getInfo("nb-frames"), fps)
                 End If
-                logger.err("Could not get media duration of " & media.getFullName & ".")
+                logger.err("Could not get media duration of " & media.getFullName & "(" & media.getMediaType.ToString & ").")
                 Return 0
         End Select
     End Function
@@ -73,7 +73,7 @@ Public Class ServerController
                 If media.containsInfo("nb-frames") Then
                     Return getTimeInMS(media.getInfo("nb-frames"), getFPS(channel))
                 End If
-                logger.err("Could not get media duration of " & media.getFullName & ".")
+                logger.err("Could not get media duration of " & media.getFullName & "(" & media.getMediaType.ToString & ").")
                 Return 0
         End Select
     End Function
