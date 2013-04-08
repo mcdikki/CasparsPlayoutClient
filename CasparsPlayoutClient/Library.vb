@@ -5,20 +5,13 @@
 ''' <remarks></remarks>
 Public Class Library
 
-    Enum ItemTypes
-        STILL = 0
-        MOVIE = 1
-        AUDIO = 2
-        TEMPLATE = 3
-    End Enum
-
     Public Function getLibraryItems() As List(Of LibraryItem)
         Return Nothing
     End Function
 
-    Public Function getLibraryItems(ByVal ItemType As Library.ItemTypes) As List(Of LibraryItem)
-        Return Nothing
-    End Function
+    'Public Function getLibraryItems(ByVal ItemType As Library.ItemTypes) As List(Of LibraryItem)
+    '    Return Nothing
+    'End Function
 
     Public Function getMovieItems() As List(Of LibraryItem)
         Return Nothing

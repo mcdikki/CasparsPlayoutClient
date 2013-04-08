@@ -254,6 +254,25 @@ Public Class CasparCGCommandFactory
         Return cmd
     End Function
 
+    Public Shared Function getInfo(Optional ByVal channel As Integer = -1, Optional ByVal layer As Integer = -1, Optional ByVal onlyBackground As Boolean = False, Optional ByVal onlyForeground As Boolean = False) As String
+        Dim cmd As String = "INFO"
+        If channel > -1 Then
+            cmd = cmd & " " & getDestination(channel, layer)
+            If layer > -1 Then
+                If onlyBackground Then
+                    cmd = cmd & " B"
+                ElseIf onlyForeground Then
+                    cmd = cmd & " F"
+                End If
+            End If
+        End If
+        Return cmd
+    End Function
+
+    Public Shared Function getInfo(ByRef template As CasparCGTemplate) As String 
+        Return escape("INFO TEMPLATE '" & template.getFullName & "'")
+    End Function
+
 
     '' CG CMD für Flashtemplates
     Public Shared Function getCGAdd(ByVal channel As Integer, ByVal layer As Integer, ByVal template As CasparCGTemplate, ByVal flashlayer As Integer, Optional ByVal playOnLoad As Boolean = False) As String
@@ -317,12 +336,12 @@ Public Class CasparCGCommandFactory
     ''' <returns></returns>
     ''' <remarks></remarks>
     Public Shared Function escape(ByVal str As String) As String
-        ' Hochkommata
-        str.Replace("'", "\'")
-        str.Replace("""", "\""")
-
         ' Backslash
-        str.Replace("\", "\\")
+        str = str.Replace("\", "\\")
+
+        ' Hochkommata
+        str = str.Replace("'", "\'")
+        str = str.Replace("""", "\""")
         Return str
     End Function
 
@@ -461,34 +480,64 @@ End Class
 
 '' Base Class for all playable media in CasparCG which are
 '' movies, stills, audios, colors and templates
-Public Class CasparCGMedia
+Public MustInherit Class CasparCGMedia
     Private name As String
     Private path As String
+    Private Infos As Dictionary(Of String, String)
+
+    Enum MediaType
+        STILL = 0
+        MOVIE = 1
+        AUDIO = 2
+        TEMPLATE = 3
+        COLOR = 4
+    End Enum
+
+    Public MustOverride Function getMediaType() As MediaType
 
     Public Sub New(ByVal name As String)
         Me.name = parseName(name)
         Me.path = parsePath(name)
+        Infos = New Dictionary(Of String, String)
+    End Sub
+
+    Public Sub New(ByVal name As String, ByVal xml As String)
+        Me.name = parseName(name)
+        Me.path = parsePath(name)
+        Infos = New Dictionary(Of String, String)
+        parseXML(xml)
     End Sub
 
     Public Function parseName(ByVal nameWithPath As String) As String
-        If name.Contains("\") Then
-            Return name.Substring(name.LastIndexOf("\") + 1)
-        ElseIf name.Contains("/") Then
-            Return name.Substring(name.LastIndexOf("/") + 1)
+        If nameWithPath.Contains("\") Then
+            Return nameWithPath.Substring(nameWithPath.LastIndexOf("\") + 1)
+        ElseIf nameWithPath.Contains("/") Then
+            Return nameWithPath.Substring(name.LastIndexOf("/") + 1)
         Else
-            Return name
+            Return nameWithPath
         End If
     End Function
 
     Public Function parsePath(ByVal nameWithPath As String) As String
-        If name.Contains("\") Then
-            Return name.Substring(1, name.LastIndexOf("\"))
-        ElseIf name.Contains("/") Then
-            Return name.Substring(1, name.LastIndexOf("/"))
+        If nameWithPath.Contains("\") Then
+            Return nameWithPath.Substring(0, nameWithPath.LastIndexOf("\") + 1)
+        ElseIf nameWithPath.Contains("/") Then
+            Return nameWithPath.Substring(0, nameWithPath.LastIndexOf("/") + 1)
         Else
             Return ""
         End If
     End Function
+
+    Public Overridable Sub parseXML(ByVal xml As String)
+        Dim configDoc As New MSXML2.DOMDocument
+        configDoc.loadXML(xml)
+        If configDoc.hasChildNodes Then
+            '' Add all mediaInformation found by INFO
+            For Each info As MSXML2.IXMLDOMNode In configDoc.firstChild.childNodes
+                addInfo(info.nodeName, info.nodeTypedValue)
+            Next
+        End If
+    End Sub
 
     Public Function getName() As String
         Return name
@@ -502,25 +551,40 @@ Public Class CasparCGMedia
         Return path & name
     End Function
 
+    Public Function getInfo(ByVal info As String) As String
+        If Infos.ContainsKey(info) Then
+            Return Infos.Item(info)
+        Else : Return ""
+        End If
+    End Function
+
+    Public Function getInfos() As Dictionary(Of String, String)
+        Return Infos
+    End Function
+
+    Public Function containsInfo(ByVal info As String) As Boolean
+        Return Infos.ContainsKey(info)
+    End Function
+
+    Public Sub addInfo(ByVal info As String, ByVal value As String)
+        Infos.Add(info, value)
+    End Sub
+
 End Class
 
 Public Class CasparCGColor
     Inherits CasparCGMedia
 
-    Private color As Color
-
-    Public Sub New(ByVal name As String, ByVal color As Color)
+    Public Sub New(ByVal name As String)
         MyBase.New(name)
-        Me.color = color
     End Sub
 
-    Public Function getColor() As Color
-        Return color
-    End Function
+    Public Sub New(ByVal name As String, ByVal xml As String)
+        MyBase.New(name, xml)
+    End Sub
 
-    Public Function getColorString() As String
-        '' ToDo: Checken ob die reihnfolge stimmt
-        Return color.ToArgb.ToString("X8")
+    Public Overrides Function getMediaType() As CasparCGMedia.MediaType
+        Return MediaType.COLOR
     End Function
 End Class
 
@@ -531,14 +595,30 @@ Public Class CasparCGMovie
         MyBase.New(name)
     End Sub
 
+    Public Sub New(ByVal name As String, ByVal xml As String)
+        MyBase.New(name, xml)
+    End Sub
+
+    Public Overrides Function getMediaType() As CasparCGMedia.MediaType
+        Return MediaType.MOVIE
+    End Function
+
 End Class
 
 Public Class CasparCGStill
     Inherits CasparCGMedia
 
     Public Sub New(ByVal name As String)
-        MyBase.new(name)
+        MyBase.New(name)
     End Sub
+
+    Public Sub New(ByVal name As String, ByVal xml As String)
+        MyBase.New(name, xml)
+    End Sub
+
+    Public Overrides Function getMediaType() As CasparCGMedia.MediaType
+        Return MediaType.STILL
+    End Function
 End Class
 
 Public Class CasparCGAudio
@@ -547,29 +627,40 @@ Public Class CasparCGAudio
     Public Sub New(ByVal name As String)
         MyBase.New(name)
     End Sub
+
+    Public Sub New(ByVal name As String, ByVal xml As String)
+        MyBase.New(name, xml)
+    End Sub
+
+    Public Overrides Function getMediaType() As CasparCGMedia.MediaType
+        Return MediaType.AUDIO
+    End Function
+
 End Class
 
 Public Class CasparCGTemplate
     Inherits CasparCGMedia
 
-    Private templateInfos As Dictionary(Of String, String)
     Private components As Dictionary(Of String, CasparCGTemplateComponent)
     Private data As CasparCGTemplateData
 
     Public Sub New(ByVal name As String, ByVal xml As String)
         MyBase.New(name)
-        templateInfos = New Dictionary(Of String, String)
         components = New Dictionary(Of String, CasparCGTemplateComponent)
         parseXML(xml)
     End Sub
 
-    Private Sub parseXML(ByVal xml As String)
+    Public Overrides Function getMediaType() As CasparCGMedia.MediaType
+        Return MediaType.TEMPLATE
+    End Function
+
+    Public Overrides Sub parseXML(ByVal xml As String)
         Dim configDoc As New MSXML2.DOMDocument
         configDoc.loadXML(xml)
         If configDoc.hasChildNodes Then
             '' Attribute verarbeiten
             For Each attrib As MSXML2.IXMLDOMNode In configDoc.selectSingleNode("template").attributes
-                templateInfos.Add(attrib.nodeName, attrib.nodeTypedValue)
+                addInfo(attrib.nodeName, attrib.nodeTypedValue)
             Next
 
             '' Components verarbeiten
@@ -592,10 +683,6 @@ Public Class CasparCGTemplate
         End If
     End Sub
 
-    Private Sub addInfo(ByVal info As String, ByVal value As String)
-        templateInfos.Add(info, value)
-    End Sub
-
     Public Function getData() As CasparCGTemplateData
         Return data
     End Function
@@ -615,20 +702,6 @@ Public Class CasparCGTemplate
         Return components.ContainsKey(compnentName)
     End Function
 
-    Public Function getTemplateInfo(ByVal info As String) As String
-        If templateInfos.ContainsKey(info) Then
-            Return templateInfos.Item(info)
-        Else : Return ""
-        End If
-    End Function
-
-    Public Function getTemplateInfos() As Dictionary(Of String, String)
-        Return templateInfos
-    End Function
-
-    Public Function containsTemplateInfo(ByVal info As String) As Boolean
-        Return templateInfos.ContainsKey(info)
-    End Function
 End Class
 
 Public Class CasparCGTemplateData

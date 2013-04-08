@@ -3,7 +3,7 @@
     Private name As String
     Private path As String
     Private size As Integer
-    Private itemType As Library.ItemTypes
+    'Private itemType As Library.ItemTypes
 
 
 
