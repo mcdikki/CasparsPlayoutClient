@@ -180,4 +180,56 @@ Public Class ServerController
         Return 0
     End Function
 
+    ''' <summary>
+    ''' Returns a Dictionary of all media and templates on the server key by their names.
+    ''' If withMediaInfo is true, all mediaItems will have filled mediaInfo which is default by need more time.
+    ''' </summary>
+    ''' <returns></returns>
+    ''' <remarks></remarks>
+    Public Function getMedia(Optional ByVal withMediaInfo As Boolean = True) As Dictionary(Of String, CasparCGMedia)
+        Dim media As New Dictionary(Of String, CasparCGMedia)
+        '' Catch the media list and create the media objects
+        Dim response = testConnection.sendCommand(CasparCGCommandFactory.getCls)
+        If response.isOK Then
+            For Each line As String In response.getData.Split(vbCrLf)
+                line = line.Trim.Replace(vbCr, "").Replace(vbLf, "")
+                If line <> "" AndAlso line.Split(" ").Length > 2 Then
+                    Dim name = line.Substring(1, line.LastIndexOf("""") - 1)
+                    line = line.Remove(0, line.LastIndexOf("""") + 1)
+                    line = line.Trim().Replace("""", "").Replace("  ", " ")
+                    Dim values() = line.Split(" ")
+                    Select Case values(0)
+                        Case "MOVIE"
+                            media.Add(name, New CasparCGMovie(name))
+                        Case "AUDIO"
+                            media.Add(name, New CasparCGAudio(name))
+                        Case "STILL"
+                            media.Add(name, New CasparCGStill(name))
+                    End Select
+                End If
+            Next
+        End If
+
+        '' Catch the template list and create the template objects
+        response = testConnection.sendCommand(CasparCGCommandFactory.getTls)
+        If response.isOK Then
+            For Each line As String In response.getData.Split(vbCrLf)
+                line = line.Trim.Replace(vbCr, "").Replace(vbLf, "")
+                If line <> "" AndAlso line.Split(" ").Length > 2 Then
+                    Dim name = line.Substring(1, line.LastIndexOf("""") - 1)
+                    media.Add(name, New CasparCGTemplate(name))
+                End If
+            Next
+        End If
+
+        '' Add mediaInfo if requested
+        If withMediaInfo Then
+            For Each item In media.Values
+                item.parseXML(getMediaInfo(item))
+            Next
+        End If
+
+        Return media
+    End Function
+
 End Class

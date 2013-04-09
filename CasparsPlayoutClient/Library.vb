@@ -5,28 +5,34 @@
 ''' <remarks></remarks>
 Public Class Library
 
-    Public Function getLibraryItems() As List(Of LibraryItem)
-        Return Nothing
+    Private media As Dictionary(Of String, CasparCGMedia)
+    Private controller As ServerController
+
+    Public Sub New(ByVal controller As ServerController)
+        Me.controller = controller
+        media = New Dictionary(Of String, CasparCGMedia)
+    End Sub
+
+    Public Function getCasparCGMedia() As IEnumerable(Of CasparCGMedia)
+        Return media.Values
     End Function
 
-    'Public Function getLibraryItems(ByVal ItemType As Library.ItemTypes) As List(Of LibraryItem)
-    '    Return Nothing
-    'End Function
-
-    Public Function getMovieItems() As List(Of LibraryItem)
-        Return Nothing
+    Public Function getItemsOfType(ByVal type As CasparCGMedia.MediaType) As List(Of CasparCGMedia)
+        Dim items As New List(Of CasparCGMedia)
+        For Each item In media.Values
+            If item.getMediaType = type Then
+                items.Add(item)
+            End If
+        Next
+        Return items
     End Function
 
-    Public Function getStillItems() As List(Of LibraryItem)
-        Return Nothing
-    End Function
-
-    Public Function getAudioItems() As List(Of LibraryItem)
-        Return Nothing
-    End Function
-
-    Public Function getTemplateItems() As List(Of LibraryItem)
-        Return Nothing
+    Public Function getItem(ByVal name As String) As CasparCGMedia
+        If media.ContainsKey(name) Then
+            Return media.Item(name)
+        Else
+            Return Nothing
+        End If
     End Function
 
     ''' <summary>
@@ -35,5 +41,6 @@ Public Class Library
     ''' <remarks></remarks>
     Public Sub refreshLibrary()
         '' todo
+        media = controller.getMedia()
     End Sub
 End Class

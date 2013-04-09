@@ -122,8 +122,8 @@ Public Class CasparCGConnection
             ' Auf antwort warten
             Dim i As Integer = 0
             While client.Available < 3
-                Threading.Thread.Sleep(2)
-                i = i + 2
+                Threading.Thread.Sleep(1)
+                i = i + 1
             End While
             logger.debug("Waited " & i & "ms for an answer")
             ReDim buffer(client.Available)
@@ -328,6 +328,14 @@ Public Class CasparCGCommandFactory
         Return cmd
     End Function
 
+    Public Shared Function getCls() As String
+        Return "CLS"
+    End Function
+
+    Public Shared Function getTls() As String
+        Return "TLS"
+    End Function
+
 
     ''' <summary>
     ''' Escapes the string str as needed for casparCG Server
@@ -485,7 +493,7 @@ Public MustInherit Class CasparCGMedia
     Private path As String
     Private Infos As Dictionary(Of String, String)
 
-    Enum MediaType
+    Public Enum MediaType
         STILL = 0
         MOVIE = 1
         AUDIO = 2

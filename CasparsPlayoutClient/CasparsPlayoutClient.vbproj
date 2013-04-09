@@ -96,9 +96,6 @@
     </Compile>
     <Compile Include="IPlaylistItem.vb" />
     <Compile Include="Library.vb" />
-    <Compile Include="LibraryItem.vb" />
-    <Compile Include="LibraryMediaItem.vb" />
-    <Compile Include="LibraryTemplateItem.vb" />
     <Compile Include="logger.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
