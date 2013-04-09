@@ -1,16 +1,22 @@
 ﻿Public Class PlaylistMovieItem
     Inherits PlaylistItem
 
-    Property file As String
-    Property path As String
-    '' eigentlich nur infos und nicht zu bearbeiten (vom User) -- Wie sperren?
-    Property fps As Integer
-    Property width As Integer
-    Property height As Integer
-    Property isInterlaced As Boolean
+    Private media As CasparCGMovie
 
-    Public Sub New(ByVal name As String, ByRef controller As ServerController, ByVal duration As Long)
+    ''' <summary>
+    ''' Create a PlaylistMovieItem. If a duration is given and smaller than the original duration of the file, the file will only be played for that long.
+    ''' </summary>
+    ''' <param name="name"></param>
+    ''' <param name="controller"></param>
+    ''' <param name="movie"></param>
+    ''' <param name="duration"></param>
+    ''' <remarks></remarks>
+    Public Sub New(ByVal name As String, ByRef controller As ServerController, ByRef movie As CasparCGMovie, Optional ByVal duration As Long = -1)
         MyBase.New(name, PlaylistItemTypes.MOVIE, controller, duration)
+        If duration > Long.Parse(movie.getInfo("nb-frames")) OrElse duration = -1 Then
+            setDuration(Long.Parse(movie.getInfo("nb-frames")))
+        End If
+        media = movie
     End Sub
 
 

@@ -13,11 +13,11 @@ Public Class Library
         media = New Dictionary(Of String, CasparCGMedia)
     End Sub
 
-    Public Function getCasparCGMedia() As IEnumerable(Of CasparCGMedia)
+    Public Function getItems() As IEnumerable(Of CasparCGMedia)
         Return media.Values
     End Function
 
-    Public Function getItemsOfType(ByVal type As CasparCGMedia.MediaType) As List(Of CasparCGMedia)
+    Public Function getItemsOfType(ByVal type As CasparCGMedia.MediaType) As IEnumerable(Of CasparCGMedia)
         Dim items As New List(Of CasparCGMedia)
         For Each item In media.Values
             If item.getMediaType = type Then
@@ -40,7 +40,6 @@ Public Class Library
     ''' </summary>
     ''' <remarks></remarks>
     Public Sub refreshLibrary()
-        '' todo
         media = controller.getMedia()
     End Sub
 End Class
