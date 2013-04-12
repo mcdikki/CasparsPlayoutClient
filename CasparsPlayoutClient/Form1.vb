@@ -4,6 +4,7 @@ Public Class Form1
 
     Private sc As ServerController
     Private worker As Thread
+    Private listener As New List(Of placeholder)
 
     Private Sub Button1_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button1.Click
         logger.debug("Try to connect casparCG server..")
@@ -11,14 +12,24 @@ Public Class Form1
             sc = New ServerController()
         End If
         Dim f2 As New Form2(sc)
-        'sc.registerFrameTickListener(f2)
+        'For i = 0 To 250
+        '    listener.Add(New placeholder)
+        '    sc.registerFrameTickListener(listener.Item(i))
+        'Next
+        sc.registerFrameTickListener(f2)
         f2.Show()
-        sc.open()
+        If Not sc.isOpen() Then
+            sc.open()
+        End If
     End Sub
 
     Private Sub Button2_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button2.Click
-        worker = New Thread(AddressOf doIt)
-        worker.Start()
+        For Each l In listener
+            sc.unregisterFrameTickListener(l)
+        Next
+        listener.Clear()
+        'worker = New Thread(AddressOf doIt)
+        'worker.Start()
     End Sub
 
     Private Sub doIt()
@@ -40,5 +51,12 @@ Public Class Form1
     Private Sub Form2_Disposed(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Disposed
         sc.close()
         MyBase.Finalize()
+    End Sub
+End Class
+
+Public Class placeholder
+    Implements IFrameTickListener
+    Public Sub sendTick(ByVal frame As Long, ByVal channel As Integer) Implements IFrameTickListener.sendTick
+        logger.debug("Channel " & channel & ": " & frame)
     End Sub
 End Class
