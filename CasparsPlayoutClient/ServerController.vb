@@ -12,15 +12,7 @@ Public Class ServerController
     Private serverPort As Integer = 5250
     Private testChannel As Integer = 1
     Private opened As Boolean
-    Public tickListener As List(Of IFrameTickListener)
-    Private Shared tickMutex As New Mutex()
-
-    Private channelFrame As Dictionary(Of Integer, Long)
-
-    Public Sub New()
-        channelFrame = New Dictionary(Of Integer, Long)
-        tickListener = New List(Of IFrameTickListener)
-    End Sub
+    Private ticker As FrameTicker
 
     Public Sub open()
         open(serverAddress, serverPort)
@@ -49,8 +41,8 @@ Public Class ServerController
         testConnection = New CasparCGConnection(serverAddress, serverPort)
 
         ' Tick Thread starten
-        'Dim ticker As New FrameTicker(updateConnection, Me)
-        tickThread = New Thread(AddressOf tick)
+        ticker = New FrameTicker(updateConnection, Me)
+        tickThread = New Thread(AddressOf ticker.tick)
         tickThread.Start()
     End Sub
 
@@ -262,146 +254,47 @@ Public Class ServerController
         Return media
     End Function
 
-    Public Function registerFrameTickListener(ByRef listener As IFrameTickListener) As Boolean
-        logger.debug("Register " & listener.ToString & " @ Thread " & Thread.CurrentThread.ManagedThreadId)
-
-        tickMutex.WaitOne()
-        If Not tickListener.Contains(listener) Then
-            tickListener.Add(listener)
-            logger.debug("Handling " & tickListener.Count & " FrameTickListener now.")
-        End If
-        tickMutex.ReleaseMutex()
-        Return True
+    Public Function getTicker() As FrameTicker
+        Return ticker
     End Function
-
-    Public Function unregisterFrameTickListener(ByRef listener As IFrameTickListener) As Boolean
-        logger.debug("Unregister " & listener.ToString & " @ Thread " & Thread.CurrentThread.ManagedThreadId)
-        Dim lock As Boolean = False
-        Monitor.Enter(tickListener, lock)
-        'Monitor.Enter(listener)
-        If lock Then
-            If tickListener.Contains(listener) Then
-                tickListener.Remove(listener)
-                logger.debug("Handling " & tickListener.Count & " FrameTickListener now.")
-            End If
-            'Monitor.Exit(listener)
-            Monitor.Exit(tickListener)
-            Return True
-        Else
-            logger.debug("Failed unregister: Could not lock data needed.")
-            Return False
-        End If
-    End Function
-
-    Public Function getFrameTickListeners() As List(Of IFrameTickListener)
-        Return tickListener
-    End Function
-
-
-
-
-    '''''''''''''''''''''''''''''''''''''''
-
-    Public Sub tick()
-        logger.debug("Ticker thread " & Thread.CurrentThread.ManagedThreadId & " started")
-
-        '' Channels erkennen
-        '' Werte in schleife auslesen auslesen
-        Dim channelsFPS() As Integer
-        Dim channels As Integer = 0
-        Dim str = updateConnection.sendCommand(CasparCGCommandFactory.getInfo()).getData.Replace(vbCrLf & vbCrLf, vbCrLf).Trim(vbCrLf).Trim(vbCrLf).Trim()
-        Dim a = str.Split(vbCrLf)
-        channels = a.Length - 1
-        ReDim channelsFPS(channels)
-        For i As Integer = 1 To channels
-            channelFrame.Add(i, 0)
-            channelsFPS(i - 1) = 1000 / (getFPS(i) / 100)
-        Next
-
-
-        Dim infoDoc As New MSXML2.DOMDocument
-        Dim frame As Long = 0
-        While True
-            If tickListener.Count > 0 Then
-                ' Alle channels durchgehen
-                For channel As Integer = 1 To channels
-                    'werte einlesen
-                    logger.debug("THREAD: " & Thread.CurrentThread.ManagedThreadId)
-                    infoDoc.loadXML(updateConnection.sendCommand(CasparCGCommandFactory.getInfo(channel, 9999)).getXMLData)
-                    frame = infoDoc.firstChild.selectSingleNode("frame-number").nodeTypedValue
-
-                    'bei änderungen listener informieren
-                    If frame <> channelFrame(channel) Then
-                        channelFrame.Item(channel) = frame
-                        'Monitor.Enter(tickListener)
-                        tickMutex.WaitOne()
-                        Try
-                            For Each listener In tickListener
-                                'Monitor.Enter(listener)
-                                listener.sendTick(frame, channel)
-                                'Monitor.Exit(listener)
-                            Next
-                        Finally
-                            tickMutex.ReleaseMutex()
-                            'Monitor.Exit(tickListener)
-                        End Try
-                    End If
-                Next
-
-                ' Jetzt ein paar frames nur rechnen und dann wieder vergleichen
-                For time As Integer = 1 To 5000
-                    For channel As Integer = 1 To channels
-                        If time Mod channelsFPS(channel - 1) = 0 Then
-                            channelFrame.Item(channel) = channelFrame.Item(channel) + 1
-                            'Monitor.Enter(tickListener)
-                            tickMutex.WaitOne()
-                            Try
-                                For Each listener In tickListener
-                                    'Monitor.Enter(listener)
-                                    listener.sendTick(channelFrame(channel), channel)
-                                    'Monitor.Exit(listener)
-                                Next
-                            Finally
-                                tickMutex.ReleaseMutex()
-                                'Monitor.Exit(tickListener)
-                            End Try
-                        End If
-                    Next
-                    Thread.Sleep(1)
-                Next
-            Else
-                logger.debug("Ticker has nothing to do")
-                Thread.Sleep(1000)
-            End If
-        End While
-
-    End Sub
 
 End Class
 
+''' <summary>
+''' A ticker class which raises events if a new frame is reached in on of the casparCG channels.
+''' Start tick() in a new Thread and register handlers for the frameTick event. 
+''' Keep in mind to use delegates since the event will likely to be rissen by a different thread.
+''' </summary>
+''' <remarks></remarks>
 Public Class FrameTicker
 
-    Private con As CasparCGConnection
-    Private channelFrame As Dictionary(Of Integer, Long)
     Private sc As ServerController
+    Private con As CasparCGConnection
+    Private interpolationTime As Integer
+    Private channelFrame As Dictionary(Of Integer, Long)
+    Public Event frameTick(ByVal sender As Object, ByVal e As frameTickEventArgs)
 
-    Public Sub New(ByRef con As CasparCGConnection, ByRef sc As ServerController)
+    ''' <summary>
+    ''' Creates a new ticker instance.
+    ''' </summary>
+    ''' <param name="con">the connection to poll the channels for the actual framenumber</param>
+    ''' <param name="controller">the servercontroler</param>
+    ''' <param name="interpolationTime">the number of milliseconds between each servercall. In that time, the frame tick will be interpolated by a local timer wich is not very precise.</param>
+    ''' <remarks></remarks>
+    Public Sub New(ByRef con As CasparCGConnection, ByVal controller As ServerController, Optional ByVal interpolationTime As Integer = 5000)
         channelFrame = New Dictionary(Of Integer, Long)
+        sc = controller
         Me.con = con
-        Me.sc = sc
+        Me.interpolationTime = interpolationTime
         logger.debug("Ticker init by thread " & Thread.CurrentThread.ManagedThreadId)
     End Sub
 
     Public Sub tick()
         logger.debug("Ticker thread " & Thread.CurrentThread.ManagedThreadId & " started")
 
-        '' Channels erkennen
-        '' Werte in schleife auslesen auslesen
         Dim channelsFPS() As Integer
-        Dim channels As Integer = 0
-        Dim str = con.sendCommand(CasparCGCommandFactory.getInfo()).getData.Replace(vbCrLf & vbCrLf, vbCrLf).Trim(vbCrLf).Trim(vbCrLf).Trim()
-        Dim a = str.Split(vbCrLf)
-        channels = a.Length - 1
+        Dim channels As Integer = con.sendCommand(CasparCGCommandFactory.getInfo()).getData.Split(vbNewLine).Length
+
         ReDim channelsFPS(channels)
         For i As Integer = 1 To channels
             channelFrame.Add(i, 0)
@@ -412,61 +305,60 @@ Public Class FrameTicker
         Dim infoDoc As New MSXML2.DOMDocument
         Dim frame As Long = 0
         While True
-            If sc.tickListener.Count > 0 Then
-                ' Alle channels durchgehen
-                For channel As Integer = 1 To channels
-                    'werte einlesen
-                    logger.debug("THREAD: " & Thread.CurrentThread.ManagedThreadId)
-                    infoDoc.loadXML(con.sendCommand(CasparCGCommandFactory.getInfo(channel, 9999)).getXMLData)
-                    frame = infoDoc.firstChild.selectSingleNode("frame-number").nodeTypedValue
+            ' Alle channels durchgehen
+            For channel As Integer = 1 To channels
+                'werte einlesen
+                infoDoc.loadXML(con.sendCommand(CasparCGCommandFactory.getInfo(channel, 9999)).getXMLData)
+                frame = infoDoc.firstChild.selectSingleNode("frame-number").nodeTypedValue
 
-                    'bei änderungen listener informieren
-                    If frame <> channelFrame(channel) Then
-                        channelFrame.Item(channel) = frame
-                        Monitor.Enter(sc.tickListener)
-                        Try
-                            For Each listener In sc.tickListener
-                                'Monitor.Enter(listener)
-                                listener.sendTick(frame, channel)
-                                'Monitor.Exit(listener)
-                            Next
-                        Finally
-                            Monitor.Exit(sc.tickListener)
-                        End Try
+                'bei änderungen listener informieren
+                If frame <> channelFrame(channel) Then
+                    channelFrame.Item(channel) = frame
+                    '' Event auslösen
+                    RaiseEvent frameTick(Me, New frameTickEventArgs(frame, channel))
+                End If
+            Next
+
+            ' Jetzt ein paar frames nur rechnen und dann wieder vergleichen
+            For time As Integer = 1 To interpolationTime
+                For channel As Integer = 1 To channels
+                    If time Mod channelsFPS(channel - 1) = 0 Then
+                        channelFrame.Item(channel) = channelFrame.Item(channel) + 1
+                        '' Event auslösen
+                        RaiseEvent frameTick(Me, New frameTickEventArgs(channelFrame.Item(channel), channel))
                     End If
                 Next
-
-                ' Jetzt ein paar frames nur rechnen und dann wieder vergleichen
-                For time As Integer = 1 To 5000
-                    For channel As Integer = 1 To channels
-                        If time Mod channelsFPS(channel - 1) = 0 Then
-                            channelFrame.Item(channel) = channelFrame.Item(channel) + 1
-                            Monitor.Enter(sc.tickListener)
-                            Try
-                                For Each listener In sc.tickListener
-                                    'Monitor.Enter(listener)
-                                    listener.sendTick(channelFrame(channel), channel)
-                                    'Monitor.Exit(listener)
-                                Next
-                            Finally
-                                Monitor.Exit(sc.tickListener)
-                            End Try
-                        End If
-                    Next
-                    Thread.Sleep(1)
-                Next
-            Else
-                logger.debug("Ticker has nothing to do")
-                Thread.Sleep(1000)
-            End If
+                Thread.Sleep(1)
+            Next
         End While
 
     End Sub
 End Class
 
-Public Interface IFrameTickListener
-    Sub sendTick(ByVal frame As Long, ByVal channel As Integer)
+''' <summary>
+''' The frameTick event result containing the channel which ticked and the actual framenumber.
+''' </summary>
+''' <remarks></remarks>
+Public Class frameTickEventArgs
+    Inherits EventArgs
 
-    Event tick()
+    Public Sub New(ByVal frame As Long, ByVal channel As Integer)
+        Me._channel = channel
+        Me._frame = frame
+    End Sub
 
-End Interface
+    Private _channel As Integer
+    Public ReadOnly Property channel As Integer
+        Get
+            Return _channel
+        End Get
+    End Property
+
+    Private _frame As Long
+    Public ReadOnly Property frame As Long
+        Get
+            Return _frame
+        End Get
+    End Property
+End Class
+

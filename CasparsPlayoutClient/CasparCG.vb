@@ -360,6 +360,7 @@ Public Class CasparCGResponse
     Private returncode As CasparReturnCode
     Private command As String
     Private data As String
+    Private xml As String
 
     Public Enum CasparReturnCode
         UNKNOWN_RETURNCODE = 0  ' This code is not known
@@ -382,12 +383,14 @@ Public Class CasparCGResponse
         Me.returncode = parseReturnCode(returnmessage)
         Me.command = parseReturnCommand(returnmessage)
         Me.data = parseReturnData(returnmessage)
+        Me.xml = parseXml(data)
     End Sub
 
     Public Sub New(ByVal returnCode As CasparReturnCode, ByVal command As String, ByVal data As String)
         Me.returncode = returnCode
         Me.command = command
         Me.data = data
+        Me.xml = parseXml(xml)
     End Sub
 
     Public Shared Function parseReturnCode(ByVal returnmessage As String) As CasparReturnCode
@@ -413,8 +416,45 @@ Public Class CasparCGResponse
 
     Public Shared Function parseReturnData(ByVal returnmessage As String) As String
         If Not IsNothing(returnmessage) AndAlso returnmessage.Length > 0 Then
-            returnmessage = Trim(returnmessage).Substring(4) ' Code wegschneiden
-            Return returnmessage.Substring(returnmessage.IndexOf(vbCr) + 1)
+            returnmessage.Substring(returnmessage.IndexOf(vbCr) + 1)
+            ' Leerzeilen am ende entfernen
+            Dim lines() = returnmessage.Split(vbCrLf)
+            returnmessage = ""
+            If lines.Length > 1 Then
+                For i = 1 To lines.Length - 1
+                    lines(i) = lines(i).Replace("vbcr", "").Replace(vbLf, "").Trim(vbVerticalTab).Trim(vbTab).Trim(vbNullChar).Trim(vbNewLine)
+                    If lines(i).Length > 0 Then
+                        If i = 1 Then
+                            returnmessage = lines(i)
+                        Else
+                            returnmessage = returnmessage & vbNewLine & lines(i)
+                        End If
+                    End If
+                Next
+            End If
+            Return returnmessage
+        End If
+        Return ""
+    End Function
+
+    Public Shared Function parseXml(ByVal data As String) As String
+        If Not IsNothing(data) Then
+            Dim xml As String = ""
+            If data.Contains("<?") And data.Contains("?>") Then
+                xml = data
+            End If
+            While xml.Contains("<?") And xml.Contains("?>")
+                Dim start As Integer = xml.IndexOf("<")
+                While Not xml.Substring(start, 2) = "<?"
+                    start = xml.Substring(start + 2).IndexOf("<")
+                End While
+                Dim ende As Integer = xml.IndexOf(">")
+                While Not xml.Substring(ende - 1, 2) = "?>"
+                    ende = xml.Substring(ende + 2).IndexOf(">")
+                End While
+                xml = xml.Remove(start, ende + 1 - start)
+            End While
+            Return xml
         End If
         Return ""
     End Function
@@ -432,26 +472,7 @@ Public Class CasparCGResponse
     End Function
 
     Public Function getXMLData() As String
-        If Not IsNothing(data) Then
-            Dim xml As String = ""
-            If data.Contains("<?") And data.Contains("?>") Then
-                xml = data
-            End If
-            While Xml.Contains("<?") And Xml.Contains("?>")
-                Dim start As Integer = Xml.IndexOf("<")
-                While Not Xml.Substring(start, 2) = "<?"
-                    start = Xml.Substring(start + 1).IndexOf("<")
-                End While
-                Dim ende As Integer = xml.IndexOf(">")
-                While Not xml.Substring(ende - 1, 2) = "?>"
-                    Dim str As String = xml.Substring(ende - 1, 2)
-                    ende = xml.Substring(ende + 1).IndexOf(">")
-                End While
-                xml = xml.Remove(start, ende + 2 - start)
-            End While
-            Return Xml
-        End If
-        Return ""
+        Return Xml
     End Function
 
 
