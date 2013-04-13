@@ -41,7 +41,7 @@ Public Class ServerController
         testConnection = New CasparCGConnection(serverAddress, serverPort)
 
         ' Tick Thread starten
-        ticker = New FrameTicker(updateConnection, Me)
+        ticker = New FrameTicker(updateConnection, Me, 0)
         tickThread = New Thread(AddressOf ticker.tick)
         tickThread.Start()
     End Sub

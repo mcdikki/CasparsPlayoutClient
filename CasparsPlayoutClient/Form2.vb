@@ -3,6 +3,7 @@
 Public Class Form2
 
     Private sc As ServerController
+    Private maxOffset(20) As Integer
     Delegate Sub SetTextCallback(ByVal frame As Long, ByVal channel As Integer)
 
     Public Sub New(ByRef controller As ServerController)
@@ -24,9 +25,12 @@ Public Class Form2
 
     Private Sub updateLstFrame(ByVal frame As Long, ByVal channel As Integer)
         If lstFrame.Items.Count >= channel Then
+            If frame - lstFrame.Items.Item(channel - 1) > maxOffset(channel - 1) Then maxOffset(channel - 1) = frame - lstFrame.Items.Item(channel - 1)
+            lstOffset.Items.Item(channel - 1) = (frame - lstFrame.Items(channel - 1) & " : " & maxOffset(channel - 1))
             lstFrame.Items.Item(channel - 1) = frame
         Else
             lstFrame.Items.Add(frame)
+            lstOffset.Items.Add(0 & " : " & maxOffset(channel - 1))
         End If
     End Sub
 

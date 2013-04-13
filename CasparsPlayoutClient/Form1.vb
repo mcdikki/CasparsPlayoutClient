@@ -4,6 +4,7 @@ Public Class Form1
 
     Private sc As ServerController
     Private worker As Thread
+    Private nf As Integer = 0
 
     Private Sub Button1_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button1.Click
         logger.debug("Try to connect casparCG server..")
@@ -13,8 +14,13 @@ Public Class Form1
         If Not sc.isOpen() Then
             sc.open()
         End If
-        Dim f2 As New Form2(sc)
-        f2.Show()
+        Dim f2 As Form2
+        For i = 0 To 5
+            nf = nf + 1
+            f2 = New Form2(sc)
+            f2.Text = nf
+            f2.Show()
+        Next
     End Sub
 
     Private Sub Button2_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button2.Click
