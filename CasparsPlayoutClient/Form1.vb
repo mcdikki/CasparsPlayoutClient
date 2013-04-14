@@ -15,7 +15,7 @@ Public Class Form1
             sc.open()
         End If
         Dim f2 As Form2
-        For i = 1 To 10
+        For i = nf To Integer.Parse(txtListenerCount.Text) - 1
             nf = nf + 1
             f2 = New Form2(sc)
             f2.Text = nf
@@ -24,8 +24,9 @@ Public Class Form1
     End Sub
 
     Private Sub Button2_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button2.Click
-        worker = New Thread(AddressOf doIt)
-        worker.Start()
+        sc.toggleTickerActive()
+        'worker = New Thread(AddressOf doIt)
+        'worker.Start()
     End Sub
 
     Private Sub doIt()
