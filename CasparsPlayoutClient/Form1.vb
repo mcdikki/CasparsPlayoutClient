@@ -15,7 +15,7 @@ Public Class Form1
             sc.open()
         End If
         Dim f2 As Form2
-        For i = 0 To 5
+        For i = 1 To 10
             nf = nf + 1
             f2 = New Form2(sc)
             f2.Text = nf
