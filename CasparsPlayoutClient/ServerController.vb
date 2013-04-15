@@ -122,6 +122,12 @@ Public Class ServerController
         Return ""
     End Function
 
+    Public Function getPlayingMediaNames(ByVal channel As Integer, ByVal layer As Integer) As IEnumerable(Of String)
+        Dim names As New List(Of String)
+        Return names
+    End Function
+
+
     ''' <summary>
     ''' Returns the smallest free layer of the given channel
     ''' </summary>
@@ -192,7 +198,7 @@ Public Class ServerController
                         Return 2994
                     Case Else
                         If configDoc.selectSingleNode("channel").selectSingleNode("video-mode").nodeTypedValue.Contains("i") Then
-                            Return Integer.Parse(configDoc.selectSingleNode("channel").selectSingleNode("video-mode").nodeTypedValue.Substring(configDoc.selectSingleNode("channel").selectSingleNode("video-mode").nodeTypedValue.IndexOf("i"))) / 2
+                            Return Integer.Parse(configDoc.selectSingleNode("channel").selectSingleNode("video-mode").nodeTypedValue.Substring(configDoc.selectSingleNode("channel").selectSingleNode("video-mode").nodeTypedValue.IndexOf("i") + 1)) / 2
                         ElseIf configDoc.selectSingleNode("channel").selectSingleNode("video-mode").nodeTypedValue.Contains("p") Then
                             Return Integer.Parse(configDoc.selectSingleNode("channel").selectSingleNode("video-mode").nodeTypedValue.Substring(configDoc.selectSingleNode("channel").selectSingleNode("video-mode").nodeTypedValue.IndexOf("p") + 1))
                         End If
@@ -373,7 +379,7 @@ Public Class FrameTicker
                     channelFrame.Item(channel) = frame
                 End If
             Next
-            '' Event auslösen
+            ' Event auslösen
             RaiseEvent frameTick(Me, New frameTickEventArgs(channelFrame))
             ' Jetzt ein paar frames nur rechnen und dann wieder mit dem Serverwert vergleichen
             Dim hasChanged = False

@@ -12,7 +12,7 @@ Public Class Form1
             sc = New ServerController()
         End If
         If Not sc.isOpen() Then
-            sc.open()
+            sc.open("casparcg", 5250)
         End If
         Dim f2 As Form2
         For i = nf To Integer.Parse(txtListenerCount.Text) - 1
