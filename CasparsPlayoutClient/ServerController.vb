@@ -18,15 +18,6 @@ Public Class ServerController
     Private updater As mediaUpdater
     Private playlist As IPlaylistItem ' Die Root Playlist unter die alle anderen kommen
 
-    '' Listen für spielende, auf spielen wartende und auf laden wartende IPlaylistItems
-    ' channel liste, layer list -> liste von Items (sollte weniger 2 elem. haben ausser bei templates)
-    Private playingItems As Dictionary(Of Integer, Dictionary(Of Integer, List(Of IPlaylistItem)))
-    ' einfach fifo von aufs abspielen wartenden items
-    Private requestPlayItems As Queue(Of IPlaylistItem)
-    ' IPlaylistItem auf das gewarted wird --> das danach zu spielende Item
-    Private requestLoadItems As Dictionary(Of IPlaylistItem, IPlaylistItem)
-
-
     Public Sub New()
         playlist = New PlaylistBlockItem("Playlist", Me, 1, 1)
     End Sub
