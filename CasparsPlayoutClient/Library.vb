@@ -40,6 +40,6 @@ Public Class Library
     ''' </summary>
     ''' <remarks></remarks>
     Public Sub refreshLibrary()
-        media = controller.getMedia()
+        media = controller.getMediaList()
     End Sub
 End Class

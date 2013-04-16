@@ -38,10 +38,12 @@
     ''' <param name="controller"></param>
     ''' <param name="duration"></param>
     ''' <remarks></remarks>
-    Protected Sub New(ByVal name As String, ByVal itemType As PlaylistItemTypes, ByRef controller As ServerController, Optional ByVal duration As Long = -1)
+    Protected Sub New(ByVal name As String, ByVal itemType As PlaylistItemTypes, ByRef controller As ServerController, Optional ByVal channel As Integer = -1, Optional ByVal layer As Integer = -1, Optional ByVal duration As Long = -1)
         Me.name = name
         Me.ItemType = itemType
         Me.controller = controller
+        setChannel(channel)
+        setLayer(layer)
         If duration > -1 Then
             setDuration(duration)
         End If
@@ -233,37 +235,6 @@
         Return childItems
     End Function
 
-    Public Function getLayerUser(Optional ByVal recursiv As Boolean = False) As Dictionary(Of Integer, List(Of IPlaylistItem))
-        Dim layerUser As New Dictionary(Of Integer, List(Of IPlaylistItem))
-        For Each child In getChildItems(recursiv)
-            If layerUser.ContainsKey(child.getLayer) Then
-                layerUser.Item(child.getLayer).Add(child)
-            Else
-                Dim user As New List(Of IPlaylistItem)
-                user.Add(child)
-                layerUser.Add(child.getLayer, user)
-            End If
-        Next
-        Return layerUser
-    End Function
-
-    Public Function isBlockOk() As Boolean Implements IPlaylistItem.isBlockOk
-        If isParallel() Then
-            Dim layerUser = getLayerUser()
-            For Each layer As Integer In layerUser.Keys
-                If layerUser(layer).Count > 1 Then
-                    ' Templates beachten: Sie dürfen auf dem gleichen layer beliebig oft vorkommen
-                    For Each item In layerUser(layer)
-                        If Not (item.getItemType = PlaylistItemTypes.TEMPLATE) Then Return False
-                    Next
-                ElseIf layerUser(layer).Count = 1 Then
-                    If Not layerUser(layer).Item(0).isBlockOk Then Return False
-                End If
-            Next
-        End If
-        Return True
-    End Function
-
     Public Function getPlayed() As Single Implements IPlaylistItem.getPlayed
         Return (1 / Duration) * Position
     End Function
@@ -317,6 +288,13 @@
 
     Public Sub addItem(ByRef item As IPlaylistItem) Implements IPlaylistItem.addItem
         If Not IsNothing(item) Then
+            If item.getChannel < 0 Then
+                item.setChannel(getChannel)
+            End If
+            If item.getLayer < 0 Then
+                item.setLayer(getLayer)
+            End If
+
             items.Add(item)
             If isParallel() Then
                 setDuration(Math.Max(getDuration, item.getDuration))
@@ -331,8 +309,10 @@
     End Sub
 
     Public Sub setChannel(ByVal channel As Integer) Implements IPlaylistItem.setChannel
-        If Not controller.containsChannel(channel) Then
-            logger.warn("Playlist " & getName() & ": The channel " & channel & " is not configured at the given server. This could lead to errors during playlist playback.")
+        If channel <> -1 Then
+            If Not controller.containsChannel(channel) Then
+                logger.warn("Playlist " & getName() & ": The channel " & channel & " is not configured at the given server. This could lead to errors during playlist playback.")
+            End If
         End If
         Me.channel = channel
     End Sub
