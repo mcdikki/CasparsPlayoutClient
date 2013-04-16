@@ -12,12 +12,20 @@
     ''' <param name="movie"></param>
     ''' <param name="duration"></param>
     ''' <remarks></remarks>
-    Public Sub New(ByVal name As String, ByRef controller As ServerController, ByVal movie As CasparCGMovie, Optional ByVal duration As Long = -1)
-        MyBase.New(name, PlaylistItemTypes.MOVIE, controller, duration)
-        If duration > Long.Parse(movie.getInfo("nb-frames")) OrElse duration = -1 Then
-            setDuration(Long.Parse(movie.getInfo("nb-frames")))
+    Public Sub New(ByVal name As String, ByRef controller As ServerController, ByVal movie As CasparCGMovie, Optional ByVal channel As Integer = -1, Optional ByVal layer As Integer = -1, Optional ByVal duration As Long = -1)
+        MyBase.New(name, PlaylistItemTypes.MOVIE, controller, channel, layer, duration)
+        If Not IsNothing(movie) Then
+            If movie.getInfos.Count = 0 Then
+                movie.parseXML(getController.getMediaInfo(movie))
+            End If
+            If duration > Long.Parse(movie.getInfo("nb-frames")) OrElse duration = -1 Then
+                setDuration(Long.Parse(movie.getInfo("nb-frames")))
+            End If
+            media = movie
+        Else
+            logger.critical("ERROR: Given movie was nothing - Stopping now")
+            Throw New Exception("NOTHING not allowed")
         End If
-        media = movie
     End Sub
 
 
@@ -28,6 +36,7 @@
         Dim result = getController.getCommandConnection.sendCommand(CasparCGCommandFactory.getPlay(getChannel, getLayer, getMedia, isLooping, , getDuration, New CasparCGTransition(CasparCGTransition.Transitions.CUT)))
         If result.isOK Then
             playing = True
+            getController.getCommandConnection.sendAsyncCommand(CasparCGCommandFactory.getLoadbg(getChannel, getLayer, "empty", True))
         Else
             logger.err("Could not start " & media.getFullName & ". ServerMessage was: " & result.getServerMessage)
         End If

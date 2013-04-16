@@ -153,7 +153,7 @@ End Class
 
 Public Class CasparCGCommandFactory
 
-    Public Shared Function getLoadbg(ByVal channel As Integer, ByVal layer As Integer, ByVal media As String, Optional ByVal looping As Boolean = False, Optional ByVal seek As Long = 0, Optional ByVal length As Long = 0, Optional ByVal transition As CasparCGTransition = Nothing, Optional ByVal filter As String = "") As String
+    Public Shared Function getLoadbg(ByVal channel As Integer, ByVal layer As Integer, ByVal media As String, Optional ByRef autostarting As Boolean = False, Optional ByVal looping As Boolean = False, Optional ByVal seek As Long = 0, Optional ByVal length As Long = 0, Optional ByVal transition As CasparCGTransition = Nothing, Optional ByVal filter As String = "") As String
         Dim cmd As String = "LOADBG " & getDestination(channel, layer) & " " & media
 
         If looping Then
@@ -167,6 +167,9 @@ Public Class CasparCGCommandFactory
         End If
         If length > 0 Then
             cmd = cmd & " LENGTH " & length
+        End If
+        If autostarting Then
+            cmd = cmd & " AUTO"
         End If
         If filter.Length > 0 Then
             cmd = cmd & " FILTER " & filter
@@ -622,6 +625,16 @@ Public MustInherit Class CasparCGMedia
         Infos.Add(info, value)
     End Sub
 
+    Public Overrides Function toString() As String
+        Dim out As String = getFullName() & " (" & getMediaType.ToString & ")"
+        If getInfos.Count > 0 Then
+            out = out & vbNewLine & "INFOS:"
+            For Each infoKey As String In getInfos().Keys
+                out = out & vbNewLine & vbTab & infoKey & " = " & getInfo(infoKey)
+            Next
+        End If
+        Return out
+    End Function
 End Class
 
 Public Class CasparCGColor

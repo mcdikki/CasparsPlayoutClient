@@ -8,7 +8,6 @@
     Function isLooping() As Boolean
     Function isAutoStarting() As Boolean
     Function isParallel() As Boolean
-    Function isBlockOk() As Boolean
 
 
     Function getDuration() As Long ' Gesamtlaufzeit in ms

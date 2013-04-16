@@ -6,8 +6,8 @@ Public Class PlaylistBlockItem
 
     Private lastPlaying As IPlaylistItem
 
-    Public Sub New(ByVal name As String, ByRef controller As ServerController)
-        MyBase.New(name, PlaylistItemTypes.BLOCK, controller, 0)
+    Public Sub New(ByVal name As String, ByRef controller As ServerController, Optional ByVal channel As Integer = -1, Optional ByVal layer As Integer = -1)
+        MyBase.New(name, PlaylistItemTypes.BLOCK, controller, channel, layer, 0)
     End Sub
 
     Public Overloads Function isPlaying()

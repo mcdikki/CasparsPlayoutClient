@@ -28,7 +28,7 @@ Public Class ServerController
 
 
     Public Sub New()
-        playlist = New PlaylistBlockItem("Playlist", Me)
+        playlist = New PlaylistBlockItem("Playlist", Me, 1, 1)
     End Sub
 
     Public Sub open()
@@ -69,11 +69,15 @@ Public Class ServerController
         ' Tick Thread starten
         ticker = New FrameTicker(tickConnection, Me, , 5)
         tickThread = New Thread(AddressOf ticker.tick)
-        tickThread.Start()
+        'tickThread.Start()
 
         ' updater starten
         updater = New mediaUpdater(updateConnection, playlist, Me)
     End Sub
+
+    Public Function getPlaylistRoot() As IPlaylistItem
+        Return playlist
+    End Function
 
     Public Function getCommandConnection() As CasparCGConnection
         Return cmdConnection
@@ -155,18 +159,29 @@ Public Class ServerController
             Dim response = testConnection.sendCommand(CasparCGCommandFactory.getInfo(media))
             If response.isOK Then
                 Return response.getXMLData
+            Else
+                logger.err("Error loading xml data received from server for " & media.toString)
+                logger.err("ServerMessage dump: " & response.getServerMessage)
             End If
         Else
             Dim layer = getFreeLayer(testChannel)
             Dim response = testConnection.sendCommand(CasparCGCommandFactory.getLoadbg(testChannel, layer, media.getFullName))
             If response.isOK Then
-                Dim configDoc As New MSXML2.DOMDocument
+                Dim infoDoc As New MSXML2.DOMDocument
                 response = testConnection.sendCommand(CasparCGCommandFactory.getInfo(testChannel, layer, True))
                 testConnection.sendAsyncCommand(CasparCGCommandFactory.getCGClear(testChannel, layer))
-                configDoc.loadXML(response.getXMLData())
-                If configDoc.hasChildNodes Then
-                    Return configDoc.selectSingleNode("producer").selectSingleNode("destination").selectSingleNode("producer").xml
+                If infoDoc.loadXML(response.getXMLData()) Then
+                    If infoDoc.selectSingleNode("producer").selectSingleNode("destination").selectSingleNode("producer").selectSingleNode("type").nodeTypedValue.Equals("separated-producer") Then
+                        Return infoDoc.selectSingleNode("producer").selectSingleNode("destination").selectSingleNode("producer").selectSingleNode("fill").selectSingleNode("producer").xml
+                    Else
+                        Return infoDoc.selectSingleNode("producer").selectSingleNode("destination").selectSingleNode("producer").xml
+                    End If
+                Else
+                    logger.err("Error loading xml data received from server for " & media.toString & ". Error: " & infoDoc.parseError.reason)
+                    logger.err("ServerMessages dump: " & response.getServerMessage)
                 End If
+            Else
+                logger.err("Error getting media information. Server messages was: " & response.getServerMessage)
             End If
         End If
         Return ""
@@ -184,7 +199,11 @@ Public Class ServerController
     ''' <returns></returns>
     ''' <remarks></remarks>
     Public Function containsChannel(ByVal channel As Integer) As Boolean
-        Return testConnection.sendCommand(CasparCGCommandFactory.getInfo(channel)).isOK
+        If Not IsNothing(testConnection) Then
+            Return testConnection.sendCommand(CasparCGCommandFactory.getInfo(channel)).isOK
+        Else
+            Return False
+        End If
     End Function
 
     ''' <summary>
@@ -276,13 +295,13 @@ Public Class ServerController
     ''' </summary>
     ''' <returns></returns>
     ''' <remarks></remarks>
-    Public Function getMedia(Optional ByVal withMediaInfo As Boolean = True) As Dictionary(Of String, CasparCGMedia)
+    Public Function getMediaList(Optional ByVal withMediaInfo As Boolean = True) As Dictionary(Of String, CasparCGMedia)
         Dim media As New Dictionary(Of String, CasparCGMedia)
         '' Catch the media list and create the media objects
         Dim response = testConnection.sendCommand(CasparCGCommandFactory.getCls)
         If response.isOK Then
             For Each line As String In response.getData.Split(vbCrLf)
-                'line = line.Trim.Replace(vbCr, "").Replace(vbLf, "")
+                line = line.Trim()
                 If line <> "" AndAlso line.Split(" ").Length > 2 Then
                     Dim name = line.Substring(1, line.LastIndexOf("""") - 1)
                     line = line.Remove(0, line.LastIndexOf("""") + 1)
