@@ -4,6 +4,7 @@
 Public Class ServerController
 
     Private cmdConnection As CasparCGConnection
+    Private tickConnection As CasparCGConnection
     Private updateConnection As CasparCGConnection
     Private testConnection As CasparCGConnection
     Private updateThread As Thread
@@ -11,8 +12,24 @@ Public Class ServerController
     Private serverAddress As String = "localhost"
     Private serverPort As Integer = 5250
     Private testChannel As Integer = 1
+    Private channels As Integer
     Private opened As Boolean
-    Private ticker As FrameTicker
+    Private WithEvents ticker As FrameTicker
+    Private updater As mediaUpdater
+    Private playlist As IPlaylistItem ' Die Root Playlist unter die alle anderen kommen
+
+    '' Listen für spielende, auf spielen wartende und auf laden wartende IPlaylistItems
+    ' channel liste, layer list -> liste von Items (sollte weniger 2 elem. haben ausser bei templates)
+    Private playingItems As Dictionary(Of Integer, Dictionary(Of Integer, List(Of IPlaylistItem)))
+    ' einfach fifo von aufs abspielen wartenden items
+    Private requestPlayItems As Queue(Of IPlaylistItem)
+    ' IPlaylistItem auf das gewarted wird --> das danach zu spielende Item
+    Private requestLoadItems As Dictionary(Of IPlaylistItem, IPlaylistItem)
+
+
+    Public Sub New()
+        playlist = New PlaylistBlockItem("Playlist", Me)
+    End Sub
 
     Public Sub open()
         open(serverAddress, serverPort)
@@ -24,6 +41,7 @@ Public Class ServerController
         If Not IsNothing(updateThread) Then updateThread.Abort()
         If Not IsNothing(tickThread) Then tickThread.Abort()
         updateConnection.close()
+        tickConnection.close()
         testConnection.close()
         cmdConnection.close()
     End Sub
@@ -37,14 +55,46 @@ Public Class ServerController
         Me.serverAddress = serverAddress
         Me.serverPort = serverPort
         cmdConnection = New CasparCGConnection(serverAddress, serverPort)
+        cmdConnection.connect()
         updateConnection = New CasparCGConnection(serverAddress, serverPort)
+        updateConnection.connect()
         testConnection = New CasparCGConnection(serverAddress, serverPort)
+        testConnection.connect()
+        tickConnection = New CasparCGConnection(serverAddress, serverPort)
+        tickConnection.connect()
+
+        ' Channels des Servers bestimmen
+        channels = readServerChannels()
 
         ' Tick Thread starten
-        ticker = New FrameTicker(updateConnection, Me, , 5)
+        ticker = New FrameTicker(tickConnection, Me, , 5)
         tickThread = New Thread(AddressOf ticker.tick)
         tickThread.Start()
+
+        ' updater starten
+        updater = New mediaUpdater(updateConnection, playlist, Me)
     End Sub
+
+    Public Function getCommandConnection() As CasparCGConnection
+        Return cmdConnection
+    End Function
+
+    Public Function getChannels() As Integer
+        Return channels
+    End Function
+
+    Private Function readServerChannels() As Integer
+        Dim ch As Integer = 0
+        Dim response = testConnection.sendCommand(CasparCGCommandFactory.getInfo())
+        If response.isOK Then
+            Dim lineArray() = response.getData.Split(vbLf)
+            If Not IsNothing(lineArray) Then
+                ch = lineArray.Length
+            End If
+        End If
+        Return ch
+    End Function
+
 
     ''' <summary>
     ''' Returns the media duration in milliseconds if playing in native fps.
@@ -127,6 +177,15 @@ Public Class ServerController
         Return names
     End Function
 
+    ''' <summary>
+    ''' Returns whether or not, the given channel is configured at the connected CasparCGServer
+    ''' </summary>
+    ''' <param name="channel">the channel number to check for</param>
+    ''' <returns></returns>
+    ''' <remarks></remarks>
+    Public Function containsChannel(ByVal channel As Integer) As Boolean
+        Return testConnection.sendCommand(CasparCGCommandFactory.getInfo(channel)).isOK
+    End Function
 
     ''' <summary>
     ''' Returns the smallest free layer of the given channel
@@ -149,8 +208,8 @@ Public Class ServerController
     ''' <param name="channel"></param>
     ''' <returns></returns>
     ''' <remarks></remarks>
-    Public Function isLayerFree(ByVal layer As Integer, ByVal channel As Integer) As Boolean
-        Dim answer = testConnection.sendCommand("INFO " & channel & "-" & layer)
+    Public Function isLayerFree(ByVal layer As Integer, ByVal channel As Integer, Optional ByVal onlyForeground As Boolean = False, Optional ByVal onlyBackground As Boolean = False) As Boolean
+        Dim answer = testConnection.sendCommand(CasparCGCommandFactory.getInfo(channel, layer, onlyBackground, onlyForeground))
         Dim doc As New MSXML2.DOMDocument()
         If answer.isOK AndAlso doc.loadXML(answer.getXMLData) Then
             For Each type As MSXML2.IXMLDOMNode In doc.getElementsByTagName("type")
@@ -187,23 +246,26 @@ Public Class ServerController
     ''' <remarks></remarks>
     Public Function getFPS(ByVal channel As Integer) As Integer
         Dim result = testConnection.sendCommand(CasparCGCommandFactory.getInfo(channel))
-        Dim configDoc As New MSXML2.DOMDocument
-        configDoc.loadXML(result.getXMLData())
-        If configDoc.hasChildNodes Then
-            If Not IsNothing(configDoc.selectSingleNode("channel")) AndAlso Not IsNothing(configDoc.selectSingleNode("channel").selectSingleNode("video-mode")) Then
-                Select Case configDoc.selectSingleNode("channel").selectSingleNode("video-mode").nodeTypedValue
-                    Case "PAL"
-                        Return 2500
-                    Case "NTSC"
-                        Return 2994
-                    Case Else
-                        If configDoc.selectSingleNode("channel").selectSingleNode("video-mode").nodeTypedValue.Contains("i") Then
-                            Return Integer.Parse(configDoc.selectSingleNode("channel").selectSingleNode("video-mode").nodeTypedValue.Substring(configDoc.selectSingleNode("channel").selectSingleNode("video-mode").nodeTypedValue.IndexOf("i") + 1)) / 2
-                        ElseIf configDoc.selectSingleNode("channel").selectSingleNode("video-mode").nodeTypedValue.Contains("p") Then
-                            Return Integer.Parse(configDoc.selectSingleNode("channel").selectSingleNode("video-mode").nodeTypedValue.Substring(configDoc.selectSingleNode("channel").selectSingleNode("video-mode").nodeTypedValue.IndexOf("p") + 1))
-                        End If
-                End Select
+        Dim infoDoc As New MSXML2.DOMDocument
+        If infoDoc.loadXML(result.getXMLData()) Then
+            If infoDoc.hasChildNodes Then
+                If Not IsNothing(infoDoc.selectSingleNode("channel")) AndAlso Not IsNothing(infoDoc.selectSingleNode("channel").selectSingleNode("video-mode")) Then
+                    Select Case infoDoc.selectSingleNode("channel").selectSingleNode("video-mode").nodeTypedValue
+                        Case "PAL"
+                            Return 2500
+                        Case "NTSC"
+                            Return 2994
+                        Case Else
+                            If infoDoc.selectSingleNode("channel").selectSingleNode("video-mode").nodeTypedValue.Contains("i") Then
+                                Return Integer.Parse(infoDoc.selectSingleNode("channel").selectSingleNode("video-mode").nodeTypedValue.Substring(infoDoc.selectSingleNode("channel").selectSingleNode("video-mode").nodeTypedValue.IndexOf("i") + 1)) / 2
+                            ElseIf infoDoc.selectSingleNode("channel").selectSingleNode("video-mode").nodeTypedValue.Contains("p") Then
+                                Return Integer.Parse(infoDoc.selectSingleNode("channel").selectSingleNode("video-mode").nodeTypedValue.Substring(infoDoc.selectSingleNode("channel").selectSingleNode("video-mode").nodeTypedValue.IndexOf("p") + 1))
+                            End If
+                    End Select
+                End If
             End If
+        Else
+            logger.err("Could not get channel fps. Error in server response: " & infoDoc.parseError.reason & " @" & vbNewLine & result.getServerMessage)
         End If
         Return 0
     End Function
@@ -220,7 +282,7 @@ Public Class ServerController
         Dim response = testConnection.sendCommand(CasparCGCommandFactory.getCls)
         If response.isOK Then
             For Each line As String In response.getData.Split(vbCrLf)
-                line = line.Trim.Replace(vbCr, "").Replace(vbLf, "")
+                'line = line.Trim.Replace(vbCr, "").Replace(vbLf, "")
                 If line <> "" AndAlso line.Split(" ").Length > 2 Then
                     Dim name = line.Substring(1, line.LastIndexOf("""") - 1)
                     line = line.Remove(0, line.LastIndexOf("""") + 1)
@@ -317,6 +379,12 @@ Public Class FrameTicker
     Private con As CasparCGConnection
     Public interpolationTime As Integer
     Private frameInterval As Integer
+    Private channels As Integer
+    Private channelFameTime() As Integer
+    Private channelLastUpdate() As Long
+    Private channelFrame As New Dictionary(Of Integer, Long)
+    Private minFrameTime As Integer = Integer.MaxValue
+
     Public Event frameTick(ByVal sender As Object, ByVal e As frameTickEventArgs)
 
     ''' <summary>
@@ -332,6 +400,17 @@ Public Class FrameTicker
         Me.con = con
         Me.interpolationTime = interpolationTime
         Me.frameInterval = frameInterval
+
+        channels = sc.getChannels 'Anzahl der Channels bestimmen
+
+        ReDim channelFameTime(channels)
+        ReDim channelLastUpdate(channels)
+        For i As Integer = 1 To channels
+            channelFameTime(i - 1) = 1000 / (sc.getFPS(i) / 100)
+            If minFrameTime > channelFameTime(i - 1) - 1 Then minFrameTime = channelFameTime(i - 1)
+            channelFrame.Add(i, 0)
+        Next
+
         logger.debug("Ticker init by thread " & Thread.CurrentThread.ManagedThreadId)
     End Sub
 
@@ -342,20 +421,6 @@ Public Class FrameTicker
         Dim iterationStart As Long
         Dim iterationEnd As Long
         Dim interpolatingSince As Integer
-        Dim channelFameTime() As Integer
-        Dim channelLastUpdate() As Long
-        Dim minFrameTime As Integer = Integer.MaxValue
-        Dim channelFrame As New Dictionary(Of Integer, Long)
-        Dim channels As Integer = con.sendCommand(CasparCGCommandFactory.getInfo()).getData.Split(vbNewLine).Length 'Anzahl der Channels bestimmen
-
-        ReDim channelFameTime(channels)
-        ReDim channelLastUpdate(channels)
-        For i As Integer = 1 To channels
-            channelFameTime(i - 1) = 1000 / (sc.getFPS(i) / 100)
-            If minFrameTime > channelFameTime(i - 1) - 1 Then minFrameTime = channelFameTime(i - 1)
-            channelFrame.Add(i, 0)
-        Next
-
 
         Dim infoDoc As New MSXML2.DOMDocument
         Dim frame As Long = 0
@@ -428,4 +493,127 @@ Public Class frameTickEventArgs
         End Get
     End Property
 End Class
+
+Public Class mediaUpdater
+
+    Private ready As New Semaphore(1, 1)
+    Private controller As ServerController
+    Private WithEvents ticker As FrameTicker
+    Private updateConnection As CasparCGConnection
+    Private channels As Integer
+    Private playlist As IPlaylistItem
+
+    ' Global um häufiges Alloc in updateMedia zu verhindern
+    Private activeItems() As Dictionary(Of Integer, Dictionary(Of String, IPlaylistItem))
+    Private infoDoc As New MSXML2.DOMDocument
+    Private layer As Integer
+    Private mediaName As String
+    Private foregroundProducer As MSXML2.IXMLDOMElement
+
+    Public Sub New(ByRef updateConnection As CasparCGConnection, ByRef playlist As IPlaylistItem, ByRef controller As ServerController)
+        Me.controller = controller
+        Me.updateConnection = updateConnection
+        Me.channels = controller.getChannels
+        Me.playlist = playlist
+
+        ReDim activeItems(channels)
+        For i = 0 To channels - 1
+            activeItems(i) = New Dictionary(Of Integer, Dictionary(Of String, IPlaylistItem))
+        Next
+
+        ticker = controller.getTicker
+
+        AddHandler ticker.frameTick, AddressOf updateMedia
+    End Sub
+
+    ''' <summary>
+    ''' Updates all playing media items in the playlist
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
+    ''' <remarks></remarks>
+    Private Sub updateMedia(ByVal sender As Object, ByVal e As frameTickEventArgs) 'Handles ticker.frameTick
+        ''
+        '' reads in alle channels as xml
+        '' and checks the state of each layer
+        '' if a media is found, the corresponding 
+        '' IPlaylistItem will be searched within the active 
+        '' Items and updated. If no one of the active Items 
+        '' is not playing anymore, it will be set to stopped.
+        ''
+
+        ' Damit nicht zu viele updates gleichzeitig laufen, 
+        ' muss jedes update exlusiv updaten. Kann es das in einer milliseconde
+        ' nicht erreichen, verwirft es das update für diesen Tick
+        If ready.WaitOne(1) Then
+
+            For Each item In playlist.getPlayingChildItems(True)
+                If activeItems(item.getChannel - 1).ContainsKey(item.getLayer) Then
+                    activeItems(item.getChannel - 1).Item(item.getLayer).Add(item.getName, item)
+                Else
+                    activeItems(item.getChannel - 1).Add(item.getLayer, New Dictionary(Of String, IPlaylistItem))
+                    activeItems(item.getChannel - 1).Item(item.getLayer).Add(item.getName, item)
+                End If
+            Next
+
+            For c = 0 To channels - 1
+                infoDoc.loadXML(updateConnection.sendCommand(CasparCGCommandFactory.getInfo(c + 1)).getXMLData)
+                '' ToDo Checken ob alles gut ging  
+
+                '' Über alle layer iter.
+                For Each layerNode As MSXML2.IXMLDOMElement In infoDoc.getElementsByTagName("layer")
+                    layer = Integer.Parse(layerNode.selectSingleNode("index").nodeTypedValue())
+
+                    ' Ich brauche das layer nur zu beachten, wenn es auch aktive Items auf diesem layer gibt
+                    If activeItems(c).ContainsKey(layer) Then
+
+                        '' Den producer im Vordergrund holen. Falls eine Transition im gang ist, müssen wir schauen
+                        '' wo das video von interesse liegt, bzw. beide verarbeiten
+                        foregroundProducer = layerNode.selectSingleNode("foreground").selectSingleNode("producer")
+                        If foregroundProducer.selectSingleNode("type").nodeTypedValue.Equals("transition-producer") Then
+
+                            '' Source und Dest einzeln betrachten
+                            foregroundProducer = foregroundProducer.selectSingleNode("producer")
+                            If foregroundProducer.selectSingleNode("source").selectSingleNode("producer").selectSingleNode("type").nodeTypedValue.Equals("ffmpeg-producer") Then
+                                mediaName = foregroundProducer.selectSingleNode("source").selectSingleNode("producer").selectSingleNode("type").nodeTypedValue
+                                ' Pfad und extension wegschneiden
+                                mediaName = mediaName.Substring(mediaName.IndexOf("\") + 1, mediaName.IndexOf("\") - mediaName.LastIndexOf("."))
+                                If activeItems(c).Item(layer).ContainsKey(mediaName) Then
+                                    '' Daten updaten
+                                    activeItems(c).Item(layer).Item(mediaName).getMedia.parseXML(infoDoc.selectSingleNode("source").selectSingleNode("producer").xml)
+                                    ''danach aus liste entfernen
+                                    activeItems(c).Item(layer).Remove(mediaName)
+                                End If
+                            ElseIf foregroundProducer.selectSingleNode("destination").selectSingleNode("producer").selectSingleNode("type").nodeTypedValue.Equals("ffmpeg-producer") Then
+                                mediaName = foregroundProducer.selectSingleNode("destination").selectSingleNode("producer").selectSingleNode("type").nodeTypedValue
+                                ' Pfad und extension wegschneiden
+                                mediaName = mediaName.Substring(mediaName.IndexOf("\") + 1, mediaName.IndexOf("\") - mediaName.LastIndexOf("."))
+                                If activeItems(c).Item(layer).ContainsKey(mediaName) Then
+                                    '' Daten updaten
+                                    activeItems(c).Item(layer).Item(mediaName).getMedia.parseXML(infoDoc.selectSingleNode("destination").selectSingleNode("producer").xml)
+                                    ''danach aus liste entfernen
+                                    activeItems(c).Item(layer).Remove(mediaName)
+                                End If
+                            End If
+                        Else
+                            mediaName = foregroundProducer.selectSingleNode("producer").selectSingleNode("type").nodeTypedValue
+                            ' Pfad und extension wegschneiden
+                            mediaName = mediaName.Substring(mediaName.IndexOf("\") + 1, mediaName.IndexOf("\") - mediaName.LastIndexOf("."))
+                            If activeItems(c).Item(layer).ContainsKey(mediaName) Then
+                                '' Daten updaten
+                                activeItems(c).Item(layer).Item(mediaName).getMedia.parseXML(infoDoc.selectSingleNode("producer").xml)
+                                ''danach aus liste entfernen
+                                activeItems(c).Item(layer).Remove(mediaName)
+                            End If
+                        End If
+                        If activeItems(c).Item(layer).Count = 0 Then Exit For
+                    End If
+                Next
+            Next
+            ready.Release()
+        End If
+    End Sub
+End Class
+
+
 

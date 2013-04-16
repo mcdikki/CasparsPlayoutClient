@@ -8,12 +8,15 @@ Public Class CasparCGConnection
     Private reconnectTries = 10
     Private connectionAttemp = 0
     Private reconnectTimeout = 1000 ' 1sec
+    Private buffersize As Integer = 1024 * 256
     Private tryConnect As Boolean = True
 
     Public Sub New(ByVal serverAddress As String, ByVal serverPort As Integer)
         Me.serveraddress = serverAddress
         Me.serverport = serverPort
         client = New TcpClient()
+        client.SendBufferSize = buffersize
+        client.ReceiveBufferSize = buffersize
         client.NoDelay = True
     End Sub
 
@@ -117,18 +120,29 @@ Public Class CasparCGConnection
             ' Befehl senden
             logger.debug("Send command: " & cmd)
             client.GetStream.Write(System.Text.UTF8Encoding.UTF8.GetBytes(cmd & vbCrLf), 0, cmd.Length + 2)
-            logger.debug("Command sent")
+            Dim timer As New Stopwatch
+            timer.Start()
+            'logger.debug("Command sent")
 
             ' Auf antwort warten
-            Dim i As Integer = 0
-            While client.Available < 3
-                Threading.Thread.Sleep(1)
-                i = i + 1
-            End While
-            logger.debug("Waited " & i & "ms for an answer")
-            ReDim buffer(client.Available)
-            client.GetStream.Read(buffer, 0, client.Available)
-            Return New CasparCGResponse(Trim(System.Text.UTF8Encoding.UTF8.GetString(buffer)))
+            Dim readComplete As Boolean = False
+            Dim readByte As Byte
+            Dim input As String = ""
+            Dim size As Integer = 0
+
+            Do Until (input.Trim().Length > 3) AndAlso (((input.Trim().Substring(0, 3) = "201" OrElse input.Trim().Substring(0, 3) = "200") AndAlso input.EndsWith(vbLf & vbCrLf)) OrElse (input.Trim().Substring(0, 3) <> "201" AndAlso input.Trim().Substring(0, 3) <> "200" AndAlso input.EndsWith(vbCrLf)))
+                readByte = client.GetStream.ReadByte()
+                If readByte > 0 Then
+                    ' Ein Zeichen gelesen
+                    input = input & ChrW(readByte)
+                Else
+                    Threading.Thread.Sleep(1)
+                End If
+            Loop
+
+            timer.Stop()
+            logger.debug("Waited " & timer.ElapsedMilliseconds & "ms for an answer and received " & input.Length & " Bytes to read.")
+            Return New CasparCGResponse(input)
         Else
             logger.err("Not connected to server. Can't send command.")
             Return Nothing
@@ -206,6 +220,14 @@ Public Class CasparCGCommandFactory
         End If
 
         Return escape(cmd)
+    End Function
+
+    Public Shared Function getPlay(ByVal channel As Integer, ByVal layer As Integer, ByVal media As CasparCGMedia, Optional ByVal looping As Boolean = False, Optional ByVal seek As Long = 0, Optional ByVal length As Long = 0, Optional ByVal transition As CasparCGTransition = Nothing, Optional ByVal filter As String = "") As String
+        If IsNothing(media) Then
+            Return getPlay(channel, layer, , looping, seek, length, transition, filter)
+        Else
+            Return getPlay(channel, layer, media.getFullName, looping, seek, length, transition, filter)
+        End If
     End Function
 
     Public Shared Function getCall(ByVal channel As Integer, ByVal layer As Integer, Optional ByVal looping As Boolean = False, Optional ByVal seek As Long = 0, Optional ByVal length As Long = 0, Optional ByVal transition As CasparCGTransition = Nothing, Optional ByVal filter As String = "") As String
@@ -357,6 +379,7 @@ End Class
 
 Public Class CasparCGResponse
 
+    Private serverMessage As String
     Private returncode As CasparReturnCode
     Private command As String
     Private data As String
@@ -379,25 +402,19 @@ Public Class CasparCGResponse
         ERR_FILE_UNREADABLE = 502 ' 502 [command] FAILED	- Media file unreadable 
     End Enum
 
-    Public Sub New(ByVal returnmessage As String)
-        Me.returncode = parseReturnCode(returnmessage)
-        Me.command = parseReturnCommand(returnmessage)
-        Me.data = parseReturnData(returnmessage)
+    Public Sub New(ByVal serverMessage As String)
+        Me.serverMessage = serverMessage
+        Me.returncode = parseReturnCode(serverMessage)
+        Me.command = parseReturnCommand(serverMessage)
+        Me.data = parseReturnData(serverMessage)
         Me.xml = parseXml(data)
     End Sub
 
-    Public Sub New(ByVal returnCode As CasparReturnCode, ByVal command As String, ByVal data As String)
-        Me.returncode = returnCode
-        Me.command = command
-        Me.data = data
-        Me.xml = parseXml(xml)
-    End Sub
-
-    Public Shared Function parseReturnCode(ByVal returnmessage As String) As CasparReturnCode
-        If Not IsNothing(returnmessage) Then
-            returnmessage = Trim(returnmessage)
-            If returnmessage.Length > 2 AndAlso IsNumeric(returnmessage.Substring(0, 3)) Then
-                Dim returncode As Integer = Integer.Parse(returnmessage.Substring(0, 3))
+    Public Shared Function parseReturnCode(ByVal serverMessage As String) As CasparReturnCode
+        If Not IsNothing(serverMessage) Then
+            serverMessage = Trim(serverMessage)
+            If serverMessage.Length > 2 AndAlso IsNumeric(serverMessage.Substring(0, 3)) Then
+                Dim returncode As Integer = Integer.Parse(serverMessage.Substring(0, 3))
                 If [Enum].IsDefined(GetType(CasparReturnCode), returncode) Then
                     Return returncode
                 End If
@@ -406,33 +423,33 @@ Public Class CasparCGResponse
         Return 0
     End Function
 
-    Public Shared Function parseReturnCommand(ByVal returnmessage As String) As String
-        If Not IsNothing(returnmessage) AndAlso returnmessage.Length > 0 Then
-            returnmessage = Trim(returnmessage).Substring(4) ' Code wegschneiden
-            Return returnmessage.Substring(0, returnmessage.IndexOf(" "))
+    Public Shared Function parseReturnCommand(ByVal serverMessage As String) As String
+        If Not IsNothing(serverMessage) AndAlso serverMessage.Length > 3 Then
+            serverMessage = Trim(serverMessage).Substring(4) ' Code wegschneiden
+            Return serverMessage.Substring(0, serverMessage.IndexOf(" "))
         End If
         Return ""
     End Function
 
-    Public Shared Function parseReturnData(ByVal returnmessage As String) As String
-        If Not IsNothing(returnmessage) AndAlso returnmessage.Length > 0 Then
-            returnmessage.Substring(returnmessage.IndexOf(vbCr) + 1)
+    Public Shared Function parseReturnData(ByVal serverMessage As String) As String
+        If Not IsNothing(serverMessage) AndAlso serverMessage.Length > 0 Then
+            serverMessage.Substring(serverMessage.IndexOf(vbCr) + 1)
             ' Leerzeilen am ende entfernen
-            Dim lines() = returnmessage.Split(vbCrLf)
-            returnmessage = ""
+            Dim lines() = serverMessage.Split(vbCrLf)
+            serverMessage = ""
             If lines.Length > 1 Then
                 For i = 1 To lines.Length - 1
                     lines(i) = lines(i).Replace("vbcr", "").Replace(vbLf, "").Trim(vbVerticalTab).Trim(vbTab).Trim(vbNullChar).Trim(vbNewLine)
                     If lines(i).Length > 0 Then
                         If i = 1 Then
-                            returnmessage = lines(i)
+                            serverMessage = lines(i)
                         Else
-                            returnmessage = returnmessage & vbNewLine & lines(i)
+                            serverMessage = serverMessage & vbNewLine & lines(i)
                         End If
                     End If
                 Next
             End If
-            Return returnmessage
+            Return serverMessage
         End If
         Return ""
     End Function
@@ -473,6 +490,10 @@ Public Class CasparCGResponse
 
     Public Function getXMLData() As String
         Return Xml
+    End Function
+
+    Public Function getServerMessage() As String
+        Return serverMessage
     End Function
 
 

@@ -24,9 +24,9 @@ Public Class Form1
     End Sub
 
     Private Sub Button2_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button2.Click
-        sc.toggleTickerActive()
-        'worker = New Thread(AddressOf doIt)
-        'worker.Start()
+        'sc.toggleTickerActive()
+        worker = New Thread(AddressOf doIt)
+        worker.Start()
     End Sub
 
     Private Sub doIt()

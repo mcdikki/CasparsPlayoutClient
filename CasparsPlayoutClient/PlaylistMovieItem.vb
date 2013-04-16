@@ -1,5 +1,6 @@
 ﻿Public Class PlaylistMovieItem
     Inherits PlaylistItem
+    Implements IPlaylistItem
 
     Private media As CasparCGMovie
 
@@ -11,7 +12,7 @@
     ''' <param name="movie"></param>
     ''' <param name="duration"></param>
     ''' <remarks></remarks>
-    Public Sub New(ByVal name As String, ByRef controller As ServerController, ByRef movie As CasparCGMovie, Optional ByVal duration As Long = -1)
+    Public Sub New(ByVal name As String, ByRef controller As ServerController, ByVal movie As CasparCGMovie, Optional ByVal duration As Long = -1)
         MyBase.New(name, PlaylistItemTypes.MOVIE, controller, duration)
         If duration > Long.Parse(movie.getInfo("nb-frames")) OrElse duration = -1 Then
             setDuration(Long.Parse(movie.getInfo("nb-frames")))
@@ -24,28 +25,38 @@
     ''-------------------------------------------------------------------------------------
     Public Overloads Sub start(Optional ByVal noWait As Boolean = True)
         '' CMD an ServerController schicken
+        Dim result = getController.getCommandConnection.sendCommand(CasparCGCommandFactory.getPlay(getChannel, getLayer, getMedia, isLooping, , getDuration, New CasparCGTransition(CasparCGTransition.Transitions.CUT)))
+        If result.isOK Then
+            playing = True
+        Else
+            logger.err("Could not start " & media.getFullName & ". ServerMessage was: " & result.getServerMessage)
+        End If
     End Sub
 
     Public Overloads Sub abort()
         '' CMD an ServerController schicken
-
+        getController.getCommandConnection.sendCommand(CasparCGCommandFactory.getStop(getChannel, getLayer))
         '' Der rest wird von der Elternklasse erledigt
         MyBase.abort()
     End Sub
 
     Public Overloads Sub pause(ByVal frames As Long)
         '' cmd an ServerController schicken
-
+        getController.getCommandConnection.sendCommand(CasparCGCommandFactory.getPause(getChannel, getLayer))
         '' pause wird über die Elternklasse realisiert
         MyBase.pause(frames)
     End Sub
 
     Public Overloads Sub unPause()
         '' cms an ServerController schicken
-
+        getController.getCommandConnection.sendCommand(CasparCGCommandFactory.getPlay(getChannel, getLayer))
         '' Aufheben der Pause wird über die Elternklasse realisiert
         MyBase.unPause()
     End Sub
+
+    Public Overloads Function getMedia() As CasparCGMedia
+        Return media
+    End Function
 
 
 
