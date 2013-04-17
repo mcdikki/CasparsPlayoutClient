@@ -3,6 +3,7 @@
 
 Public Class ServerController
 
+    Public readyForUpdate As New Semaphore(1, 1)
     Private cmdConnection As CasparCGConnection
     Private tickConnection As CasparCGConnection
     Private updateConnection As CasparCGConnection
@@ -510,7 +511,6 @@ End Class
 
 Public Class mediaUpdater
 
-    Private ready As New Semaphore(1, 1)
     Private controller As ServerController
     Private WithEvents ticker As FrameTicker
     Private updateConnection As CasparCGConnection
@@ -560,13 +560,13 @@ Public Class mediaUpdater
         ' Damit nicht zu viele updates gleichzeitig laufen, 
         ' muss jedes update exlusiv updaten. Kann es das in einer milliseconde
         ' nicht erreichen, verwirft es das update für diesen Tick
-        If ready.WaitOne(1) Then
+        If controller.readyForUpdate.WaitOne(1) Then
 
             '' Listen und variablen vorbereiten
             xml = ""
             mediaName = ""
             For Each item In playlist.getPlayingChildItems(True, True)
-                logger.err("Found playing: " & item.getName)
+                logger.err("Found in playing list: " & item.getName)
                 If activeItems(item.getChannel - 1).ContainsKey(item.getLayer) Then
                     activeItems(item.getChannel - 1).Item(item.getLayer).Add(item.getMedia().getName, item)
                 Else
@@ -586,33 +586,35 @@ Public Class mediaUpdater
                         ' Ich brauche das layer nur zu beachten, wenn es auch aktive Items auf diesem layer gibt
                         If activeItems(c).ContainsKey(layer) Then
 
-                            '' Den producer im Vordergrund holen. Falls eine Transition im gang ist, müssen wir schauen
-                            '' wo das video von interesse liegt, bzw. beide verarbeiten
+                            '' Zum richtigen Producer navigieren
                             foregroundProducer = layerNode.selectSingleNode("foreground").selectSingleNode("producer")
-                            If foregroundProducer.selectSingleNode("type").nodeTypedValue.Equals("transition-producer") Then
+                            Do Until IsNothing(foregroundProducer) _
+                                OrElse foregroundProducer.selectSingleNode("type").nodeTypedValue.Equals("ffmpeg-producer") _
+                                OrElse foregroundProducer.selectSingleNode("type").nodeTypedValue.Equals("image-producer") _
+                                OrElse foregroundProducer.selectSingleNode("type").nodeTypedValue.Equals("color-producer")
 
-                                '' Source und Dest einzeln betrachten
-                                'foregroundProducer = foregroundProducer.selectSingleNode("producer")
+                                Select Case foregroundProducer.selectSingleNode("type").nodeTypedValue
+                                    Case "transition-producer"
+                                        foregroundProducer = foregroundProducer.selectSingleNode("destination").selectSingleNode("producer")
+                                    Case "separated-producer"
+                                        foregroundProducer = foregroundProducer.selectSingleNode("fill").selectSingleNode("producer")
+                                    Case Else
+                                        foregroundProducer = Nothing
+                                End Select
+                            Loop
 
-                                '' !!! Vorsicht, einer der beiden medien die spielen gehen hier verloren!!! TODO
-                                If foregroundProducer.selectSingleNode("source").selectSingleNode("producer").selectSingleNode("type").nodeTypedValue.Equals("ffmpeg-producer") Then
-                                    ' Name und xml holen
-                                    mediaName = foregroundProducer.selectSingleNode("source").selectSingleNode("producer").selectSingleNode("filename").nodeTypedValue
-                                    xml = foregroundProducer.selectSingleNode("source").selectSingleNode("producer").xml
-                                ElseIf foregroundProducer.selectSingleNode("destination").selectSingleNode("producer").selectSingleNode("type").nodeTypedValue.Equals("ffmpeg-producer") Then
-                                    ' Name und xml holen
-                                    mediaName = foregroundProducer.selectSingleNode("destination").selectSingleNode("producer").selectSingleNode("filename").nodeTypedValue
-                                    xml = foregroundProducer.selectSingleNode("destination").selectSingleNode("producer").xml
+                            ' Name und XML aus dem Producer holen und Pfad und extension wegschneiden
+                            If Not IsNothing(foregroundProducer) Then
+                                If foregroundProducer.selectSingleNode("type").nodeTypedValue.Equals("color-producer") Then
+                                    mediaName = foregroundProducer.selectSingleNode("color").nodeTypedValue
+                                Else
+                                    mediaName = foregroundProducer.selectSingleNode("filename").nodeTypedValue
+                                    '' CASPARCG BUG WORKAROUND für doppelte // bei image-producern
+                                    mediaName = mediaName.Replace("\\", "\")
+                                    mediaName = mediaName.Substring(mediaName.IndexOf("\") + 1, mediaName.LastIndexOf(".") - (mediaName.IndexOf("\") + 1)).ToUpper
                                 End If
-                            ElseIf foregroundProducer.selectSingleNode("type").nodeTypedValue.Equals("ffmpeg-producer") Then
-                                ' Name und Xml holen
-                                mediaName = foregroundProducer.selectSingleNode("filename").nodeTypedValue
                                 xml = foregroundProducer.xml
-                            End If
-
-                            ' Pfad und extension wegschneiden
-                            If mediaName.Length > 0 Then
-                                mediaName = mediaName.Substring(mediaName.IndexOf("\") + 1, mediaName.LastIndexOf(".") - (mediaName.IndexOf("\") + 1))
+                                logger.warn("Found media '" & mediaName & "' playing on " & c + 1 & "-" & layer)
                                 If activeItems(c).Item(layer).ContainsKey(mediaName) Then
                                     '' Daten updaten
                                     activeItems(c).Item(layer).Item(mediaName).getMedia.parseXML(xml)
@@ -628,6 +630,7 @@ Public Class mediaUpdater
                     For Each layer As Integer In activeItems(c).Keys
                         For Each item As IPlaylistItem In activeItems(c).Item(layer).Values
                             item.stoppedPlaying()
+                            logger.warn("Not playing on server anymore: '" & item.getMedia.getFullName & "'")
                         Next
                     Next
                     activeItems(c).Clear()
@@ -636,7 +639,7 @@ Public Class mediaUpdater
                 End If
             Next
         End If
-        ready.Release()
+        controller.readyForUpdate.Release()
     End Sub
 End Class
 

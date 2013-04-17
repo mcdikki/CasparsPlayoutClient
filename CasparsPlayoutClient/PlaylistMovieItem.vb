@@ -36,7 +36,12 @@
         logger.log("Starte " & getChannel() & "-" & getLayer() & ": " & getMedia.toString)
         Dim result = getController.getCommandConnection.sendCommand(CasparCGCommandFactory.getPlay(getChannel, getLayer, getMedia, isLooping, , getDuration))
         If result.isOK Then
+            While Not getController.readyForUpdate.WaitOne()
+                logger.warn(getName() & ": Could not get handel to update my status")
+            End While
             playing = True
+            Threading.Thread.Sleep(1)
+            getController.readyForUpdate.Release()
             getController.getCommandConnection.sendAsyncCommand(CasparCGCommandFactory.getLoadbg(getChannel, getLayer, "empty", True))
             logger.log("...gestartet " & getChannel() & "-" & getLayer() & ": " & getMedia.toString)
         Else

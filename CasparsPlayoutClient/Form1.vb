@@ -39,8 +39,9 @@ Public Class Form1
         p1.setAutoStart(True)
         p2.setAutoStart(True)
 
-        p1.addItem(New PlaylistMovieItem("amb", sc, mediaLib.getItem("amb")))
-        p1.addItem(New PlaylistMovieItem("cg1080i50", sc, mediaLib.getItem("cg1080i50")))
+        p1.addItem(New PlaylistMovieItem("1", sc, mediaLib.getItem("amb")))
+        p1.addItem(New PlaylistMovieItem("2", sc, mediaLib.getItem("cg1080i50")))
+        p1.addItem(New PlaylistMovieItem("3", sc, mediaLib.getItem("go1080p25")))
 
         p2.addItem(New PlaylistMovieItem("go1080p25", sc, mediaLib.getItem("go1080p25")))
         p2.addItem(New PlaylistMovieItem("cg1080i50", sc, mediaLib.getItem("cg1080i50"), , 2))
