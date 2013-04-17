@@ -23,7 +23,7 @@
             End If
             media = movie
         Else
-            logger.critical("ERROR: Given movie was nothing - Stopping now")
+            logger.critical("PlaylistMovieItem.new: ERROR: Given movie was nothing - Stopping now")
             Throw New Exception("NOTHING not allowed")
         End If
     End Sub
@@ -33,27 +33,22 @@
     ''-------------------------------------------------------------------------------------
     Public Overrides Sub start(Optional ByVal noWait As Boolean = True)
         '' CMD an ServerController schicken
-        logger.log("Starte " & getChannel() & "-" & getLayer() & ": " & getMedia.toString)
+        logger.log("PlaylistMovieItem.start: Starte " & getChannel() & "-" & getLayer() & ": " & getMedia.toString)
         Dim result = getController.getCommandConnection.sendCommand(CasparCGCommandFactory.getPlay(getChannel, getLayer, getMedia, isLooping, , getDuration))
         If result.isOK Then
             While Not getController.readyForUpdate.WaitOne()
-                logger.warn(getName() & ": Could not get handel to update my status")
+                logger.warn("PlaylistMovieItem.start: " & getName() & ": Could not get handel to update my status")
             End While
             playing = True
-            Threading.Thread.Sleep(1)
             getController.readyForUpdate.Release()
             getController.getCommandConnection.sendAsyncCommand(CasparCGCommandFactory.getLoadbg(getChannel, getLayer, "empty", True))
-            logger.log("...gestartet " & getChannel() & "-" & getLayer() & ": " & getMedia.toString)
+            logger.log("PlaylistMovieItem.start: ...gestartet " & getChannel() & "-" & getLayer() & ": " & getMedia.toString)
         Else
-            logger.err("Could not start " & media.getFullName & ". ServerMessage was: " & result.getServerMessage)
+            logger.err("PlaylistMovieItem.start: Could not start " & media.getFullName & ". ServerMessage was: " & result.getServerMessage)
         End If
-        While isPlaying() 'AndAlso Not noWait
-            getController.update()
-            Threading.Thread.Sleep(1000)
-            'logger.log(getMedia.toString)
-            For Each item In getController.getPlaylistRoot.getPlayingChildItems(True, True)
-                logger.warn(item.getMedia.toString)
-            Next
+        While isPlaying() AndAlso Not noWait
+            'getController.update()
+            Threading.Thread.Sleep(1)
         End While
     End Sub
 

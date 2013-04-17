@@ -39,6 +39,11 @@ Public Class PlaylistBlockItem
 
     End Sub
 
+    Public Overrides Sub stoppedPlaying()
+        lastPlaying = getChildItems().Count
+        MyBase.stoppedPlaying()
+    End Sub
+
     Public Overrides Sub start(Optional ByVal noWait As Boolean = True)
         If getChildItems.Count > 0 AndAlso isParallel() Then
             lastPlaying = 0

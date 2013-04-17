@@ -64,9 +64,12 @@
         Next
     End Sub
 
-    Public Sub stoppedPlaying() Implements IPlaylistItem.stoppedPlaying
+    Public Overridable Sub stoppedPlaying() Implements IPlaylistItem.stoppedPlaying
         playing = False
-        logger.log("Stopped playing " & getName() & " (" & getChannel() & "-" & getLayer() & ")")
+        If Not IsNothing(startThread) Then
+            startThread.Abort()
+        End If
+        logger.debug("PlaylistItem.stoppedPlaying: Stopped playing " & getName() & " (" & getChannel() & "-" & getLayer() & ")")
     End Sub
 
     Public Sub load() Implements IPlaylistItem.load
@@ -120,7 +123,7 @@
             startThread = New Threading.Thread(AddressOf Me.start)
             startThread.Start()
         Else
-            logger.log("Start " & getName())
+            logger.debug("PlaylistItem.start: Start " & getName())
             playing = True
 
             ' alle Unteritems starten.
@@ -289,7 +292,7 @@
     End Sub
 
     Public Sub addItem(ByRef item As IPlaylistItem) Implements IPlaylistItem.addItem
-        logger.log(getName() & "(" & getChannel() & "-" & getLayer() & "): Adding new Item " & item.getName)
+        logger.log("PlaylistItem.addItem: " & getName() & "(" & getChannel() & "-" & getLayer() & "): Adding new Item " & item.getName)
         If Not IsNothing(item) Then
             If item.getChannel < 0 Then
                 item.setChannel(getChannel)
@@ -314,7 +317,7 @@
     Public Sub setChannel(ByVal channel As Integer) Implements IPlaylistItem.setChannel
         If channel <> -1 Then
             If Not controller.containsChannel(channel) Then
-                logger.warn("Playlist " & getName() & ": The channel " & channel & " is not configured at the given server. This could lead to errors during playlist playback.")
+                logger.warn("PlaylistItem.setChannel: Playlist " & getName() & ": The channel " & channel & " is not configured at the given server. This could lead to errors during playlist playback.")
             End If
         End If
         Me.channel = channel
@@ -328,7 +331,7 @@
         If layer > -2 Then
             Me.layer = layer
         Else
-            logger.warn("Playlist " & getName() & ": Can't set layer to " & layer & ". Leaving it unset which means it will be the standard layer")
+            logger.warn("PlaylistItem.setLayer: Playlist " & getName() & ": Can't set layer to " & layer & ". Leaving it unset which means it will be the standard layer")
             Me.layer = -1
         End If
     End Sub

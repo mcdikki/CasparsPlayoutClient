@@ -30,24 +30,24 @@ Public Class CasparCGConnection
                 client.NoDelay = True
                 If client.Connected Then
                     connectionAttemp = 0
-                    logger.log("Connected to " & serveraddress & ":" & serverport.ToString)
+                    logger.log("CasparCGConnection.connect: Connected to " & serveraddress & ":" & serverport.ToString)
                     Return True
                 End If
             Catch e As Exception
                 logger.warn(e.Message)
                 If connectionAttemp < reconnectTries Then
                     connectionAttemp = connectionAttemp + 1
-                    logger.warn("Try to reconnect " & connectionAttemp & "/" & reconnectTries)
+                    logger.warn("CasparCGConnection.connect: Try to reconnect " & connectionAttemp & "/" & reconnectTries)
                     Dim i As Integer = 0
                     Threading.Thread.Sleep(reconnectTimeout)
                     Return connect()
                 Else
-                    logger.err("Could not connect to " & serveraddress & ":" & serverport.ToString)
+                    logger.err("CasparCGConnection.connect: Could not connect to " & serveraddress & ":" & serverport.ToString)
                     Return False
                 End If
             End Try
         Else
-            logger.log("Allready connected to " & serveraddress & ":" & serverport.ToString)
+            logger.log("CasparCGConnection.connect: Allready connected to " & serveraddress & ":" & serverport.ToString)
         End If
         Return client.Connected
     End Function
@@ -95,10 +95,10 @@ Public Class CasparCGConnection
     ''' <remarks></remarks>
     Public Sub sendAsyncCommand(ByVal cmd As String)
         If connected(tryConnect) Then
-            logger.debug("Send command: " & cmd)
+            logger.debug("CasparCGConnection.sendAsyncCommand: Send command: " & cmd)
             client.GetStream.Write(System.Text.UTF8Encoding.UTF8.GetBytes(cmd & vbCrLf), 0, cmd.Length + 2)
-            logger.debug("Command sent")
-        Else : logger.err("Not connected to server. Can't send command.")
+            logger.debug("CasparCGConnection.sendAsyncCommand: Command sent")
+        Else : logger.err("CasparCGConnection.sendAsyncCommand: Not connected to server. Can't send command.")
         End If
     End Sub
 
@@ -118,7 +118,7 @@ Public Class CasparCGConnection
                 client.GetStream.Read(buffer, 0, client.Available)
             End If
             ' Befehl senden
-            logger.debug("Send command: " & cmd)
+            logger.debug("CasparCGConnection.sendCommand: Send command: " & cmd)
             client.GetStream.Write(System.Text.UTF8Encoding.UTF8.GetBytes(cmd & vbCrLf), 0, cmd.Length + 2)
             Dim timer As New Stopwatch
             timer.Start()
@@ -141,10 +141,10 @@ Public Class CasparCGConnection
             Loop
 
             timer.Stop()
-            logger.debug("Waited " & timer.ElapsedMilliseconds & "ms for an answer and received " & input.Length & " Bytes to read.")
+            logger.debug("CasparCGConnection.sendCommand: Waited " & timer.ElapsedMilliseconds & "ms for an answer and received " & input.Length & " Bytes to read.")
             Return New CasparCGResponse(input)
         Else
-            logger.err("Not connected to server. Can't send command.")
+            logger.err("CasparCGConnection.sendCommand: Not connected to server. Can't send command.")
             Return Nothing
         End If
     End Function

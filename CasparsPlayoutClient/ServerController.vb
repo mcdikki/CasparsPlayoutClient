@@ -20,7 +20,7 @@ Public Class ServerController
     Private playlist As IPlaylistItem ' Die Root Playlist unter die alle anderen kommen
 
     Public Sub New()
-        playlist = New PlaylistBlockItem("Playlist", Me, 1, 1)
+        playlist = New PlaylistBlockItem("Playlist", Me, -1, -1)
     End Sub
 
     Public Sub open()
@@ -28,7 +28,7 @@ Public Class ServerController
     End Sub
 
     Public Sub close()
-        logger.debug("Close servercontroller...")
+        logger.debug("ServerController.close: Close servercontroller...")
         opened = False
         If Not IsNothing(updateThread) Then updateThread.Abort()
         If Not IsNothing(tickThread) Then tickThread.Abort()
@@ -57,14 +57,18 @@ Public Class ServerController
 
         ' Channels des Servers bestimmen
         channels = readServerChannels()
+        If channels = testChannel - 1 Then
+            channels = channels - 1
+        End If
 
         ' Tick Thread starten
         ticker = New FrameTicker(tickConnection, Me, , 5)
-        tickThread = New Thread(AddressOf ticker.tick)
+        'tickThread = New Thread(AddressOf ticker.tick)
         'tickThread.Start()
 
         ' updater starten
         updater = New mediaUpdater(updateConnection, playlist, Me)
+        AddHandler ticker.frameTick, AddressOf updater.updateMedia
     End Sub
 
     Public Sub update()
@@ -120,7 +124,7 @@ Public Class ServerController
                     End If
                     Return getTimeInMS(media.getInfo("nb-frames"), fps)
                 End If
-                logger.err("Could not get media duration of " & media.getFullName & "(" & media.getMediaType.ToString & ").")
+                logger.err("ServerController.getOriginalMediaDuration: Could not get media duration of " & media.getFullName & "(" & media.getMediaType.ToString & ").")
                 Return 0
         End Select
     End Function
@@ -145,7 +149,7 @@ Public Class ServerController
                 If media.containsInfo("nb-frames") Then
                     Return getTimeInMS(media.getInfo("nb-frames"), getFPS(channel))
                 End If
-                logger.err("Could not get media duration of " & media.getFullName & "(" & media.getMediaType.ToString & ").")
+                logger.err("ServerController.getMediaDuration: Could not get media duration of " & media.getFullName & "(" & media.getMediaType.ToString & ").")
                 Return 0
         End Select
     End Function
@@ -202,9 +206,9 @@ Public Class ServerController
             Return True
         End If
         If Not IsNothing(doc.parseError) Then
-            logger.warn("Error checking layer." & vbNewLine & doc.parseError.reason & vbNewLine & doc.parseError.line & ":" & doc.parseError.linepos & vbNewLine & doc.parseError.srcText)
+            logger.warn("ServerController.isLayerFree: Error checking layer." & vbNewLine & doc.parseError.reason & vbNewLine & doc.parseError.line & ":" & doc.parseError.linepos & vbNewLine & doc.parseError.srcText)
         Else
-            logger.warn("Could not check layer. Server response was incorrect.")
+            logger.warn("ServerController.isLayerFree: Could not check layer. Server response was incorrect.")
         End If
         Return False
     End Function
@@ -247,7 +251,7 @@ Public Class ServerController
                 End If
             End If
         Else
-            logger.err("Could not get channel fps. Error in server response: " & infoDoc.parseError.reason & " @" & vbNewLine & result.getServerMessage)
+            logger.err("ServerController.getFPS: Could not get channel fps. Error in server response: " & infoDoc.parseError.reason & " @" & vbNewLine & result.getServerMessage)
         End If
         Return 0
     End Function
@@ -258,8 +262,8 @@ Public Class ServerController
             If response.isOK Then
                 Return response.getXMLData
             Else
-                logger.err("Error loading xml data received from server for " & media.toString)
-                logger.err("ServerMessage dump: " & response.getServerMessage)
+                logger.err("ServerController.getMediaInfo: Error loading xml data received from server for " & media.toString)
+                logger.err("ServerController.getMediaInfo: ServerMessage dump: " & response.getServerMessage)
             End If
         Else
             Dim layer = getFreeLayer(testChannel)
@@ -275,11 +279,11 @@ Public Class ServerController
                         Return infoDoc.selectSingleNode("producer").selectSingleNode("destination").selectSingleNode("producer").xml
                     End If
                 Else
-                    logger.err("Error loading xml data received from server for " & media.toString & ". Error: " & infoDoc.parseError.reason)
-                    logger.err("ServerMessages dump: " & response.getServerMessage)
+                    logger.err("ServerController.getMediaInfo: Error loading xml data received from server for " & media.toString & ". Error: " & infoDoc.parseError.reason)
+                    logger.err("ServerController.getMediaInfo: ServerMessages dump: " & response.getServerMessage)
                 End If
             Else
-                logger.err("Error getting media information. Server messages was: " & response.getServerMessage)
+                logger.err("ServerController.getMediaInfo: Error getting media information. Server messages was: " & response.getServerMessage)
             End If
         End If
         Return ""
@@ -348,7 +352,7 @@ Public Class ServerController
     End Sub
 
     Public Sub startTicker()
-        If Not IsNothing(tickThread) AndAlso Not tickThread.IsAlive AndAlso Not IsNothing(ticker) Then
+        If IsNothing(tickThread) OrElse Not tickThread.IsAlive AndAlso Not IsNothing(ticker) Then
             tickThread = New Thread(AddressOf ticker.tick)
             tickThread.Start()
         End If
@@ -426,11 +430,11 @@ Public Class FrameTicker
             channelFrame.Add(i, 0)
         Next
 
-        logger.debug("Ticker init by thread " & Thread.CurrentThread.ManagedThreadId)
+        logger.debug("frameTicker.New: Ticker init by thread " & Thread.CurrentThread.ManagedThreadId)
     End Sub
 
     Public Sub tick()
-        logger.debug("Ticker thread " & Thread.CurrentThread.ManagedThreadId & " started")
+        logger.debug("frameTicker.tick: Ticker thread " & Thread.CurrentThread.ManagedThreadId & " started")
         Dim timer As New Stopwatch ' Timer to measure the time it takes to calc current frame / channel and inform listeners
         Dim offsetTimer As New Stopwatch
         Dim iterationStart As Long
@@ -461,6 +465,8 @@ Public Class FrameTicker
             Next
             ' Event auslösen
             RaiseEvent frameTick(Me, New frameTickEventArgs(channelFrame))
+            logger.debug("FrameTicker.tick: Raise frameTick()")
+
             ' Jetzt ein paar frames nur rechnen und dann wieder mit dem Serverwert vergleichen
             Dim hasChanged = False
             interpolatingSince = timer.ElapsedMilliseconds
@@ -476,7 +482,10 @@ Public Class FrameTicker
                     End If
                 Next
                 '' Event auslösen
-                If hasChanged Then RaiseEvent frameTick(Me, New frameTickEventArgs(channelFrame))
+                If hasChanged Then
+                    RaiseEvent frameTick(Me, New frameTickEventArgs(channelFrame))
+                    logger.debug("FrameTicker.tick: Raise frameTick()")
+                End If
                 hasChanged = False
 
                 ' Jetzt noch ein bisschen warten um die cpu zu entlasten. Mindestens bis die nächste frame möglich ist
@@ -535,10 +544,6 @@ Public Class mediaUpdater
         For i = 0 To channels - 1
             activeItems(i) = New Dictionary(Of Integer, Dictionary(Of String, IPlaylistItem))
         Next
-
-        ticker = controller.getTicker
-
-        AddHandler ticker.frameTick, AddressOf updateMedia
     End Sub
 
     ''' <summary>
@@ -560,13 +565,13 @@ Public Class mediaUpdater
         ' Damit nicht zu viele updates gleichzeitig laufen, 
         ' muss jedes update exlusiv updaten. Kann es das in einer milliseconde
         ' nicht erreichen, verwirft es das update für diesen Tick
+        'logger.warn("mediaUpdater.updateMedia: Got tick")
         If controller.readyForUpdate.WaitOne(1) Then
-
+            'logger.warn("mediaUpdater.updateMedia: Got tick and handle")
             '' Listen und variablen vorbereiten
             xml = ""
             mediaName = ""
             For Each item In playlist.getPlayingChildItems(True, True)
-                logger.err("Found in playing list: " & item.getName)
                 If activeItems(item.getChannel - 1).ContainsKey(item.getLayer) Then
                     activeItems(item.getChannel - 1).Item(item.getLayer).Add(item.getMedia().getName, item)
                 Else
@@ -614,7 +619,6 @@ Public Class mediaUpdater
                                     mediaName = mediaName.Substring(mediaName.IndexOf("\") + 1, mediaName.LastIndexOf(".") - (mediaName.IndexOf("\") + 1)).ToUpper
                                 End If
                                 xml = foregroundProducer.xml
-                                logger.warn("Found media '" & mediaName & "' playing on " & c + 1 & "-" & layer)
                                 If activeItems(c).Item(layer).ContainsKey(mediaName) Then
                                     '' Daten updaten
                                     activeItems(c).Item(layer).Item(mediaName).getMedia.parseXML(xml)
@@ -630,12 +634,11 @@ Public Class mediaUpdater
                     For Each layer As Integer In activeItems(c).Keys
                         For Each item As IPlaylistItem In activeItems(c).Item(layer).Values
                             item.stoppedPlaying()
-                            logger.warn("Not playing on server anymore: '" & item.getMedia.getFullName & "'")
                         Next
                     Next
                     activeItems(c).Clear()
                 Else
-                    logger.err("Could not update media at channel " & c + 1 & ". Unable to load xml data. " & infoDoc.parseError.reason)
+                    logger.err("mediaUpdater.UpdateMedia: Could not update media at channel " & c + 1 & ". Unable to load xml data. " & infoDoc.parseError.reason)
                 End If
             Next
         End If

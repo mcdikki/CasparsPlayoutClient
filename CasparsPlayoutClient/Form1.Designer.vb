@@ -51,7 +51,7 @@ Partial Class Form1
         Me.txtListenerCount.Name = "txtListenerCount"
         Me.txtListenerCount.Size = New System.Drawing.Size(126, 20)
         Me.txtListenerCount.TabIndex = 2
-        Me.txtListenerCount.Text = "10"
+        Me.txtListenerCount.Text = "1"
         '
         'Form1
         '
