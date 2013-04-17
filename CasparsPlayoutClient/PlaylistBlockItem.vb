@@ -4,7 +4,7 @@ Public Class PlaylistBlockItem
     Inherits PlaylistItem
     Implements IPlaylistItem
 
-    Private lastPlaying As IPlaylistItem
+    Private lastPlaying As Integer
 
     Public Sub New(ByVal name As String, ByRef controller As ServerController, Optional ByVal channel As Integer = -1, Optional ByVal layer As Integer = -1)
         MyBase.New(name, PlaylistItemTypes.BLOCK, controller, channel, layer, 0)
@@ -26,8 +26,10 @@ Public Class PlaylistBlockItem
         If Not isParallel() Then
             '' Wenn das zuletzt gespielte nicht mehr aktiv ist
             '' das nächste starten falls möglich
-            If Not lastPlaying.isPlaying AndAlso getChildItems().Count > getChildItems().IndexOf(lastPlaying) + 1 Then
-                getChildItems().Item(getChildItems().IndexOf(lastPlaying) + 1).start()
+            If lastPlaying > -1 Then
+                If getChildItems.Count > lastPlaying + 1 AndAlso Not getChildItems().Item(lastPlaying).isPlaying Then
+                    getChildItems().Item(lastPlaying + 1).start()
+                End If
             End If
         End If
 
@@ -37,7 +39,10 @@ Public Class PlaylistBlockItem
 
     End Sub
 
-    Public Overloads Sub start(Optional ByVal noWait As Boolean = True)
+    Public Overrides Sub start(Optional ByVal noWait As Boolean = True)
+        If getChildItems.Count > 0 AndAlso isParallel() Then
+            lastPlaying = 0
+        End If
         MyBase.start(noWait)
         AddHandler getController.getTicker.frameTick, AddressOf receiveTick
     End Sub

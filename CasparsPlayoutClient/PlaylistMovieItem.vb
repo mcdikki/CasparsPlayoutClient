@@ -31,15 +31,25 @@
 
     '' Methoden die überschrieben werden müssen weil sie andere oder mehr functionen haben
     ''-------------------------------------------------------------------------------------
-    Public Overloads Sub start(Optional ByVal noWait As Boolean = True)
+    Public Overrides Sub start(Optional ByVal noWait As Boolean = True)
         '' CMD an ServerController schicken
+        logger.log("Starte " & getChannel() & "-" & getLayer() & ": " & getMedia.toString)
         Dim result = getController.getCommandConnection.sendCommand(CasparCGCommandFactory.getPlay(getChannel, getLayer, getMedia, isLooping, , getDuration, New CasparCGTransition(CasparCGTransition.Transitions.CUT)))
         If result.isOK Then
             playing = True
+            logger.log("Gestartet " & getChannel() & "-" & getLayer() & ": " & getMedia.toString)
             getController.getCommandConnection.sendAsyncCommand(CasparCGCommandFactory.getLoadbg(getChannel, getLayer, "empty", True))
+            logger.log("Startet " & getChannel() & "-" & getLayer() & ": " & getMedia.toString)
         Else
             logger.err("Could not start " & media.getFullName & ". ServerMessage was: " & result.getServerMessage)
         End If
+        While isPlaying() AndAlso Not noWait
+            Threading.Thread.Sleep(1000)
+            logger.log(getMedia.toString)
+            For Each item In getController.getPlaylistRoot.getPlayingChildItems(True, True)
+                logger.warn(item.toString)
+            Next
+        End While
     End Sub
 
     Public Overloads Sub abort()
@@ -63,7 +73,7 @@
         MyBase.unPause()
     End Sub
 
-    Public Overloads Function getMedia() As CasparCGMedia
+    Public Overrides Function getMedia() As CasparCGMedia
         Return media
     End Function
 

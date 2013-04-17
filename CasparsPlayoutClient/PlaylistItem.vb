@@ -114,11 +114,12 @@
     ''' </summary>
     ''' <param name="noWait"></param>
     ''' <remarks></remarks>
-    Public Sub start(Optional ByVal noWait As Boolean = True) Implements IPlaylistItem.start
+    Public Overridable Sub start(Optional ByVal noWait As Boolean = True) Implements IPlaylistItem.start
         If noWait AndAlso IsNothing(startThread) Then
             startThread = New Threading.Thread(AddressOf Me.start)
-            startThread.Start(True)
+            startThread.Start()
         Else
+            logger.log("Start " & getName())
             playing = True
 
             ' alle Unteritems starten.
@@ -205,7 +206,7 @@
         Return Remaining
     End Function
 
-    Public Function getActiveChildItems(Optional ByVal recursiv As Boolean = False, Optional ByVal onlyPlayable As Boolean = False) As IEnumerable(Of IPlaylistItem) Implements IPlaylistItem.getPlayingChildItems
+    Public Function getPlayingChildItems(Optional ByVal recursiv As Boolean = False, Optional ByVal onlyPlayable As Boolean = False) As IEnumerable(Of IPlaylistItem) Implements IPlaylistItem.getPlayingChildItems
         Dim activeItems As New List(Of IPlaylistItem)
         For Each item In items
             If item.isPlaying Then
@@ -260,7 +261,7 @@
         Return controller
     End Function
 
-    Public Function getMedia() As CasparCGMedia Implements IPlaylistItem.getMedia
+    Public Overridable Function getMedia() As CasparCGMedia Implements IPlaylistItem.getMedia
         Return Nothing
     End Function
 
@@ -322,7 +323,7 @@
     End Sub
 
     Public Sub setLayer(ByVal layer As Integer) Implements IPlaylistItem.setLayer
-        If layer <= 0 Then
+        If layer > -2 Then
             Me.layer = layer
         Else
             logger.warn("Playlist " & getName() & ": Can't set layer to " & layer & ". Leaving it unset which means it will be the standard layer")

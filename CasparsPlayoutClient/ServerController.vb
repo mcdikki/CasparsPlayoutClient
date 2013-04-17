@@ -60,7 +60,7 @@ Public Class ServerController
         ' Tick Thread starten
         ticker = New FrameTicker(tickConnection, Me, , 5)
         tickThread = New Thread(AddressOf ticker.tick)
-        'tickThread.Start()
+        tickThread.Start()
 
         ' updater starten
         updater = New mediaUpdater(updateConnection, playlist, Me)
@@ -294,7 +294,7 @@ Public Class ServerController
             For Each line As String In response.getData.Split(vbCrLf)
                 line = line.Trim()
                 If line <> "" AndAlso line.Split(" ").Length > 2 Then
-                    Dim name = line.Substring(1, line.LastIndexOf("""") - 1)
+                    Dim name = line.Substring(1, line.LastIndexOf("""") - 1).ToUpper
                     line = line.Remove(0, line.LastIndexOf("""") + 1)
                     line = line.Trim().Replace("""", "").Replace("  ", " ")
                     Dim values() = line.Split(" ")
@@ -316,7 +316,7 @@ Public Class ServerController
             For Each line As String In response.getData.Split(vbCrLf)
                 line = line.Trim.Replace(vbCr, "").Replace(vbLf, "")
                 If line <> "" AndAlso line.Split(" ").Length > 2 Then
-                    Dim name = line.Substring(1, line.LastIndexOf("""") - 1)
+                    Dim name = line.Substring(1, line.LastIndexOf("""") - 1).ToUpper
                     media.Add(name, New CasparCGTemplate(name))
                 End If
             Next
@@ -518,6 +518,7 @@ Public Class mediaUpdater
     Private infoDoc As New MSXML2.DOMDocument
     Private layer As Integer
     Private mediaName As String
+    Dim xml As String
     Private foregroundProducer As MSXML2.IXMLDOMElement
 
     Public Sub New(ByRef updateConnection As CasparCGConnection, ByRef playlist As IPlaylistItem, ByRef controller As ServerController)
@@ -556,13 +557,15 @@ Public Class mediaUpdater
         ' muss jedes update exlusiv updaten. Kann es das in einer milliseconde
         ' nicht erreichen, verwirft es das update für diesen Tick
         If ready.WaitOne(1) Then
-
-            For Each item In playlist.getPlayingChildItems(True)
+            For i = 0 To channels - 1
+                activeItems(i).Clear()
+            Next
+            For Each item In playlist.getPlayingChildItems(True, True)
                 If activeItems(item.getChannel - 1).ContainsKey(item.getLayer) Then
-                    activeItems(item.getChannel - 1).Item(item.getLayer).Add(item.getName, item)
+                    activeItems(item.getChannel - 1).Item(item.getLayer).Add(item.getMedia().getName, item)
                 Else
                     activeItems(item.getChannel - 1).Add(item.getLayer, New Dictionary(Of String, IPlaylistItem))
-                    activeItems(item.getChannel - 1).Item(item.getLayer).Add(item.getName, item)
+                    activeItems(item.getChannel - 1).Item(item.getLayer).Add(item.getMedia.getName, item)
                 End If
             Next
 

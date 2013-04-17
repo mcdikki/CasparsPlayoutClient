@@ -28,8 +28,8 @@ Public Class Library
     End Function
 
     Public Function getItem(ByVal name As String) As CasparCGMedia
-        If media.ContainsKey(name) Then
-            Return media.Item(name)
+        If media.ContainsKey(name.ToUpper) Then
+            Return media.Item(name.ToUpper)
         Else
             Return Nothing
         End If
