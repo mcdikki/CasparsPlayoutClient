@@ -66,6 +66,7 @@
 
     Public Sub stoppedPlaying() Implements IPlaylistItem.stoppedPlaying
         playing = False
+        logger.log("Stopped playing " & getName() & " (" & getChannel() & "-" & getLayer() & ")")
     End Sub
 
     Public Sub load() Implements IPlaylistItem.load
@@ -288,6 +289,7 @@
     End Sub
 
     Public Sub addItem(ByRef item As IPlaylistItem) Implements IPlaylistItem.addItem
+        logger.log(getName() & "(" & getChannel() & "-" & getLayer() & "): Adding new Item " & item.getName)
         If Not IsNothing(item) Then
             If item.getChannel < 0 Then
                 item.setChannel(getChannel)

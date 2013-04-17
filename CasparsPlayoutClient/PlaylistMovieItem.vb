@@ -34,20 +34,20 @@
     Public Overrides Sub start(Optional ByVal noWait As Boolean = True)
         '' CMD an ServerController schicken
         logger.log("Starte " & getChannel() & "-" & getLayer() & ": " & getMedia.toString)
-        Dim result = getController.getCommandConnection.sendCommand(CasparCGCommandFactory.getPlay(getChannel, getLayer, getMedia, isLooping, , getDuration, New CasparCGTransition(CasparCGTransition.Transitions.CUT)))
+        Dim result = getController.getCommandConnection.sendCommand(CasparCGCommandFactory.getPlay(getChannel, getLayer, getMedia, isLooping, , getDuration))
         If result.isOK Then
             playing = True
-            logger.log("Gestartet " & getChannel() & "-" & getLayer() & ": " & getMedia.toString)
             getController.getCommandConnection.sendAsyncCommand(CasparCGCommandFactory.getLoadbg(getChannel, getLayer, "empty", True))
-            logger.log("Startet " & getChannel() & "-" & getLayer() & ": " & getMedia.toString)
+            logger.log("...gestartet " & getChannel() & "-" & getLayer() & ": " & getMedia.toString)
         Else
             logger.err("Could not start " & media.getFullName & ". ServerMessage was: " & result.getServerMessage)
         End If
-        While isPlaying() AndAlso Not noWait
+        While isPlaying() 'AndAlso Not noWait
+            getController.update()
             Threading.Thread.Sleep(1000)
-            logger.log(getMedia.toString)
+            'logger.log(getMedia.toString)
             For Each item In getController.getPlaylistRoot.getPlayingChildItems(True, True)
-                logger.warn(item.toString)
+                logger.warn(item.getMedia.toString)
             Next
         End While
     End Sub

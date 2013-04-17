@@ -154,7 +154,7 @@ End Class
 Public Class CasparCGCommandFactory
 
     Public Shared Function getLoadbg(ByVal channel As Integer, ByVal layer As Integer, ByVal media As String, Optional ByRef autostarting As Boolean = False, Optional ByVal looping As Boolean = False, Optional ByVal seek As Long = 0, Optional ByVal length As Long = 0, Optional ByVal transition As CasparCGTransition = Nothing, Optional ByVal filter As String = "") As String
-        Dim cmd As String = "LOADBG " & getDestination(channel, layer) & " " & media
+        Dim cmd As String = "LOADBG " & getDestination(channel, layer) & " '" & media & "'"
 
         If looping Then
             cmd = cmd & " LOOP"
@@ -179,7 +179,7 @@ Public Class CasparCGCommandFactory
     End Function
 
     Public Shared Function getLoad(ByVal channel As Integer, ByVal layer As Integer, ByVal media As String, Optional ByVal looping As Boolean = False, Optional ByVal seek As Long = 0, Optional ByVal length As Long = 0, Optional ByVal transition As CasparCGTransition = Nothing, Optional ByVal filter As String = "") As String
-        Dim cmd As String = "LOAD " & getDestination(channel, layer) & " " & media
+        Dim cmd As String = "LOAD " & getDestination(channel, layer) & " '" & media & "'"
 
         If looping Then
             cmd = cmd & " LOOP"
@@ -204,7 +204,7 @@ Public Class CasparCGCommandFactory
         Dim cmd As String = "PLAY " & getDestination(channel, layer)
 
         If media.Length > 0 Then
-            cmd = cmd & " " & media
+            cmd = cmd & " '" & media & "'"
         End If
         If looping Then
             cmd = cmd & " LOOP"
@@ -589,7 +589,7 @@ Public MustInherit Class CasparCGMedia
         If configDoc.hasChildNodes Then
             '' Add all mediaInformation found by INFO
             For Each info As MSXML2.IXMLDOMNode In configDoc.firstChild.childNodes
-                addInfo(info.nodeName, info.nodeTypedValue)
+                setInfo(info.nodeName, info.nodeTypedValue)
             Next
         End If
     End Sub
@@ -620,6 +620,14 @@ Public MustInherit Class CasparCGMedia
     Public Function containsInfo(ByVal info As String) As Boolean
         Return Infos.ContainsKey(info)
     End Function
+
+    Public Sub setInfo(ByVal info As String, ByVal value As String)
+        If Infos.ContainsKey(info) Then
+            Infos.Item(info) = value
+        Else
+            Infos.Add(info, value)
+        End If
+    End Sub
 
     Public Sub addInfo(ByVal info As String, ByVal value As String)
         Infos.Add(info, value)
@@ -1090,7 +1098,7 @@ Public Class CasparCGTransition
     End Sub
 
     Public Overloads Function toString() As String
-        Return Transitions.GetName(GetType(Transitions), trans) & " " & duration & " " & Directions.GetName(GetType(Directions), direction) & Tweens.GetName(GetType(Tweens), tween)
+        Return Transitions.GetName(GetType(Transitions), trans) & " " & duration & " " & Directions.GetName(GetType(Directions), direction) & " " & Tweens.GetName(GetType(Tweens), tween)
     End Function
 
 End Class

@@ -15,7 +15,7 @@ Public Class Form1
             sc.open("casparcg", 5250)
         End If
 
-        'Thread.Sleep(1000)
+        Thread.Sleep(1000)
 
         'doIt()
 
@@ -27,27 +27,28 @@ Public Class Form1
         Dim mediaLib As New Library(sc)
         mediaLib.refreshLibrary()
 
-        Dim p As New PlaylistBlockItem("GESAMT LISTE", sc)
         Dim p1 As New PlaylistBlockItem("P1_SEQ", sc)
         Dim p2 As New PlaylistBlockItem("P2_SEQ", sc)
 
         p1.setChannel(1)
         p2.setChannel(1)
+        p1.setLayer(1)
+        p2.setLayer(1)
         p1.setParallel(False)
         p2.setParallel(True)
         p1.setAutoStart(True)
         p2.setAutoStart(True)
 
         p1.addItem(New PlaylistMovieItem("amb", sc, mediaLib.getItem("amb")))
-        p1.addItem(New PlaylistMovieItem("cg1080i50", sc, New CasparCGMovie("cg1080i50")))
+        p1.addItem(New PlaylistMovieItem("cg1080i50", sc, mediaLib.getItem("cg1080i50")))
 
         p2.addItem(New PlaylistMovieItem("go1080p25", sc, mediaLib.getItem("go1080p25")))
         p2.addItem(New PlaylistMovieItem("cg1080i50", sc, mediaLib.getItem("cg1080i50"), , 2))
 
-        p.addItem(p1)
-        p.addItem(p2)
-        sc.getPlaylistRoot.addItem(p)
-        sc.getPlaylistRoot.start()
+        sc.getPlaylistRoot.addItem(p1)
+        'sc.getPlaylistRoot.addItem(p2)
+
+        sc.getPlaylistRoot.start(False)
 
     End Sub
 

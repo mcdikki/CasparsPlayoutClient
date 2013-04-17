@@ -11,7 +11,7 @@ Public Class ServerController
     Private tickThread As Thread
     Private serverAddress As String = "localhost"
     Private serverPort As Integer = 5250
-    Private testChannel As Integer = 1
+    Private testChannel As Integer = 4
     Private channels As Integer
     Private opened As Boolean
     Private WithEvents ticker As FrameTicker
@@ -60,10 +60,14 @@ Public Class ServerController
         ' Tick Thread starten
         ticker = New FrameTicker(tickConnection, Me, , 5)
         tickThread = New Thread(AddressOf ticker.tick)
-        tickThread.Start()
+        'tickThread.Start()
 
         ' updater starten
         updater = New mediaUpdater(updateConnection, playlist, Me)
+    End Sub
+
+    Public Sub update()
+        updater.updateMedia(Nothing, Nothing)
     End Sub
 
     Public Function getPlaylistRoot() As IPlaylistItem
@@ -143,39 +147,6 @@ Public Class ServerController
                 logger.err("Could not get media duration of " & media.getFullName & "(" & media.getMediaType.ToString & ").")
                 Return 0
         End Select
-    End Function
-
-    Public Function getMediaInfo(ByRef media As CasparCGMedia) As String
-        If media.getMediaType = CasparCGMedia.MediaType.TEMPLATE Then
-            Dim response = testConnection.sendCommand(CasparCGCommandFactory.getInfo(media))
-            If response.isOK Then
-                Return response.getXMLData
-            Else
-                logger.err("Error loading xml data received from server for " & media.toString)
-                logger.err("ServerMessage dump: " & response.getServerMessage)
-            End If
-        Else
-            Dim layer = getFreeLayer(testChannel)
-            Dim response = testConnection.sendCommand(CasparCGCommandFactory.getLoadbg(testChannel, layer, media.getFullName))
-            If response.isOK Then
-                Dim infoDoc As New MSXML2.DOMDocument
-                response = testConnection.sendCommand(CasparCGCommandFactory.getInfo(testChannel, layer, True))
-                testConnection.sendAsyncCommand(CasparCGCommandFactory.getCGClear(testChannel, layer))
-                If infoDoc.loadXML(response.getXMLData()) Then
-                    If infoDoc.selectSingleNode("producer").selectSingleNode("destination").selectSingleNode("producer").selectSingleNode("type").nodeTypedValue.Equals("separated-producer") Then
-                        Return infoDoc.selectSingleNode("producer").selectSingleNode("destination").selectSingleNode("producer").selectSingleNode("fill").selectSingleNode("producer").xml
-                    Else
-                        Return infoDoc.selectSingleNode("producer").selectSingleNode("destination").selectSingleNode("producer").xml
-                    End If
-                Else
-                    logger.err("Error loading xml data received from server for " & media.toString & ". Error: " & infoDoc.parseError.reason)
-                    logger.err("ServerMessages dump: " & response.getServerMessage)
-                End If
-            Else
-                logger.err("Error getting media information. Server messages was: " & response.getServerMessage)
-            End If
-        End If
-        Return ""
     End Function
 
     Public Function getPlayingMediaNames(ByVal channel As Integer, ByVal layer As Integer) As IEnumerable(Of String)
@@ -278,6 +249,39 @@ Public Class ServerController
             logger.err("Could not get channel fps. Error in server response: " & infoDoc.parseError.reason & " @" & vbNewLine & result.getServerMessage)
         End If
         Return 0
+    End Function
+
+    Public Function getMediaInfo(ByRef media As CasparCGMedia) As String
+        If media.getMediaType = CasparCGMedia.MediaType.TEMPLATE Then
+            Dim response = testConnection.sendCommand(CasparCGCommandFactory.getInfo(media))
+            If response.isOK Then
+                Return response.getXMLData
+            Else
+                logger.err("Error loading xml data received from server for " & media.toString)
+                logger.err("ServerMessage dump: " & response.getServerMessage)
+            End If
+        Else
+            Dim layer = getFreeLayer(testChannel)
+            Dim response = testConnection.sendCommand(CasparCGCommandFactory.getLoadbg(testChannel, layer, media.getFullName))
+            If response.isOK Then
+                Dim infoDoc As New MSXML2.DOMDocument
+                response = testConnection.sendCommand(CasparCGCommandFactory.getInfo(testChannel, layer, True))
+                testConnection.sendAsyncCommand(CasparCGCommandFactory.getCGClear(testChannel, layer))
+                If infoDoc.loadXML(response.getXMLData()) AndAlso Not IsNothing(infoDoc.selectSingleNode("producer").selectSingleNode("destination")) Then
+                    If infoDoc.selectSingleNode("producer").selectSingleNode("destination").selectSingleNode("producer").selectSingleNode("type").nodeTypedValue.Equals("separated-producer") Then
+                        Return infoDoc.selectSingleNode("producer").selectSingleNode("destination").selectSingleNode("producer").selectSingleNode("fill").selectSingleNode("producer").xml
+                    Else
+                        Return infoDoc.selectSingleNode("producer").selectSingleNode("destination").selectSingleNode("producer").xml
+                    End If
+                Else
+                    logger.err("Error loading xml data received from server for " & media.toString & ". Error: " & infoDoc.parseError.reason)
+                    logger.err("ServerMessages dump: " & response.getServerMessage)
+                End If
+            Else
+                logger.err("Error getting media information. Server messages was: " & response.getServerMessage)
+            End If
+        End If
+        Return ""
     End Function
 
     ''' <summary>
@@ -543,7 +547,7 @@ Public Class mediaUpdater
     ''' <param name="sender"></param>
     ''' <param name="e"></param>
     ''' <remarks></remarks>
-    Private Sub updateMedia(ByVal sender As Object, ByVal e As frameTickEventArgs) 'Handles ticker.frameTick
+    Public Sub updateMedia(ByVal sender As Object, ByVal e As frameTickEventArgs) 'Handles ticker.frameTick
         ''
         '' reads in alle channels as xml
         '' and checks the state of each layer
@@ -557,10 +561,12 @@ Public Class mediaUpdater
         ' muss jedes update exlusiv updaten. Kann es das in einer milliseconde
         ' nicht erreichen, verwirft es das update für diesen Tick
         If ready.WaitOne(1) Then
-            For i = 0 To channels - 1
-                activeItems(i).Clear()
-            Next
+
+            '' Listen und variablen vorbereiten
+            xml = ""
+            mediaName = ""
             For Each item In playlist.getPlayingChildItems(True, True)
+                logger.err("Found playing: " & item.getName)
                 If activeItems(item.getChannel - 1).ContainsKey(item.getLayer) Then
                     activeItems(item.getChannel - 1).Item(item.getLayer).Add(item.getMedia().getName, item)
                 Else
@@ -570,61 +576,67 @@ Public Class mediaUpdater
             Next
 
             For c = 0 To channels - 1
-                infoDoc.loadXML(updateConnection.sendCommand(CasparCGCommandFactory.getInfo(c + 1)).getXMLData)
-                '' ToDo Checken ob alles gut ging  
+                Dim response = updateConnection.sendCommand(CasparCGCommandFactory.getInfo(c + 1))
+                If infoDoc.loadXML(response.getXMLData) Then
 
-                '' Über alle layer iter.
-                For Each layerNode As MSXML2.IXMLDOMElement In infoDoc.getElementsByTagName("layer")
-                    layer = Integer.Parse(layerNode.selectSingleNode("index").nodeTypedValue())
+                    '' Über alle layer iter.
+                    For Each layerNode As MSXML2.IXMLDOMElement In infoDoc.getElementsByTagName("layer")
+                        layer = Integer.Parse(layerNode.selectSingleNode("index").nodeTypedValue())
 
-                    ' Ich brauche das layer nur zu beachten, wenn es auch aktive Items auf diesem layer gibt
-                    If activeItems(c).ContainsKey(layer) Then
+                        ' Ich brauche das layer nur zu beachten, wenn es auch aktive Items auf diesem layer gibt
+                        If activeItems(c).ContainsKey(layer) Then
 
-                        '' Den producer im Vordergrund holen. Falls eine Transition im gang ist, müssen wir schauen
-                        '' wo das video von interesse liegt, bzw. beide verarbeiten
-                        foregroundProducer = layerNode.selectSingleNode("foreground").selectSingleNode("producer")
-                        If foregroundProducer.selectSingleNode("type").nodeTypedValue.Equals("transition-producer") Then
+                            '' Den producer im Vordergrund holen. Falls eine Transition im gang ist, müssen wir schauen
+                            '' wo das video von interesse liegt, bzw. beide verarbeiten
+                            foregroundProducer = layerNode.selectSingleNode("foreground").selectSingleNode("producer")
+                            If foregroundProducer.selectSingleNode("type").nodeTypedValue.Equals("transition-producer") Then
 
-                            '' Source und Dest einzeln betrachten
-                            foregroundProducer = foregroundProducer.selectSingleNode("producer")
-                            If foregroundProducer.selectSingleNode("source").selectSingleNode("producer").selectSingleNode("type").nodeTypedValue.Equals("ffmpeg-producer") Then
-                                mediaName = foregroundProducer.selectSingleNode("source").selectSingleNode("producer").selectSingleNode("type").nodeTypedValue
-                                ' Pfad und extension wegschneiden
-                                mediaName = mediaName.Substring(mediaName.IndexOf("\") + 1, mediaName.IndexOf("\") - mediaName.LastIndexOf("."))
-                                If activeItems(c).Item(layer).ContainsKey(mediaName) Then
-                                    '' Daten updaten
-                                    activeItems(c).Item(layer).Item(mediaName).getMedia.parseXML(infoDoc.selectSingleNode("source").selectSingleNode("producer").xml)
-                                    ''danach aus liste entfernen
-                                    activeItems(c).Item(layer).Remove(mediaName)
+                                '' Source und Dest einzeln betrachten
+                                'foregroundProducer = foregroundProducer.selectSingleNode("producer")
+
+                                '' !!! Vorsicht, einer der beiden medien die spielen gehen hier verloren!!! TODO
+                                If foregroundProducer.selectSingleNode("source").selectSingleNode("producer").selectSingleNode("type").nodeTypedValue.Equals("ffmpeg-producer") Then
+                                    ' Name und xml holen
+                                    mediaName = foregroundProducer.selectSingleNode("source").selectSingleNode("producer").selectSingleNode("filename").nodeTypedValue
+                                    xml = foregroundProducer.selectSingleNode("source").selectSingleNode("producer").xml
+                                ElseIf foregroundProducer.selectSingleNode("destination").selectSingleNode("producer").selectSingleNode("type").nodeTypedValue.Equals("ffmpeg-producer") Then
+                                    ' Name und xml holen
+                                    mediaName = foregroundProducer.selectSingleNode("destination").selectSingleNode("producer").selectSingleNode("filename").nodeTypedValue
+                                    xml = foregroundProducer.selectSingleNode("destination").selectSingleNode("producer").xml
                                 End If
-                            ElseIf foregroundProducer.selectSingleNode("destination").selectSingleNode("producer").selectSingleNode("type").nodeTypedValue.Equals("ffmpeg-producer") Then
-                                mediaName = foregroundProducer.selectSingleNode("destination").selectSingleNode("producer").selectSingleNode("type").nodeTypedValue
-                                ' Pfad und extension wegschneiden
-                                mediaName = mediaName.Substring(mediaName.IndexOf("\") + 1, mediaName.IndexOf("\") - mediaName.LastIndexOf("."))
-                                If activeItems(c).Item(layer).ContainsKey(mediaName) Then
-                                    '' Daten updaten
-                                    activeItems(c).Item(layer).Item(mediaName).getMedia.parseXML(infoDoc.selectSingleNode("destination").selectSingleNode("producer").xml)
-                                    ''danach aus liste entfernen
-                                    activeItems(c).Item(layer).Remove(mediaName)
-                                End If
+                            ElseIf foregroundProducer.selectSingleNode("type").nodeTypedValue.Equals("ffmpeg-producer") Then
+                                ' Name und Xml holen
+                                mediaName = foregroundProducer.selectSingleNode("filename").nodeTypedValue
+                                xml = foregroundProducer.xml
                             End If
-                        Else
-                            mediaName = foregroundProducer.selectSingleNode("producer").selectSingleNode("type").nodeTypedValue
+
                             ' Pfad und extension wegschneiden
-                            mediaName = mediaName.Substring(mediaName.IndexOf("\") + 1, mediaName.IndexOf("\") - mediaName.LastIndexOf("."))
-                            If activeItems(c).Item(layer).ContainsKey(mediaName) Then
-                                '' Daten updaten
-                                activeItems(c).Item(layer).Item(mediaName).getMedia.parseXML(infoDoc.selectSingleNode("producer").xml)
-                                ''danach aus liste entfernen
-                                activeItems(c).Item(layer).Remove(mediaName)
+                            If mediaName.Length > 0 Then
+                                mediaName = mediaName.Substring(mediaName.IndexOf("\") + 1, mediaName.LastIndexOf(".") - (mediaName.IndexOf("\") + 1))
+                                If activeItems(c).Item(layer).ContainsKey(mediaName) Then
+                                    '' Daten updaten
+                                    activeItems(c).Item(layer).Item(mediaName).getMedia.parseXML(xml)
+                                    ''danach aus liste entfernen
+                                    activeItems(c).Item(layer).Remove(mediaName)
+                                End If
                             End If
+                            If activeItems(c).Item(layer).Count = 0 Then Exit For
                         End If
-                        If activeItems(c).Item(layer).Count = 0 Then Exit For
-                    End If
-                Next
+                    Next
+                    ' Alle Items in diesem Channel die jetzt noch in der liste sind, sind nicht mehr auf dem Server gestartet 
+                    ' und werden daher als gestoppt markiert
+                    For Each layer As Integer In activeItems(c).Keys
+                        For Each item As IPlaylistItem In activeItems(c).Item(layer).Values
+                            item.stoppedPlaying()
+                        Next
+                    Next
+                    activeItems(c).Clear()
+                Else
+                    logger.err("Could not update media at channel " & c + 1 & ". Unable to load xml data. " & infoDoc.parseError.reason)
+                End If
             Next
-            ready.Release()
         End If
+        ready.Release()
     End Sub
 End Class
 
