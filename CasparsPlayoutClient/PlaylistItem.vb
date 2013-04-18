@@ -62,6 +62,7 @@
         For Each item In items
             item.abort()
         Next
+        playing = False
     End Sub
 
     Public Overridable Sub stoppedPlaying() Implements IPlaylistItem.stoppedPlaying
@@ -79,12 +80,9 @@
     '' ToDo:
     '' Alle Pause und delay funktionen über events realisieren und eventuell mit dem server Tick synchronisieren
     ''
-    Public Sub pause(ByVal frames As Long) Implements IPlaylistItem.pause
-        If Not IsNothing(startThread) Then
-            startThread.Suspend()
-        End If
+    Public Overridable Sub pause(ByVal frames As Long) Implements IPlaylistItem.pause
         For Each item In items
-            item.pause(frames)
+            item.pause(-1)
         Next
 
         '' Wenn gesagt wird wie lange die pause geht, starte einen kleinen 
@@ -101,13 +99,10 @@
         unPause()
     End Sub
 
-    Public Sub unPause() Implements IPlaylistItem.unPause
+    Public Overridable Sub unPause() Implements IPlaylistItem.unPause
         For Each item In items
             item.unPause()
         Next
-        If Not IsNothing(startThread) Then
-            startThread.Resume()
-        End If
         pauseThread = Nothing
         paused = False
     End Sub
@@ -118,8 +113,13 @@
     ''' </summary>
     ''' <param name="noWait"></param>
     ''' <remarks></remarks>
-    Public Overridable Sub start(Optional ByVal noWait As Boolean = True) Implements IPlaylistItem.start
-        If noWait AndAlso IsNothing(startThread) Then
+    Public Overridable Sub start(Optional ByVal noWait As Boolean = False) Implements IPlaylistItem.start
+        logger.log("PlaylistItem.start: " & getName() & ": received start at thread " & Threading.Thread.CurrentThread.ManagedThreadId)
+        If noWait Then
+            logger.log("PlaylistItem.start: " & getName() & ": noWait is true. Start new thread")
+            If Not IsNothing(startThread) Then
+                startThread.Abort()
+            End If
             startThread = New Threading.Thread(AddressOf Me.start)
             startThread.Start()
         Else
@@ -134,6 +134,7 @@
                 item.start(isParallel)
             Next
         End If
+        logger.debug("PlaylistItem.start: Start " & getName() & " has been completed")
     End Sub
 
     Public Overrides Function toString() As String Implements IPlaylistItem.toString
@@ -272,6 +273,11 @@
 
     '' SETTER:
     ''---------
+
+    Public Sub setName(ByVal Name As String)
+        Me.name = Name
+    End Sub
+
     Public Sub setChildItems(ByRef items As System.Collections.Generic.List(Of IPlaylistItem)) Implements IPlaylistItem.setChildItems
         ' einzeln und nicht als block hinzufügen damit die duration berechnet wird
         For Each item In items

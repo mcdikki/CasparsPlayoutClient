@@ -15,10 +15,11 @@ Public Class Form1
             sc.open("casparcg", 5250)
         End If
 
-        Thread.Sleep(1000)
+        'Thread.Sleep(1000)
 
-        testPlaylist()
         openListener()
+        testPlaylist()
+
 
     End Sub
 
@@ -27,36 +28,36 @@ Public Class Form1
         mediaLib.refreshLibrary()
 
         Dim p1 As IPlaylistItem
-        Dim p2 As New PlaylistBlockItem("P2_SEQ", sc)
+        Dim pp As New PlaylistBlockItem("Paralelle Playlist", sc)
+        Dim ps As New PlaylistBlockItem("Seq. Playlist", sc)
 
-        'p1.setChannel(1)
-        'p2.setChannel(1)
-        'p1.setLayer(1)
-        'p2.setLayer(1)
-        'p1.setParallel(False)
-        'p2.setParallel(True)
-        'p1.setAutoStart(True)
+        pp.setParallel(True)
         'p2.setAutoStart(True)
 
-        'p1.addItem(New PlaylistMovieItem("1", sc, mediaLib.getItem("amb")))
-        'p1.addItem(New PlaylistMovieItem("2", sc, mediaLib.getItem("cg1080i50")))
-        'p1.addItem(New PlaylistMovieItem("3", sc, mediaLib.getItem("go1080p25")))
+        p1 = New PlaylistMovieItem("S1", sc, mediaLib.getItem("amb"), 3, 1)
+        ps.addItem(p1)
+        p1 = New PlaylistMovieItem("S2", sc, mediaLib.getItem("cg1080i50"), 3, 1)
+        ps.addItem(p1)
+        p1 = New PlaylistMovieItem("S3", sc, mediaLib.getItem("amb"), 3, 1)
+        ps.addItem(p1)
 
-        p1 = New PlaylistMovieItem("go1080p25", sc, mediaLib.getItem("go1080p25"), 3, 1)
-        p1.setLooping(True)
-        p2.addItem(p1)
+        p1 = New PlaylistMovieItem("P1", sc, mediaLib.getItem("go1080p25"), 3, 1)
+        'p1.setLooping(True)
+        pp.addItem(p1)
 
-        p1 = New PlaylistMovieItem("cg1080i50", sc, mediaLib.getItem("cg1080i50"), 1, 2)
-        p1.setLooping(True)
-        p2.addItem(p1)
+        p1 = New PlaylistMovieItem("P2", sc, mediaLib.getItem("cg1080i50"), 1, 2)
+        'p1.setLooping(True)
+        pp.addItem(p1)
 
 
+        sc.getPlaylistRoot.addItem(ps)
+        sc.getPlaylistRoot.addItem(pp)
+        'p1 = New PlaylistMovieItem("S3", sc, mediaLib.getItem("amb"), 3, 1)
         'sc.getPlaylistRoot.addItem(p1)
-        sc.getPlaylistRoot.addItem(p2)
         sc.startTicker()
         'openListener()
 
-        p2.start()
+        'p2.start()
         'sc.getPlaylistRoot.start(True)
 
     End Sub
@@ -72,9 +73,20 @@ Public Class Form1
     End Sub
 
     Private Sub Button2_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button2.Click
+
+        If sc.getPlaylistRoot.isPlaying Then
+            logger.log("Aborting...")
+            sc.getPlaylistRoot.abort()
+            logger.log("...done.")
+        Else
+            logger.log("Starting...")
+            sc.getPlaylistRoot.start(True)
+            logger.log("...done.")
+        End If
+
         'sc.toggleTickerActive()
-        worker = New Thread(AddressOf doIt)
-        worker.Start()
+        'worker = New Thread(AddressOf doIt)
+        'worker.Start()
     End Sub
 
     Private Sub doIt()

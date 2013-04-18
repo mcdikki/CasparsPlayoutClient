@@ -18,7 +18,7 @@
             If movie.getInfos.Count = 0 Then
                 movie.parseXML(getController.getMediaInfo(movie))
             End If
-            If duration > Long.Parse(movie.getInfo("nb-frames")) OrElse duration = -1 Then
+            If movie.containsInfo("nb-frames") AndAlso (duration > Long.Parse(movie.getInfo("nb-frames")) OrElse duration = -1) Then
                 setDuration(Long.Parse(movie.getInfo("nb-frames")))
             End If
             media = movie
@@ -31,7 +31,7 @@
 
     '' Methoden die überschrieben werden müssen weil sie andere oder mehr functionen haben
     ''-------------------------------------------------------------------------------------
-    Public Overrides Sub start(Optional ByVal noWait As Boolean = True)
+    Public Overrides Sub start(Optional ByVal noWait As Boolean = False)
         '' CMD an ServerController schicken
         logger.log("PlaylistMovieItem.start: Starte " & getChannel() & "-" & getLayer() & ": " & getMedia.toString)
         Dim result = getController.getCommandConnection.sendCommand(CasparCGCommandFactory.getPlay(getChannel, getLayer, getMedia, isLooping, , getDuration))
@@ -46,6 +46,7 @@
         Else
             logger.err("PlaylistMovieItem.start: Could not start " & media.getFullName & ". ServerMessage was: " & result.getServerMessage)
         End If
+
         While isPlaying() AndAlso Not noWait
             'getController.update()
             Threading.Thread.Sleep(1)
@@ -59,16 +60,18 @@
         MyBase.abort()
     End Sub
 
-    Public Overloads Sub pause(ByVal frames As Long)
+    Public Overrides Sub pause(ByVal frames As Long)
         '' cmd an ServerController schicken
         getController.getCommandConnection.sendCommand(CasparCGCommandFactory.getPause(getChannel, getLayer))
+        logger.log(getName() & " paused.")
         '' pause wird über die Elternklasse realisiert
         MyBase.pause(frames)
     End Sub
 
-    Public Overloads Sub unPause()
+    Public Overrides Sub unPause()
         '' cms an ServerController schicken
         getController.getCommandConnection.sendCommand(CasparCGCommandFactory.getPlay(getChannel, getLayer))
+        logger.log(getName() & " unpaused.")
         '' Aufheben der Pause wird über die Elternklasse realisiert
         MyBase.unPause()
     End Sub

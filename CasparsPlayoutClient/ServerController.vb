@@ -204,11 +204,13 @@ Public Class ServerController
                 End If
             Next
             Return True
-        End If
-        If Not IsNothing(doc.parseError) Then
-            logger.warn("ServerController.isLayerFree: Error checking layer." & vbNewLine & doc.parseError.reason & vbNewLine & doc.parseError.line & ":" & doc.parseError.linepos & vbNewLine & doc.parseError.srcText)
         Else
-            logger.warn("ServerController.isLayerFree: Could not check layer. Server response was incorrect.")
+            If Not IsNothing(doc.parseError) Then
+                logger.warn("ServerController.isLayerFree: Error checking layer." & vbNewLine & doc.parseError.reason & vbNewLine & doc.parseError.line & ":" & doc.parseError.linepos & vbNewLine & doc.parseError.srcText)
+                logger.warn("Server command and response was: " & answer.getCommand & vbNewLine & answer.getServerMessage)
+            Else
+                logger.warn("ServerController.isLayerFree: Could not check layer. Server response was incorrect.")
+            End If
         End If
         Return False
     End Function
@@ -271,7 +273,7 @@ Public Class ServerController
             If response.isOK Then
                 Dim infoDoc As New MSXML2.DOMDocument
                 response = testConnection.sendCommand(CasparCGCommandFactory.getInfo(testChannel, layer, True))
-                testConnection.sendAsyncCommand(CasparCGCommandFactory.getCGClear(testChannel, layer))
+                testConnection.sendAsyncCommand(CasparCGCommandFactory.getClear(testChannel, layer))
                 If infoDoc.loadXML(response.getXMLData()) AndAlso Not IsNothing(infoDoc.selectSingleNode("producer").selectSingleNode("destination")) Then
                     If infoDoc.selectSingleNode("producer").selectSingleNode("destination").selectSingleNode("producer").selectSingleNode("type").nodeTypedValue.Equals("separated-producer") Then
                         Return infoDoc.selectSingleNode("producer").selectSingleNode("destination").selectSingleNode("producer").selectSingleNode("fill").selectSingleNode("producer").xml
@@ -572,6 +574,7 @@ Public Class mediaUpdater
             xml = ""
             mediaName = ""
             For Each item In playlist.getPlayingChildItems(True, True)
+                logger.log(item.getMedia().getName)
                 If activeItems(item.getChannel - 1).ContainsKey(item.getLayer) Then
                     activeItems(item.getChannel - 1).Item(item.getLayer).Add(item.getMedia().getName, item)
                 Else

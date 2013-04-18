@@ -142,7 +142,7 @@ Public Class CasparCGConnection
 
             timer.Stop()
             logger.debug("CasparCGConnection.sendCommand: Waited " & timer.ElapsedMilliseconds & "ms for an answer and received " & input.Length & " Bytes to read.")
-            Return New CasparCGResponse(input)
+            Return New CasparCGResponse(input, cmd)
         Else
             logger.err("CasparCGConnection.sendCommand: Not connected to server. Can't send command.")
             Return Nothing
@@ -274,7 +274,7 @@ Public Class CasparCGCommandFactory
     Public Shared Function getClear(Optional ByVal channel As Integer = -1, Optional ByVal layer As Integer = -1) As String
         Dim cmd As String = "CLEAR"
         If channel > -1 Then
-            cmd = cmd & getDestination(channel, layer)
+            cmd = cmd & " " & getDestination(channel, layer)
         End If
         Return cmd
     End Function
@@ -382,6 +382,7 @@ End Class
 
 Public Class CasparCGResponse
 
+    Private cmd As String
     Private serverMessage As String
     Private returncode As CasparReturnCode
     Private command As String
@@ -405,7 +406,9 @@ Public Class CasparCGResponse
         ERR_FILE_UNREADABLE = 502 ' 502 [command] FAILED	- Media file unreadable 
     End Enum
 
-    Public Sub New(ByVal serverMessage As String)
+    Public Sub New(ByVal serverMessage As String, ByVal cmd As String)
+        'logger.log(cmd)
+        Me.cmd = cmd
         Me.serverMessage = serverMessage
         Me.returncode = parseReturnCode(serverMessage)
         Me.command = parseReturnCommand(serverMessage)
@@ -428,7 +431,7 @@ Public Class CasparCGResponse
 
     Public Shared Function parseReturnCommand(ByVal serverMessage As String) As String
         If Not IsNothing(serverMessage) AndAlso serverMessage.Length > 3 Then
-            serverMessage = Trim(serverMessage).Substring(4) ' Code wegschneiden
+            serverMessage = serverMessage.Trim().Substring(4) ' Code wegschneiden
             Return serverMessage.Substring(0, serverMessage.IndexOf(" "))
         End If
         Return ""
@@ -484,6 +487,10 @@ Public Class CasparCGResponse
     End Function
 
     Public Function getCommand() As String
+        Return cmd
+    End Function
+
+    Public Function getReturnedCommand() As String
         Return command
     End Function
 

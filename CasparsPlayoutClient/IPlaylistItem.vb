@@ -38,7 +38,7 @@
     Sub loadXML(ByVal xml As String) ' Erstellt ein IPlaylistItem aus einer xml definition)
 
     Sub load() ' lädt wenn möglich item schon im Hintergrund (ACMP loadbg)
-    Sub start(Optional ByVal noWait As Boolean = True)
+    Sub start(Optional ByVal noWait As Boolean = False)
     Sub abort() ' stopt item (ACMP stop)
     Sub stoppedPlaying() ' informs item that it has stopped playing
     Sub pause(ByVal frames As Long) ' pausiert das Spielen des Items for frames Frames oder bis zum manuellen start bei 0 (ACMP pause)
