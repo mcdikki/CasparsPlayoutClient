@@ -21,6 +21,7 @@ Public Class ServerController
 
     Public Sub New()
         playlist = New PlaylistBlockItem("Playlist", Me, -1, -1)
+        playlist.setParallel(True)
     End Sub
 
     Public Sub open()

@@ -41,7 +41,7 @@
             End While
             playing = True
             getController.readyForUpdate.Release()
-            getController.getCommandConnection.sendAsyncCommand(CasparCGCommandFactory.getLoadbg(getChannel, getLayer, "empty", True))
+            'getController.getCommandConnection.sendAsyncCommand(CasparCGCommandFactory.getLoadbg(getChannel, getLayer, "empty", True))
             logger.log("PlaylistMovieItem.start: ...gestartet " & getChannel() & "-" & getLayer() & ": " & getMedia.toString)
         Else
             logger.err("PlaylistMovieItem.start: Could not start " & media.getFullName & ". ServerMessage was: " & result.getServerMessage)
@@ -63,7 +63,6 @@
     Public Overrides Sub pause(ByVal frames As Long)
         '' cmd an ServerController schicken
         getController.getCommandConnection.sendCommand(CasparCGCommandFactory.getPause(getChannel, getLayer))
-        logger.log(getName() & " paused.")
         '' pause wird über die Elternklasse realisiert
         MyBase.pause(frames)
     End Sub
@@ -71,8 +70,6 @@
     Public Overrides Sub unPause()
         '' cms an ServerController schicken
         getController.getCommandConnection.sendCommand(CasparCGCommandFactory.getPlay(getChannel, getLayer))
-        logger.log(getName() & " unpaused.")
-        '' Aufheben der Pause wird über die Elternklasse realisiert
         MyBase.unPause()
     End Sub
 
@@ -80,7 +77,13 @@
         Return media
     End Function
 
-
+    Public Overrides Function getPosition() As Long
+        If getMedia.containsInfo("nb-frames") AndAlso getMedia.containsInfo("frame-number") Then
+            Return Long.Parse(getMedia.getInfo("frame-number"))
+        Else
+            Return 0
+        End If
+    End Function
 
     '' Methoden die Überschrieben werden müssen weil sie leer sind
     ''-------------------------------------------------------------

@@ -1,7 +1,7 @@
 ﻿Public MustInherit Class PlaylistItem
     Implements IPlaylistItem
 
-    Private name As String
+    Private _name As String
     Private layer As Integer
     Private channel As Integer
     Private delay As Long
@@ -12,9 +12,9 @@
     ' Die (Kinder)Items dieses Items
     Private items As List(Of IPlaylistItem)
     Private WithEvents controller As ServerController
-    Private Duration As Long ' Gesamtlaufzeit in Frames
-    Private Position As Long ' aktuelle Frame
-    Private Remaining As Long ' noch zu spielende Frames
+    Private _Duration As Long ' Gesamtlaufzeit in Frames
+    Private _Position As Long ' aktuelle Frame
+    Private _Remaining As Long ' noch zu spielende Frames
     Private ItemType As PlaylistItem.PlaylistItemTypes ' Typ des Item
     Friend playing As Boolean
     Private paused As Boolean
@@ -39,7 +39,7 @@
     ''' <param name="duration"></param>
     ''' <remarks></remarks>
     Protected Sub New(ByVal name As String, ByVal itemType As PlaylistItemTypes, ByRef controller As ServerController, Optional ByVal channel As Integer = -1, Optional ByVal layer As Integer = -1, Optional ByVal duration As Long = -1)
-        Me.name = name
+        Me._name = name
         Me.ItemType = itemType
         Me.controller = controller
         setChannel(channel)
@@ -144,14 +144,14 @@
 
     Public Function toXML() As String Implements IPlaylistItem.toXML
         Dim xml As String = "<item><name>" & _
-            name & "</name><type>" & _
+            _name & "</name><type>" & _
             getItemType.ToString & "</type><layer>" & _
             layer.ToString & "</layer><channel>" & _
             channel.ToString & "</channel><autostarting>" & _
             isAutoStarting.ToString & "</autostarting><isParallel>" & _
             isParallel.ToString & "</isParallel><isLooping>" & _
             isLooping.ToString & "</isLooping><duration>" & _
-            Duration.ToString & "</duration><delay>" & _
+            _Duration.ToString & "</duration><delay>" & _
             delay.ToString & "</delay> "
         For Each item As IPlaylistItem In items
             xml = xml & item.toXML
@@ -180,7 +180,7 @@
     End Function
 
     Public Function getName() As String Implements IPlaylistItem.getName
-        Return name
+        Return _name
     End Function
 
     Public Function isAutoStarting() As Boolean Implements IPlaylistItem.isAutoStarting
@@ -195,25 +195,25 @@
         Return parallel
     End Function
 
-    Public Function getDuration() As Long Implements IPlaylistItem.getDuration
-        Return Duration
+    Public Overridable Function getDuration() As Long Implements IPlaylistItem.getDuration
+        Return _Duration
     End Function
 
     Public Function getItemType() As PlaylistItemTypes Implements IPlaylistItem.getItemType
         Return ItemType
     End Function
 
-    Public Function getPosition() As Long Implements IPlaylistItem.getPosition
-        Return Position
+    Public Overridable Function getPosition() As Long Implements IPlaylistItem.getPosition
+        Return _Position
     End Function
 
-    Public Function getRemaining() As Long Implements IPlaylistItem.getRemaining
-        Return Remaining
+    Public Overridable Function getRemaining() As Long Implements IPlaylistItem.getRemaining
+        Return getDuration() - getPosition()
     End Function
 
     Public Function getPlayingChildItems(Optional ByVal recursiv As Boolean = False, Optional ByVal onlyPlayable As Boolean = False) As IEnumerable(Of IPlaylistItem) Implements IPlaylistItem.getPlayingChildItems
         Dim activeItems As New List(Of IPlaylistItem)
-        For Each item In items
+        For Each item In getChildItems(recursiv)
             If item.isPlaying Then
                 If onlyPlayable Then
                     If item.isPlayable Then
@@ -221,9 +221,6 @@
                     End If
                 Else
                     activeItems.Add(item)
-                End If
-                If recursiv Then
-                    activeItems.AddRange(item.getPlayingChildItems(recursiv, onlyPlayable))
                 End If
             End If
         Next
@@ -241,8 +238,8 @@
         Return childItems
     End Function
 
-    Public Function getPlayed() As Single Implements IPlaylistItem.getPlayed
-        Return (1 / Duration) * Position
+    Public Overridable Function getPlayed() As Single Implements IPlaylistItem.getPlayed
+        Return (1 / _Duration) * _Position
     End Function
 
     Public Function isPlaying() As Boolean Implements IPlaylistItem.isPlaying
@@ -275,7 +272,7 @@
     ''---------
 
     Public Sub setName(ByVal Name As String)
-        Me.name = Name
+        Me._name = Name
     End Sub
 
     Public Sub setChildItems(ByRef items As System.Collections.Generic.List(Of IPlaylistItem)) Implements IPlaylistItem.setChildItems
@@ -286,15 +283,15 @@
     End Sub
 
     Public Sub setDuration(ByVal duration As Long) Implements IPlaylistItem.setDuration
-        Me.Duration = duration
+        Me._Duration = duration
     End Sub
 
     Public Sub setPosition(ByVal position As Long) Implements IPlaylistItem.setPosition
-        Me.Position = position
+        Me._Position = position
     End Sub
 
     Public Sub setRemaining(ByVal remaining As Long) Implements IPlaylistItem.setRemaining
-        Me.Remaining = remaining
+        Me._Remaining = remaining
     End Sub
 
     Public Sub addItem(ByRef item As IPlaylistItem) Implements IPlaylistItem.addItem
@@ -349,4 +346,30 @@
     Public Sub setParallel(ByVal parallel As Boolean) Implements IPlaylistItem.setParallel
         Me.parallel = parallel
     End Sub
+
+
+    ' Properties
+    Public ReadOnly Property position
+        Get
+            Return getPosition()
+        End Get
+    End Property
+
+    Public ReadOnly Property played
+        Get
+            Return getPlayed()
+        End Get
+    End Property
+
+    Public ReadOnly Property duration
+        Get
+            Return getDuration()
+        End Get
+    End Property
+
+    Public ReadOnly Property remaining
+        Get
+            Return getRemaining()
+        End Get
+    End Property
 End Class

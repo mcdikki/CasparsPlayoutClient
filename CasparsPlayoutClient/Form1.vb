@@ -16,7 +16,8 @@ Public Class Form1
         End If
 
         'Thread.Sleep(1000)
-
+        Dim mediaMon As New MediaMonitor(sc)
+        mediaMon.Show()
         openListener()
         testPlaylist()
 
@@ -34,11 +35,11 @@ Public Class Form1
         pp.setParallel(True)
         'p2.setAutoStart(True)
 
-        p1 = New PlaylistMovieItem("S1", sc, mediaLib.getItem("amb"), 3, 1)
+        p1 = New PlaylistMovieItem("S1", sc, mediaLib.getItem("amb"), 2, 1)
         ps.addItem(p1)
-        p1 = New PlaylistMovieItem("S2", sc, mediaLib.getItem("cg1080i50"), 3, 1)
+        p1 = New PlaylistMovieItem("S2", sc, mediaLib.getItem("cg1080i50"), 2, 1)
         ps.addItem(p1)
-        p1 = New PlaylistMovieItem("S3", sc, mediaLib.getItem("amb"), 3, 1)
+        p1 = New PlaylistMovieItem("S3", sc, mediaLib.getItem("amb"), 2, 1)
         ps.addItem(p1)
 
         p1 = New PlaylistMovieItem("P1", sc, mediaLib.getItem("go1080p25"), 3, 1)
