@@ -1,7 +1,9 @@
 ﻿Imports System.Net
 Imports System.Net.Sockets
+Imports System.Threading
 
 Public Class CasparCGConnection
+    Private connectionLock As New Semaphore(1, 1)
     Private serveraddress As String = "localhost"
     Private serverport As Integer = 5250 ' std. acmp2 port
     Private client As TcpClient
@@ -95,9 +97,11 @@ Public Class CasparCGConnection
     ''' <remarks></remarks>
     Public Sub sendAsyncCommand(ByVal cmd As String)
         If connected(tryConnect) Then
+            connectionLock.WaitOne()
             logger.debug("CasparCGConnection.sendAsyncCommand: Send command: " & cmd)
             client.GetStream.Write(System.Text.UTF8Encoding.UTF8.GetBytes(cmd & vbCrLf), 0, cmd.Length + 2)
             logger.debug("CasparCGConnection.sendAsyncCommand: Command sent")
+            connectionLock.Release()
         Else : logger.err("CasparCGConnection.sendAsyncCommand: Not connected to server. Can't send command.")
         End If
     End Sub
@@ -112,6 +116,9 @@ Public Class CasparCGConnection
         If connected(tryConnect) Then
             Dim isOk As Boolean = False
             Dim buffer() As Byte
+
+            connectionLock.WaitOne()
+
             If client.Available > 0 Then
                 ReDim buffer(client.Available)
                 ' den alten Buffer erstmal auslesen, ihn brauchen wir nicht
@@ -139,6 +146,8 @@ Public Class CasparCGConnection
                     Threading.Thread.Sleep(1)
                 End If
             Loop
+
+            connectionLock.Release()
 
             timer.Stop()
             logger.debug("CasparCGConnection.sendCommand: Waited " & timer.ElapsedMilliseconds & "ms for an answer and received " & input.Length & " Bytes to read.")

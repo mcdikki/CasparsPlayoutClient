@@ -70,7 +70,7 @@
         If Not IsNothing(startThread) Then
             startThread.Abort()
         End If
-        logger.debug("PlaylistItem.stoppedPlaying: Stopped playing " & getName() & " (" & getChannel() & "-" & getLayer() & ")")
+        logger.log("PlaylistItem.stoppedPlaying: Stopped playing " & getName() & " (" & getChannel() & "-" & getLayer() & ")")
     End Sub
 
     Public Sub load() Implements IPlaylistItem.load
@@ -138,8 +138,7 @@
     End Sub
 
     Public Overrides Function toString() As String Implements IPlaylistItem.toString
-        ''toDo
-        Return MyBase.ToString
+        Return getName() & "(" & getItemType.ToString & ") " & getChannel() & "-" & getLayer() & " playing: " & isPlaying.ToString
     End Function
 
     Public Function toXML() As String Implements IPlaylistItem.toXML
@@ -347,29 +346,4 @@
         Me.parallel = parallel
     End Sub
 
-
-    ' Properties
-    Public ReadOnly Property position
-        Get
-            Return getPosition()
-        End Get
-    End Property
-
-    Public ReadOnly Property played
-        Get
-            Return getPlayed()
-        End Get
-    End Property
-
-    Public ReadOnly Property duration
-        Get
-            Return getDuration()
-        End Get
-    End Property
-
-    Public ReadOnly Property remaining
-        Get
-            Return getRemaining()
-        End Get
-    End Property
 End Class

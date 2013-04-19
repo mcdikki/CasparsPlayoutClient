@@ -35,18 +35,18 @@ Public Class Form1
         pp.setParallel(True)
         'p2.setAutoStart(True)
 
-        p1 = New PlaylistMovieItem("S1", sc, mediaLib.getItem("amb"), 2, 1)
+        p1 = New PlaylistMovieItem("1. AMB 2-1", sc, mediaLib.getItem("amb"), 2, 1)
         ps.addItem(p1)
-        p1 = New PlaylistMovieItem("S2", sc, mediaLib.getItem("cg1080i50"), 2, 1)
+        p1 = New PlaylistMovieItem("2. cg1080i50 2-1", sc, mediaLib.getItem("cg1080i50"), 2, 1)
         ps.addItem(p1)
-        p1 = New PlaylistMovieItem("S3", sc, mediaLib.getItem("amb"), 2, 1)
+        p1 = New PlaylistMovieItem("3. AMB 2-1", sc, mediaLib.getItem("amb"), 2, 1)
         ps.addItem(p1)
 
-        p1 = New PlaylistMovieItem("P1", sc, mediaLib.getItem("go1080p25"), 3, 1)
+        p1 = New PlaylistMovieItem("P. go1080p25 3-1", sc, mediaLib.getItem("go1080p25"), 3, 1)
         'p1.setLooping(True)
         pp.addItem(p1)
 
-        p1 = New PlaylistMovieItem("P2", sc, mediaLib.getItem("cg1080i50"), 1, 2)
+        p1 = New PlaylistMovieItem("P. cg1080i50 1-2", sc, mediaLib.getItem("cg1080i50"), 1, 2)
         'p1.setLooping(True)
         pp.addItem(p1)
 

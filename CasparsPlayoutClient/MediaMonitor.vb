@@ -25,26 +25,19 @@
     End Sub
 
     Private Sub updateView()
-        'lsvPlayingMedia.Clear()
-
-
-
-        'lsvPlayingMedia.Items.Find("Name", False)(0).SubItems.Add("Test")    '   SubItems.Add("Test")
-        ''lsvPlayingMedia.Items.Add(header)
-
         For Each item In sc.getPlaylistRoot.getPlayingChildItems(True, True)
-            logger.log(item.getName)
+            logger.log(item.toString)
             Dim line As New ListViewItem(item.getName)
-            line.Name = item.getName
+            line.Name = item.toString
             With line.SubItems
                 .Add(item.getChannel)
                 .Add(item.getLayer)
                 .Add(item.getDuration)
                 .Add(item.getRemaining)
             End With
-            If lsvPlayingMedia.Items.ContainsKey(item.getName) Then
-                logger.log("remove " & item.getName)
-                lsvPlayingMedia.Items(item.getName).Remove()
+            If lsvPlayingMedia.Items.ContainsKey(item.toString) Then
+                logger.log("remove " & item.toString)
+                lsvPlayingMedia.Items(item.toString).Remove()
             End If
             lsvPlayingMedia.Items.Add(line)
         Next

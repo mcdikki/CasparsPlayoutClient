@@ -575,7 +575,6 @@ Public Class mediaUpdater
             xml = ""
             mediaName = ""
             For Each item In playlist.getPlayingChildItems(True, True)
-                logger.log(item.getMedia().getName)
                 If activeItems(item.getChannel - 1).ContainsKey(item.getLayer) Then
                     activeItems(item.getChannel - 1).Item(item.getLayer).Add(item.getMedia().getName, item)
                 Else
