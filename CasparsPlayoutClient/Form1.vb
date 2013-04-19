@@ -18,7 +18,7 @@ Public Class Form1
         'Thread.Sleep(1000)
         Dim mediaMon As New MediaMonitor(sc)
         mediaMon.Show()
-        openListener()
+        'openListener()
         testPlaylist()
 
 

@@ -3,7 +3,7 @@ Imports System.Net.Sockets
 Imports System.Threading
 
 Public Class CasparCGConnection
-    Private connectionLock As New Semaphore(1, 1)
+    Private connectionLock As Semaphore
     Private serveraddress As String = "localhost"
     Private serverport As Integer = 5250 ' std. acmp2 port
     Private client As TcpClient
@@ -14,6 +14,7 @@ Public Class CasparCGConnection
     Private tryConnect As Boolean = True
 
     Public Sub New(ByVal serverAddress As String, ByVal serverPort As Integer)
+        connectionLock = New Semaphore(1, 1)
         Me.serveraddress = serverAddress
         Me.serverport = serverPort
         client = New TcpClient()
@@ -114,10 +115,9 @@ Public Class CasparCGConnection
     ''' <param name="cmd"></param>
     Public Function sendCommand(ByVal cmd As String) As CasparCGResponse
         If connected(tryConnect) Then
+            connectionLock.WaitOne()
             Dim isOk As Boolean = False
             Dim buffer() As Byte
-
-            connectionLock.WaitOne()
 
             If client.Available > 0 Then
                 ReDim buffer(client.Available)
@@ -147,10 +147,9 @@ Public Class CasparCGConnection
                 End If
             Loop
 
-            connectionLock.Release()
-
             timer.Stop()
             logger.debug("CasparCGConnection.sendCommand: Waited " & timer.ElapsedMilliseconds & "ms for an answer and received " & input.Length & " Bytes to read.")
+            connectionLock.Release()
             Return New CasparCGResponse(input, cmd)
         Else
             logger.err("CasparCGConnection.sendCommand: Not connected to server. Can't send command.")

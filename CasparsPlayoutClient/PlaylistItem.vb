@@ -70,7 +70,7 @@
         If Not IsNothing(startThread) Then
             startThread.Abort()
         End If
-        logger.log("PlaylistItem.stoppedPlaying: Stopped playing " & getName() & " (" & getChannel() & "-" & getLayer() & ")")
+        logger.debug("PlaylistItem.stoppedPlaying: Stopped playing " & getName() & " (" & getChannel() & "-" & getLayer() & ")")
     End Sub
 
     Public Sub load() Implements IPlaylistItem.load
@@ -238,7 +238,7 @@
     End Function
 
     Public Overridable Function getPlayed() As Single Implements IPlaylistItem.getPlayed
-        Return (1 / _Duration) * _Position
+        Return (1 / getDuration()) * getPosition()
     End Function
 
     Public Function isPlaying() As Boolean Implements IPlaylistItem.isPlaying

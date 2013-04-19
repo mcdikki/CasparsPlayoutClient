@@ -155,11 +155,6 @@ Public Class ServerController
         End Select
     End Function
 
-    Public Function getPlayingMediaNames(ByVal channel As Integer, ByVal layer As Integer) As IEnumerable(Of String)
-        Dim names As New List(Of String)
-        Return names
-    End Function
-
     ''' <summary>
     ''' Returns whether or not, the given channel is configured at the connected CasparCGServer
     ''' </summary>
@@ -181,9 +176,9 @@ Public Class ServerController
     ''' <returns></returns>
     ''' <remarks></remarks>
     Public Function getFreeLayer(ByVal channel As Integer) As Integer
-        Dim layer As Integer = 0
-        While Not isLayerFree(layer, channel)
-            layer = layer + 1
+        Dim layer As Integer = Integer.MaxValue
+        While Not isLayerFree(layer, channel) AndAlso layer > 0
+            layer = layer - 1
         End While
         Return layer
     End Function
@@ -274,7 +269,7 @@ Public Class ServerController
             If response.isOK Then
                 Dim infoDoc As New MSXML2.DOMDocument
                 response = testConnection.sendCommand(CasparCGCommandFactory.getInfo(testChannel, layer, True))
-                testConnection.sendAsyncCommand(CasparCGCommandFactory.getClear(testChannel, layer))
+                testConnection.sendCommand(CasparCGCommandFactory.getClear(testChannel, layer))
                 If infoDoc.loadXML(response.getXMLData()) AndAlso Not IsNothing(infoDoc.selectSingleNode("producer").selectSingleNode("destination")) Then
                     If infoDoc.selectSingleNode("producer").selectSingleNode("destination").selectSingleNode("producer").selectSingleNode("type").nodeTypedValue.Equals("separated-producer") Then
                         Return infoDoc.selectSingleNode("producer").selectSingleNode("destination").selectSingleNode("producer").selectSingleNode("fill").selectSingleNode("producer").xml

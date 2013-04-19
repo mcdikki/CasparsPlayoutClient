@@ -1,6 +1,7 @@
 ﻿Public Class MediaMonitor
 
     Private sc As ServerController
+    Delegate Sub updateDelegate()
 
     Public Sub New(ByRef controller As ServerController)
         MyBase.New()
@@ -16,17 +17,24 @@
             .Add("Layer")
             .Add("Laufzeit")
             .Add("Verbleibend")
+            .Add("% gespielt")
         End With
-        tmUpdater.Start()
+        AddHandler sc.getTicker.frameTick, AddressOf tmUpdater_Tick
+        'tmUpdater.Start()
     End Sub
 
     Private Sub tmUpdater_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tmUpdater.Tick
-        updateView()
+        If lsvPlayingMedia.InvokeRequired Then
+            Dim d As New updateDelegate(AddressOf updateView)
+            Me.Invoke(d, New Object() {})
+        Else
+            updateView()
+        End If
     End Sub
 
     Private Sub updateView()
+        lsvPlayingMedia.Items.Clear()
         For Each item In sc.getPlaylistRoot.getPlayingChildItems(True, True)
-            logger.log(item.toString)
             Dim line As New ListViewItem(item.getName)
             line.Name = item.toString
             With line.SubItems
@@ -34,9 +42,9 @@
                 .Add(item.getLayer)
                 .Add(item.getDuration)
                 .Add(item.getRemaining)
+                .Add(item.getPlayed)
             End With
             If lsvPlayingMedia.Items.ContainsKey(item.toString) Then
-                logger.log("remove " & item.toString)
                 lsvPlayingMedia.Items(item.toString).Remove()
             End If
             lsvPlayingMedia.Items.Add(line)
