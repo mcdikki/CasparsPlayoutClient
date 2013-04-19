@@ -63,7 +63,7 @@ Public Class ServerController
         End If
 
         ' Tick Thread starten
-        ticker = New FrameTicker(tickConnection, Me, , 5)
+        ticker = New FrameTicker(tickConnection, Me, , 1)
         'tickThread = New Thread(AddressOf ticker.tick)
         'tickThread.Start()
 
@@ -210,6 +210,15 @@ Public Class ServerController
         End If
         Return False
     End Function
+
+    Public Function getTimeStringOfMS(ByVal milliseconds As Long) As String
+        Dim time As String = Str(milliseconds / 3600000).Substring(0, 2) & ":" & _
+                            Str(milliseconds / 60000).Substring(0, 2) & ":" & _
+                            Str(milliseconds / 1000).Substring(0, 2) & "." & _
+                            Str(milliseconds Mod 1000).Substring(0, 2)
+        Return time
+    End Function
+
 
     ''' <summary>
     ''' Returns the time in milliseconds needed to play the given number of frames at a specified framerate.

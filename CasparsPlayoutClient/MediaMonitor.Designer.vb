@@ -25,14 +25,15 @@ Partial Class MediaMonitor
         Me.components = New System.ComponentModel.Container()
         Me.lsvPlayingMedia = New System.Windows.Forms.ListView()
         Me.tmUpdater = New System.Windows.Forms.Timer(Me.components)
+        Me.lblClock = New System.Windows.Forms.Label()
         Me.SuspendLayout()
         '
         'lsvPlayingMedia
         '
         Me.lsvPlayingMedia.GridLines = True
-        Me.lsvPlayingMedia.Location = New System.Drawing.Point(12, 28)
+        Me.lsvPlayingMedia.Location = New System.Drawing.Point(12, 60)
         Me.lsvPlayingMedia.Name = "lsvPlayingMedia"
-        Me.lsvPlayingMedia.Size = New System.Drawing.Size(1011, 486)
+        Me.lsvPlayingMedia.Size = New System.Drawing.Size(1011, 454)
         Me.lsvPlayingMedia.TabIndex = 0
         Me.lsvPlayingMedia.UseCompatibleStateImageBehavior = False
         '
@@ -40,11 +41,22 @@ Partial Class MediaMonitor
         '
         Me.tmUpdater.Interval = 500
         '
+        'lblClock
+        '
+        Me.lblClock.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
+        Me.lblClock.Font = New System.Drawing.Font("Arial", 18.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.lblClock.Location = New System.Drawing.Point(446, 9)
+        Me.lblClock.Name = "lblClock"
+        Me.lblClock.Size = New System.Drawing.Size(140, 32)
+        Me.lblClock.TabIndex = 1
+        Me.lblClock.Text = "00:00:00.00"
+        '
         'MediaMonitor
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(1035, 526)
+        Me.Controls.Add(Me.lblClock)
         Me.Controls.Add(Me.lsvPlayingMedia)
         Me.Name = "MediaMonitor"
         Me.Text = "MediaMonitor"
@@ -53,4 +65,5 @@ Partial Class MediaMonitor
     End Sub
     Friend WithEvents lsvPlayingMedia As System.Windows.Forms.ListView
     Friend WithEvents tmUpdater As System.Windows.Forms.Timer
+    Friend WithEvents lblClock As System.Windows.Forms.Label
 End Class

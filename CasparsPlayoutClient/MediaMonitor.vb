@@ -2,6 +2,7 @@
 
     Private sc As ServerController
     Delegate Sub updateDelegate()
+    Delegate Sub clockDelegate(ByVal state As Dictionary(Of Integer, Long))
 
     Public Sub New(ByRef controller As ServerController)
         MyBase.New()
@@ -19,11 +20,26 @@
             .Add("Verbleibend")
             .Add("% gespielt")
         End With
-        AddHandler sc.getTicker.frameTick, AddressOf tmUpdater_Tick
-        'tmUpdater.Start()
+        AddHandler sc.getTicker.frameTick, AddressOf Updater_Tick
+        AddHandler sc.getTicker.frameTick, AddressOf Clock_Tick
     End Sub
 
-    Private Sub tmUpdater_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tmUpdater.Tick
+    Private Sub Clock_Tick(ByVal sender As Object, ByVal e As frameTickEventArgs)
+        If lblClock.InvokeRequired Then
+            Dim d As New clockDelegate(AddressOf updateClock)
+            Me.Invoke(d, New Object() {e.result})
+        Else
+            updateClock(e.result)
+        End If
+    End Sub
+
+    Private Sub updateClock(ByVal state As Dictionary(Of Integer, Long))
+        If state.ContainsKey(1) Then
+            lblClock.Text = state.Item(1)
+        End If
+    End Sub
+
+    Private Sub Updater_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs)
         If lsvPlayingMedia.InvokeRequired Then
             Dim d As New updateDelegate(AddressOf updateView)
             Me.Invoke(d, New Object() {})
