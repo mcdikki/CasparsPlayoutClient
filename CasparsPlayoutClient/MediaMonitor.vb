@@ -37,11 +37,13 @@
         For Each item In sc.getPlaylistRoot.getPlayingChildItems(True, True)
             Dim line As New ListViewItem(item.getName)
             line.Name = item.toString
+            Dim ts = TimeSpan.FromMilliseconds(sc.getTimeInMS(item.getDuration, sc.getFPS(item.getChannel)))
             With line.SubItems
                 .Add(item.getChannel)
                 .Add(item.getLayer)
-                .Add(item.getDuration)
-                .Add(item.getRemaining)
+                .Add(ts.ToString("g"))
+                ts = TimeSpan.FromMilliseconds(sc.getTimeInMS(item.getRemaining, sc.getFPS(item.getChannel)))
+                .Add(ts.ToString("g"))
                 .Add(item.getPlayed)
             End With
             If lsvPlayingMedia.Items.ContainsKey(item.toString) Then
