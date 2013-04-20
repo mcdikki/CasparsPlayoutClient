@@ -25,7 +25,7 @@ Partial Class PlaylistView
         Me.TableLayoutMain = New System.Windows.Forms.TableLayoutPanel()
         Me.infoLayout = New System.Windows.Forms.FlowLayoutPanel()
         Me.buttonLayout = New System.Windows.Forms.FlowLayoutPanel()
-        Me.cmdToggleButton = New System.Windows.Forms.Button()
+        Me.cmbToggleButton = New System.Windows.Forms.Button()
         Me.txtName = New System.Windows.Forms.TextBox()
         Me.nameLayout = New System.Windows.Forms.FlowLayoutPanel()
         Me.pbPlayed = New System.Windows.Forms.ProgressBar()
@@ -65,21 +65,22 @@ Partial Class PlaylistView
         Me.TableLayoutMain.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 89.64706!))
         Me.TableLayoutMain.Controls.Add(Me.infoLayout, 0, 1)
         Me.TableLayoutMain.Controls.Add(Me.buttonLayout, 0, 2)
-        Me.TableLayoutMain.Controls.Add(Me.cmdToggleButton, 0, 0)
+        Me.TableLayoutMain.Controls.Add(Me.cmbToggleButton, 0, 0)
         Me.TableLayoutMain.Controls.Add(Me.nameLayout, 1, 0)
         Me.TableLayoutMain.Controls.Add(Me.childLayout, 1, 2)
         Me.TableLayoutMain.Location = New System.Drawing.Point(0, 0)
         Me.TableLayoutMain.Name = "TableLayoutMain"
         Me.TableLayoutMain.RowCount = 3
         Me.TableLayoutMain.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 54.0!))
-        Me.TableLayoutMain.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 17.46575!))
-        Me.TableLayoutMain.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 82.53425!))
+        Me.TableLayoutMain.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 30.72289!))
+        Me.TableLayoutMain.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 69.27711!))
         Me.TableLayoutMain.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20.0!))
-        Me.TableLayoutMain.Size = New System.Drawing.Size(425, 346)
+        Me.TableLayoutMain.Size = New System.Drawing.Size(489, 225)
         Me.TableLayoutMain.TabIndex = 0
         '
         'infoLayout
         '
+        Me.infoLayout.AutoSize = True
         Me.infoLayout.BackColor = System.Drawing.Color.Transparent
         Me.TableLayoutMain.SetColumnSpan(Me.infoLayout, 2)
         Me.infoLayout.Controls.Add(Me.grbChannelLayer)
@@ -89,7 +90,7 @@ Partial Class PlaylistView
         Me.infoLayout.Controls.Add(Me.grpRemaining)
         Me.infoLayout.Location = New System.Drawing.Point(3, 57)
         Me.infoLayout.Name = "infoLayout"
-        Me.infoLayout.Size = New System.Drawing.Size(419, 45)
+        Me.infoLayout.Size = New System.Drawing.Size(406, 44)
         Me.infoLayout.TabIndex = 0
         '
         'buttonLayout
@@ -98,19 +99,20 @@ Partial Class PlaylistView
         Me.buttonLayout.Controls.Add(Me.ckbAuto)
         Me.buttonLayout.Controls.Add(Me.ckbLoop)
         Me.buttonLayout.FlowDirection = System.Windows.Forms.FlowDirection.TopDown
-        Me.buttonLayout.Location = New System.Drawing.Point(3, 108)
+        Me.buttonLayout.Location = New System.Drawing.Point(3, 109)
         Me.buttonLayout.Name = "buttonLayout"
-        Me.buttonLayout.Size = New System.Drawing.Size(38, 235)
+        Me.buttonLayout.Size = New System.Drawing.Size(44, 113)
         Me.buttonLayout.TabIndex = 1
         '
-        'cmdToggleButton
+        'cmbToggleButton
         '
-        Me.cmdToggleButton.Location = New System.Drawing.Point(3, 3)
-        Me.cmdToggleButton.Name = "cmdToggleButton"
-        Me.cmdToggleButton.Size = New System.Drawing.Size(38, 48)
-        Me.cmdToggleButton.TabIndex = 2
-        Me.cmdToggleButton.Text = ">"
-        Me.cmdToggleButton.UseVisualStyleBackColor = True
+        Me.cmbToggleButton.AutoSize = True
+        Me.cmbToggleButton.Location = New System.Drawing.Point(3, 3)
+        Me.cmbToggleButton.Name = "cmbToggleButton"
+        Me.cmbToggleButton.Size = New System.Drawing.Size(38, 48)
+        Me.cmbToggleButton.TabIndex = 2
+        Me.cmbToggleButton.Text = ">"
+        Me.cmbToggleButton.UseVisualStyleBackColor = True
         '
         'txtName
         '
@@ -126,9 +128,9 @@ Partial Class PlaylistView
         Me.nameLayout.Controls.Add(Me.txtName)
         Me.nameLayout.Controls.Add(Me.pbPlayed)
         Me.nameLayout.FlowDirection = System.Windows.Forms.FlowDirection.TopDown
-        Me.nameLayout.Location = New System.Drawing.Point(47, 3)
+        Me.nameLayout.Location = New System.Drawing.Point(53, 3)
         Me.nameLayout.Name = "nameLayout"
-        Me.nameLayout.Size = New System.Drawing.Size(375, 48)
+        Me.nameLayout.Size = New System.Drawing.Size(432, 48)
         Me.nameLayout.TabIndex = 4
         '
         'pbPlayed
@@ -252,10 +254,11 @@ Partial Class PlaylistView
         '
         'childLayout
         '
+        Me.childLayout.AutoSize = True
         Me.childLayout.FlowDirection = System.Windows.Forms.FlowDirection.TopDown
-        Me.childLayout.Location = New System.Drawing.Point(47, 108)
+        Me.childLayout.Location = New System.Drawing.Point(53, 109)
         Me.childLayout.Name = "childLayout"
-        Me.childLayout.Size = New System.Drawing.Size(375, 235)
+        Me.childLayout.Size = New System.Drawing.Size(0, 0)
         Me.childLayout.TabIndex = 5
         '
         'ckbParallel
@@ -296,12 +299,16 @@ Partial Class PlaylistView
         '
         'PlaylistView
         '
-        Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
-        Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
+        Me.AccessibleRole = System.Windows.Forms.AccessibleRole.ListItem
+        Me.AutoScaleDimensions = New System.Drawing.SizeF(96.0!, 96.0!)
+        Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi
+        Me.AutoSize = True
+        Me.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
         Me.Controls.Add(Me.TableLayoutMain)
         Me.Name = "PlaylistView"
-        Me.Size = New System.Drawing.Size(428, 349)
+        Me.Size = New System.Drawing.Size(492, 228)
         Me.TableLayoutMain.ResumeLayout(False)
+        Me.TableLayoutMain.PerformLayout()
         Me.infoLayout.ResumeLayout(False)
         Me.buttonLayout.ResumeLayout(False)
         Me.buttonLayout.PerformLayout()
@@ -326,7 +333,7 @@ Partial Class PlaylistView
     Friend WithEvents nudChannel As System.Windows.Forms.NumericUpDown
     Friend WithEvents nudLayer As System.Windows.Forms.NumericUpDown
     Friend WithEvents buttonLayout As System.Windows.Forms.FlowLayoutPanel
-    Friend WithEvents cmdToggleButton As System.Windows.Forms.Button
+    Friend WithEvents cmbToggleButton As System.Windows.Forms.Button
     Friend WithEvents nameLayout As System.Windows.Forms.FlowLayoutPanel
     Friend WithEvents txtName As System.Windows.Forms.TextBox
     Friend WithEvents pbPlayed As System.Windows.Forms.ProgressBar
