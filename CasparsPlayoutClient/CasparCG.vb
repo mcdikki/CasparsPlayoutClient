@@ -766,11 +766,13 @@ Public Class CasparCGTemplate
 
     Public Sub New(ByVal name As String)
         MyBase.New(name)
+        data = New CasparCGTemplateData
         components = New Dictionary(Of String, CasparCGTemplateComponent)
     End Sub
 
     Public Sub New(ByVal name As String, ByVal xml As String)
         MyBase.New(name)
+        data = New CasparCGTemplateData
         components = New Dictionary(Of String, CasparCGTemplateComponent)
         parseXML(xml)
     End Sub
@@ -808,7 +810,9 @@ Public Class CasparCGTemplate
             '' Instances
             For Each instance As MSXML2.IXMLDOMNode In configDoc.getElementsByTagName("instance")
                 If Not IsDBNull(instance.attributes.getNamedItem("type")) AndAlso Not IsDBNull(instance.attributes.getNamedItem("name")) AndAlso containsComponent(instance.attributes.getNamedItem("type").nodeTypedValue) Then
-                    data.addInstance(New CasparCGTemplateInstance(instance.attributes.getNamedItem("name").nodeTypedValue, getComponent(instance.attributes.getNamedItem("type").nodeTypedValue)))
+                    Dim c As CasparCGTemplateComponent = getComponent(instance.attributes.getNamedItem("type").nodeTypedValue)
+                    Dim i As New CasparCGTemplateInstance(instance.attributes.getNamedItem("name").nodeTypedValue, c)
+                    data.addInstance(i)
                 End If
             Next
         End If
@@ -837,6 +841,21 @@ Public Class CasparCGTemplate
 
     Public Function containsComponent(ByVal compnentName As String) As Boolean
         Return components.ContainsKey(compnentName)
+    End Function
+
+    Public Overrides Function toString() As String
+        Dim out As String = MyBase.toString & vbNewLine & "Components:"
+        For Each comp In getComponents()
+            out = out & vbNewLine & vbTab & comp.getName
+        Next
+        out = out & vbNewLine & "Instances and their properties:"
+        For Each instance In data.getInstances
+            For Each prop In instance.getComponent.getProperties
+                out = out & vbNewLine & vbTab & "Property Name: '" & prop.propertyName & "' Type: '" & prop.propertyType & "' Desc: '" & prop.propertyInfo & "'"
+                out = out & vbNewLine & vbTab & instance.getName & " = " & instance.getData(prop)
+            Next
+        Next
+        Return out
     End Function
 
 End Class
@@ -912,7 +931,7 @@ Public Class CasparCGTemplateComponent
         Dim configDoc As New MSXML2.DOMDocument
         configDoc.loadXML(xml)
         If configDoc.hasChildNodes Then
-            name = configDoc.nodeName
+            name = configDoc.firstChild.attributes.getNamedItem("name").nodeTypedValue
             For Each prop As MSXML2.IXMLDOMNode In configDoc.getElementsByTagName("property")
                 addProperty(New CasparCGTemplateComponentProperty(prop.xml))
             Next
@@ -993,6 +1012,7 @@ Public Class CasparCGTemplateInstance
 
     Public Sub New(ByVal name As String, ByRef component As CasparCGTemplateComponent)
         Me.name = name
+        Me.component = component
         values = New Dictionary(Of CasparCGTemplateComponentProperty, String)
         For Each prop As CasparCGTemplateComponentProperty In component.getProperties
             values.Add(prop, "")

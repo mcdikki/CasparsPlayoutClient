@@ -640,6 +640,13 @@ Public Class mediaUpdater
                     ' und werden daher als gestoppt markiert
                     For Each layer As Integer In activeItems(c).Keys
                         For Each item As IPlaylistItem In activeItems(c).Item(layer).Values
+
+                            '' BUGFIX CasparCG won't ever reach nb-frames with frame-number, so we fake it till this is fixed
+                            If item.getMedia.containsInfo("nb-frames") AndAlso item.getMedia.containsInfo("frame-number") Then
+                                If Long.Parse(item.getMedia.getInfo("nb-frames")) > Long.Parse(item.getMedia.getInfo("frame-number")) Then
+                                    item.getMedia.setInfo("frame-number", item.getMedia.getInfo("nb-frames"))
+                                End If
+                            End If
                             item.stoppedPlaying()
                         Next
                     Next
