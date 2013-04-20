@@ -4,11 +4,12 @@
 
     Private Sub MainWindow_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
         sc = New ServerController()
-        sc.open("casparcg", 5250)
-        sc.startTicker()
+        sc.open("localhost", 5250)
+        AddPlaylist()
+        'sc.startTicker()
     End Sub
 
-    Private Sub cmbAddPlaylist_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmbAddPlaylist.Click
+    Private Sub AddPlaylist()
 
         Dim mediaLib As New Library(sc)
         mediaLib.refreshLibrary()
@@ -40,8 +41,12 @@
         sc.getPlaylistRoot.addItem(pp)
 
 
-        Dim playlistView As New PlaylistView(sc.getPlaylistRoot)
-        playlistView.Parent = Me.playlistLayout
+        'Dim playlistView As New PlaylistView(sc.getPlaylistRoot)
+        Dim playlistview As New TestPlaylistView(sc.getPlaylistRoot)
+        'playlistview.Height = Me.Height - 100
+        playlistview.Dock = DockStyle.Fill
+        PlaylistView.Parent = Me
+        'playlistView.Width = Me.Width
         playlistView.Show()
     End Sub
 End Class

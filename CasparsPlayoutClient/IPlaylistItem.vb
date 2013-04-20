@@ -16,7 +16,7 @@
     Function getItemType() As PlaylistItem.PlaylistItemTypes ' Typ des Item
     Function isPlaying() As Boolean
     Function isPaused() As Boolean
-    Function getPlayed() As Single '% des Items gespielt
+    Function getPlayed() As Byte '% des Items gespielt
     Function getChildItems(Optional ByVal recursiv As Boolean = False) As List(Of IPlaylistItem) ' alle Items in diesem Item
     Function getPlayingChildItems(Optional ByVal recursiv As Boolean = False, Optional ByVal onlyPlayable As Boolean = False) As IEnumerable(Of IPlaylistItem) ' alle activen, spielenden Items in diesem Item
     Function getMedia() As CasparCGMedia

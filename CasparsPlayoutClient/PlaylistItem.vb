@@ -237,8 +237,8 @@
         Return childItems
     End Function
 
-    Public Overridable Function getPlayed() As Single Implements IPlaylistItem.getPlayed
-        Return (1 / getDuration()) * getPosition()
+    Public Overridable Function getPlayed() As Byte Implements IPlaylistItem.getPlayed
+        Return (100 / getDuration()) * getPosition()
     End Function
 
     Public Function isPlaying() As Boolean Implements IPlaylistItem.isPlaying

@@ -145,6 +145,12 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="ServerController.vb" />
+    <Compile Include="TestPlaylistView.Designer.vb">
+      <DependentUpon>TestPlaylistView.vb</DependentUpon>
+    </Compile>
+    <Compile Include="TestPlaylistView.vb">
+      <SubType>UserControl</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Form1.resx">
@@ -167,6 +173,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="PlaylistView.resx">
       <DependentUpon>PlaylistView.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TestPlaylistView.resx">
+      <DependentUpon>TestPlaylistView.vb</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

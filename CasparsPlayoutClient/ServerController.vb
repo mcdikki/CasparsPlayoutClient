@@ -12,7 +12,7 @@ Public Class ServerController
     Private tickThread As Thread
     Private serverAddress As String = "localhost"
     Private serverPort As Integer = 5250
-    Private testChannel As Integer = 4
+    Private testChannel As Integer = 2
     Private channels As Integer
     Private opened As Boolean
     Private WithEvents ticker As FrameTicker

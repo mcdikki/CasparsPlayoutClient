@@ -1,9 +1,12 @@
-﻿Public Class PlaylistView
+﻿Public Class TestPlaylistView
 
     Private playlist As IPlaylistItem
+    Private childs As List(Of TestPlaylistView)
+    Private fullHeight As Integer
 
     Public Sub New(ByRef playlist As IPlaylistItem)
         Me.playlist = playlist
+        childs = New List(Of TestPlaylistView)
         InitializeComponent()
         init()
     End Sub
@@ -33,16 +36,28 @@
         Else
             '' BlockItem, schauen ob childs geladen werden können
             For Each item In playlist.getChildItems(False)
-                Dim child As New PlaylistView(item)
+                Dim child As New TestPlaylistView(item)
+                child.Dock = DockStyle.Fill
+                child.Width = Me.layoutContentSplit.Panel2.Width
                 child.Parent = Me.childLayout
                 child.Show()
+                childs.Add(child)
             Next
         End If
+        If childs.Count > 0 Then logger.log("My Content width: " & Me.childLayout.Width & "   childs width: " & childs.Item(0).Width)
 
     End Sub
 
-    Private Sub lblExpand_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles lblExpand.Click
-        Me.Height = Me.infoLayout.Top + Me.infoLayout.Height
+    Private Sub layoutHeaderContentSplit_DoubleClick(ByVal sender As Object, ByVal e As System.EventArgs) Handles lblExpand.Click, layoutHeaderContentSplit.DoubleClick
+        If layoutHeaderContentSplit.Panel2Collapsed Then
+            lblExpand.Text = "+"
+            Me.Height = fullHeight
+        Else
+            fullHeight = Me.Height
+            Me.Height = layoutHeaderContentSplit.Panel1MinSize
+            lblExpand.Text = "-"
+        End If
+        layoutHeaderContentSplit.Panel2Collapsed = Not layoutHeaderContentSplit.Panel2Collapsed
     End Sub
 
 End Class
