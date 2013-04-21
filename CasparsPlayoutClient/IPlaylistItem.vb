@@ -24,6 +24,7 @@
     Function toXML() As String
     Function toString() As String
 
+    Sub setName(ByVal name As String)
     Sub setLayer(ByVal layer As Integer)
     Sub setChannel(ByVal channel As Integer)
     Sub setLooping(ByVal looping As Boolean)

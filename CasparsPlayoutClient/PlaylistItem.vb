@@ -270,7 +270,7 @@
     '' SETTER:
     ''---------
 
-    Public Sub setName(ByVal Name As String)
+    Public Sub setName(ByVal Name As String) Implements IPlaylistItem.setName
         Me._name = Name
     End Sub
 

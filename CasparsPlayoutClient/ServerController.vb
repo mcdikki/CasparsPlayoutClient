@@ -63,7 +63,7 @@ Public Class ServerController
         End If
 
         ' Tick Thread starten
-        ticker = New FrameTicker(tickConnection, Me, , 1)
+        ticker = New FrameTicker(tickConnection, Me, , 10)
         'tickThread = New Thread(AddressOf ticker.tick)
         'tickThread.Start()
 

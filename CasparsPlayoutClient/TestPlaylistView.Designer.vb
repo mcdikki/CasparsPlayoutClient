@@ -23,18 +23,18 @@ Partial Class TestPlaylistView
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
         Me.layoutContentSplit = New System.Windows.Forms.SplitContainer()
-        Me.buttonLayout = New System.Windows.Forms.FlowLayoutPanel()
+        Me.layoutButton = New System.Windows.Forms.FlowLayoutPanel()
         Me.ckbParallel = New System.Windows.Forms.CheckBox()
         Me.ckbAuto = New System.Windows.Forms.CheckBox()
         Me.ckbLoop = New System.Windows.Forms.CheckBox()
-        Me.childLayout = New System.Windows.Forms.FlowLayoutPanel()
+        Me.layoutChild = New System.Windows.Forms.FlowLayoutPanel()
         Me.layoutHeaderTable = New System.Windows.Forms.TableLayoutPanel()
         Me.lblExpand = New System.Windows.Forms.Label()
         Me.cmbToggleButton = New System.Windows.Forms.Button()
         Me.pbPlayed = New System.Windows.Forms.ProgressBar()
         Me.layoutInfos = New System.Windows.Forms.FlowLayoutPanel()
         Me.grbChannelLayer = New System.Windows.Forms.GroupBox()
-        Me.chLayerLayout = New System.Windows.Forms.FlowLayoutPanel()
+        Me.layoutChannelLayer = New System.Windows.Forms.FlowLayoutPanel()
         Me.grbDelay = New System.Windows.Forms.GroupBox()
         Me.txtDelay = New System.Windows.Forms.TextBox()
         Me.grbDuration = New System.Windows.Forms.GroupBox()
@@ -52,7 +52,7 @@ Partial Class TestPlaylistView
         Me.layoutContentSplit.Panel1.SuspendLayout()
         Me.layoutContentSplit.Panel2.SuspendLayout()
         Me.layoutContentSplit.SuspendLayout()
-        Me.buttonLayout.SuspendLayout()
+        Me.layoutButton.SuspendLayout()
         Me.layoutHeaderTable.SuspendLayout()
         Me.layoutInfos.SuspendLayout()
         Me.grbChannelLayer.SuspendLayout()
@@ -79,33 +79,33 @@ Partial Class TestPlaylistView
         '
         'layoutContentSplit.Panel1
         '
-        Me.layoutContentSplit.Panel1.Controls.Add(Me.buttonLayout)
+        Me.layoutContentSplit.Panel1.Controls.Add(Me.layoutButton)
         Me.layoutContentSplit.Panel1MinSize = 30
         '
         'layoutContentSplit.Panel2
         '
         Me.layoutContentSplit.Panel2.AutoScroll = True
-        Me.layoutContentSplit.Panel2.Controls.Add(Me.childLayout)
+        Me.layoutContentSplit.Panel2.Controls.Add(Me.layoutChild)
         Me.layoutContentSplit.Size = New System.Drawing.Size(311, 117)
         Me.layoutContentSplit.SplitterDistance = 30
         Me.layoutContentSplit.TabIndex = 0
         '
-        'buttonLayout
+        'layoutButton
         '
-        Me.buttonLayout.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+        Me.layoutButton.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
                     Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.buttonLayout.AutoSize = True
-        Me.buttonLayout.Controls.Add(Me.ckbParallel)
-        Me.buttonLayout.Controls.Add(Me.ckbAuto)
-        Me.buttonLayout.Controls.Add(Me.ckbLoop)
-        Me.buttonLayout.FlowDirection = System.Windows.Forms.FlowDirection.TopDown
-        Me.buttonLayout.Location = New System.Drawing.Point(0, 0)
-        Me.buttonLayout.Margin = New System.Windows.Forms.Padding(2, 3, 2, 3)
-        Me.buttonLayout.MaximumSize = New System.Drawing.Size(35, 0)
-        Me.buttonLayout.MinimumSize = New System.Drawing.Size(30, 0)
-        Me.buttonLayout.Name = "buttonLayout"
-        Me.buttonLayout.Size = New System.Drawing.Size(35, 111)
-        Me.buttonLayout.TabIndex = 2
+        Me.layoutButton.AutoSize = True
+        Me.layoutButton.Controls.Add(Me.ckbParallel)
+        Me.layoutButton.Controls.Add(Me.ckbAuto)
+        Me.layoutButton.Controls.Add(Me.ckbLoop)
+        Me.layoutButton.FlowDirection = System.Windows.Forms.FlowDirection.TopDown
+        Me.layoutButton.Location = New System.Drawing.Point(0, 0)
+        Me.layoutButton.Margin = New System.Windows.Forms.Padding(2, 3, 2, 3)
+        Me.layoutButton.MaximumSize = New System.Drawing.Size(35, 0)
+        Me.layoutButton.MinimumSize = New System.Drawing.Size(30, 0)
+        Me.layoutButton.Name = "layoutButton"
+        Me.layoutButton.Size = New System.Drawing.Size(35, 111)
+        Me.layoutButton.TabIndex = 2
         '
         'ckbParallel
         '
@@ -155,20 +155,19 @@ Partial Class TestPlaylistView
         Me.ckbLoop.TextAlign = System.Drawing.ContentAlignment.TopCenter
         Me.ckbLoop.UseVisualStyleBackColor = True
         '
-        'childLayout
+        'layoutChild
         '
-        Me.childLayout.AutoScroll = True
-        Me.childLayout.AutoSize = True
-        Me.childLayout.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
-        Me.childLayout.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
-        Me.childLayout.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.childLayout.FlowDirection = System.Windows.Forms.FlowDirection.TopDown
-        Me.childLayout.Location = New System.Drawing.Point(0, 0)
-        Me.childLayout.Margin = New System.Windows.Forms.Padding(2, 3, 2, 3)
-        Me.childLayout.Name = "childLayout"
-        Me.childLayout.Size = New System.Drawing.Size(277, 117)
-        Me.childLayout.TabIndex = 6
-        Me.childLayout.WrapContents = False
+        Me.layoutChild.AutoSize = True
+        Me.layoutChild.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
+        Me.layoutChild.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
+        Me.layoutChild.Dock = System.Windows.Forms.DockStyle.Top
+        Me.layoutChild.FlowDirection = System.Windows.Forms.FlowDirection.TopDown
+        Me.layoutChild.Location = New System.Drawing.Point(0, 0)
+        Me.layoutChild.Margin = New System.Windows.Forms.Padding(2, 3, 2, 3)
+        Me.layoutChild.Name = "layoutChild"
+        Me.layoutChild.Size = New System.Drawing.Size(277, 4)
+        Me.layoutChild.TabIndex = 6
+        Me.layoutChild.WrapContents = False
         '
         'layoutHeaderTable
         '
@@ -253,7 +252,7 @@ Partial Class TestPlaylistView
                     Or System.Windows.Forms.AnchorStyles.Left) _
                     Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.grbChannelLayer.AutoSize = True
-        Me.grbChannelLayer.Controls.Add(Me.chLayerLayout)
+        Me.grbChannelLayer.Controls.Add(Me.layoutChannelLayer)
         Me.grbChannelLayer.Font = New System.Drawing.Font("Microsoft Sans Serif", 6.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.grbChannelLayer.Location = New System.Drawing.Point(0, 0)
         Me.grbChannelLayer.Margin = New System.Windows.Forms.Padding(0)
@@ -264,16 +263,16 @@ Partial Class TestPlaylistView
         Me.grbChannelLayer.TabStop = False
         Me.grbChannelLayer.Text = "Channel-Layer"
         '
-        'chLayerLayout
+        'layoutChannelLayer
         '
-        Me.chLayerLayout.AutoSize = True
-        Me.chLayerLayout.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
-        Me.chLayerLayout.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.chLayerLayout.Location = New System.Drawing.Point(0, 10)
-        Me.chLayerLayout.Margin = New System.Windows.Forms.Padding(2, 3, 2, 3)
-        Me.chLayerLayout.Name = "chLayerLayout"
-        Me.chLayerLayout.Size = New System.Drawing.Size(0, 25)
-        Me.chLayerLayout.TabIndex = 0
+        Me.layoutChannelLayer.AutoSize = True
+        Me.layoutChannelLayer.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
+        Me.layoutChannelLayer.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.layoutChannelLayer.Location = New System.Drawing.Point(0, 10)
+        Me.layoutChannelLayer.Margin = New System.Windows.Forms.Padding(2, 3, 2, 3)
+        Me.layoutChannelLayer.Name = "layoutChannelLayer"
+        Me.layoutChannelLayer.Size = New System.Drawing.Size(0, 25)
+        Me.layoutChannelLayer.TabIndex = 0
         '
         'grbDelay
         '
@@ -399,7 +398,7 @@ Partial Class TestPlaylistView
         Me.nudLayer.Anchor = System.Windows.Forms.AnchorStyles.Right
         Me.nudLayer.AutoSize = True
         Me.nudLayer.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.nudLayer.Location = New System.Drawing.Point(188, 4)
+        Me.nudLayer.Location = New System.Drawing.Point(227, 3)
         Me.nudLayer.Margin = New System.Windows.Forms.Padding(2, 3, 2, 3)
         Me.nudLayer.Maximum = New Decimal(New Integer() {1000, 0, 0, 0})
         Me.nudLayer.Minimum = New Decimal(New Integer() {1, 0, 0, -2147483648})
@@ -412,7 +411,7 @@ Partial Class TestPlaylistView
         Me.nudChannel.Anchor = System.Windows.Forms.AnchorStyles.Right
         Me.nudChannel.AutoSize = True
         Me.nudChannel.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.nudChannel.Location = New System.Drawing.Point(230, 4)
+        Me.nudChannel.Location = New System.Drawing.Point(185, 3)
         Me.nudChannel.Margin = New System.Windows.Forms.Padding(2, 3, 2, 3)
         Me.nudChannel.Maximum = New Decimal(New Integer() {1000, 0, 0, 0})
         Me.nudChannel.Minimum = New Decimal(New Integer() {1, 0, 0, -2147483648})
@@ -472,8 +471,8 @@ Partial Class TestPlaylistView
         Me.layoutContentSplit.Panel2.PerformLayout()
         CType(Me.layoutContentSplit, System.ComponentModel.ISupportInitialize).EndInit()
         Me.layoutContentSplit.ResumeLayout(False)
-        Me.buttonLayout.ResumeLayout(False)
-        Me.buttonLayout.PerformLayout()
+        Me.layoutButton.ResumeLayout(False)
+        Me.layoutButton.PerformLayout()
         Me.layoutHeaderTable.ResumeLayout(False)
         Me.layoutHeaderTable.PerformLayout()
         Me.layoutInfos.ResumeLayout(False)
@@ -500,18 +499,18 @@ Partial Class TestPlaylistView
 
     End Sub
     Friend WithEvents layoutContentSplit As System.Windows.Forms.SplitContainer
-    Friend WithEvents buttonLayout As System.Windows.Forms.FlowLayoutPanel
+    Friend WithEvents layoutButton As System.Windows.Forms.FlowLayoutPanel
     Friend WithEvents ckbParallel As System.Windows.Forms.CheckBox
     Friend WithEvents ckbAuto As System.Windows.Forms.CheckBox
     Friend WithEvents ckbLoop As System.Windows.Forms.CheckBox
-    Friend WithEvents childLayout As System.Windows.Forms.FlowLayoutPanel
+    Friend WithEvents layoutChild As System.Windows.Forms.FlowLayoutPanel
     Friend WithEvents layoutHeaderTable As System.Windows.Forms.TableLayoutPanel
     Friend WithEvents lblExpand As System.Windows.Forms.Label
     Friend WithEvents cmbToggleButton As System.Windows.Forms.Button
     Friend WithEvents pbPlayed As System.Windows.Forms.ProgressBar
     Friend WithEvents layoutInfos As System.Windows.Forms.FlowLayoutPanel
     Friend WithEvents grbChannelLayer As System.Windows.Forms.GroupBox
-    Friend WithEvents chLayerLayout As System.Windows.Forms.FlowLayoutPanel
+    Friend WithEvents layoutChannelLayer As System.Windows.Forms.FlowLayoutPanel
     Friend WithEvents grbDelay As System.Windows.Forms.GroupBox
     Friend WithEvents txtDelay As System.Windows.Forms.TextBox
     Friend WithEvents grbDuration As System.Windows.Forms.GroupBox
