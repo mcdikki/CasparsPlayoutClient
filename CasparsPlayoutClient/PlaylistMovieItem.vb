@@ -85,6 +85,12 @@
         End If
     End Function
 
+    Public Overrides Sub setPosition(ByVal position As Long)
+        If Not isPlaying() AndAlso getMedia.containsInfo("frame-number") Then
+            getMedia.setInfo("frame-number", 0)
+        End If
+    End Sub
+
     '' Methoden die Überschrieben werden müssen weil sie leer sind
     ''-------------------------------------------------------------
     Public Overloads Sub addItem(ByVal item As IPlaylistItem)

@@ -242,7 +242,7 @@
         Return (100 / getDuration()) * getPosition()
     End Function
 
-    Public Function isPlaying() As Boolean Implements IPlaylistItem.isPlaying
+    Public Overridable Function isPlaying() As Boolean Implements IPlaylistItem.isPlaying
         Return playing
     End Function
 
@@ -294,7 +294,7 @@
         Me.Duration = duration
     End Sub
 
-    Public Sub setPosition(ByVal position As Long) Implements IPlaylistItem.setPosition
+    Public Overridable Sub setPosition(ByVal position As Long) Implements IPlaylistItem.setPosition
         Me.Position = position
     End Sub
 

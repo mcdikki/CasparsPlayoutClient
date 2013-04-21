@@ -29,7 +29,7 @@
         p1 = New PlaylistMovieItem("3. AMB 2-1", sc, mediaLib.getItem("amb").clone, 2, 1)
         ps.addItem(p1)
 
-        p1 = New PlaylistMovieItem("P. go1080p25 3-1", sc, mediaLib.getItem("go1080p25").clone, 1, 1)
+        p1 = New PlaylistMovieItem("P. go1080p25 3-1", sc, mediaLib.getItem("go1080p25").clone, 3, 1)
         'p1.setLooping(True)
         pp.addItem(p1)
 
@@ -46,9 +46,7 @@
         playlistView = New TestPlaylistView(sc.getPlaylistRoot)
         'playlistview.Height = Me.Height - 100
         playlistview.Dock = DockStyle.Fill
-        PlaylistView.Parent = Me
-        'playlistView.Width = Me.Width
-        playlistView.Show()
+        playlistView.Parent = layoutPlaylistSplit.Panel1
 
         AddHandler sc.getTicker.frameTick, AddressOf onTick
     End Sub
@@ -57,4 +55,9 @@
         playlistView.onDataChanged()
     End Sub
 
+    Protected Overrides Sub Finalize()
+        sc.stopTicker()
+        RemoveHandler sc.getTicker.frameTick, AddressOf onTick
+        MyBase.Finalize()
+    End Sub
 End Class

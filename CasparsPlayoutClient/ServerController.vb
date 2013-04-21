@@ -212,12 +212,21 @@ Public Class ServerController
         Return False
     End Function
 
+    ''' <summary>
+    ''' Returns the given number of milliseconds as a formated String "*hh:mm:ss.µµ" where h = hours, m = minutes, s = seconds and µ = milliseconds.
+    ''' </summary>
+    ''' <param name="milliseconds"></param>
+    ''' <returns></returns>
+    ''' <remarks></remarks>
     Public Shared Function getTimeStringOfMS(ByVal milliseconds As Long) As String
-        Dim time As String = Str(milliseconds / 3600000).Substring(0, 2) & ":" & _
-                            Str(milliseconds / 60000).Substring(0, 2) & ":" & _
-                            Str(milliseconds / 1000).Substring(0, 2) & "." & _
-                            Str(milliseconds Mod 1000).Substring(0, 2)
-        Return time
+        If milliseconds > 0 Then
+            Dim h As String = Convert.ToUInt16(Math.Truncate(milliseconds / 3600000)).ToString("D2")
+            Dim m As String = Convert.ToUInt16(Math.Truncate((milliseconds / 60000) Mod 60)).ToString("D2")
+            Dim s As String = Convert.ToUInt16(Math.Truncate((milliseconds / 1000) Mod 60)).ToString("D2")
+            Dim ms As String = Convert.ToUInt16(Math.Truncate(milliseconds Mod 1000)).ToString("D2").Substring(0, 2)
+            Return h & ":" & m & ":" & s & "." & ms
+        Else : Return "00:00:00.00"
+        End If
     End Function
 
 
@@ -584,9 +593,7 @@ Public Class mediaUpdater
         ' Damit nicht zu viele updates gleichzeitig laufen, 
         ' muss jedes update exlusiv updaten. Kann es das in einer milliseconde
         ' nicht erreichen, verwirft es das update für diesen Tick
-        'logger.warn("mediaUpdater.updateMedia: Got tick")
         If controller.readyForUpdate.WaitOne(1) Then
-            'logger.warn("mediaUpdater.updateMedia: Got tick and handle")
             '' Listen und variablen vorbereiten
             xml = ""
             mediaName = ""

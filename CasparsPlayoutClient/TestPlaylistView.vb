@@ -1,17 +1,20 @@
 ﻿Public Class TestPlaylistView
 
+    Private isInit As Boolean = False
     Private playlist As IPlaylistItem
     Private childs As List(Of TestPlaylistView)
-    Private fullHeight As Integer
+    Private startCompact As Boolean
     Private Delegate Sub updateDelegate()
 
     Private Event changedPlaying()
     Public Event dataChanged()
 
-    Public Sub New(ByRef playlist As IPlaylistItem)
+    Public Sub New(ByRef playlist As IPlaylistItem, Optional ByVal startCompact As Boolean = True)
         Me.playlist = playlist
+        Me.startCompact = startCompact
         childs = New List(Of TestPlaylistView)
         InitializeComponent()
+        isInit = True
         init()
     End Sub
 
@@ -31,51 +34,62 @@
         '' Werte eintragen
         With playlist
             Me.txtName.Text = .getName
-            Me.nudChannel.Value = .getChannel
-            Me.nudLayer.Value = .getLayer
-            Me.txtPosition.Text = .getPosition
-            Me.txtDuration.Text = .getDuration
+            Me.nudChannel.Value = Math.Max(.getChannel, 0)
+            Me.nudLayer.Value = Math.Max(.getLayer, -1)
+            Me.txtPosition.Text = ServerController.getTimeStringOfMS(.getPosition)
+            Me.txtDuration.Text = ServerController.getTimeStringOfMS(.getDuration)
+            Me.txtRemaining.Text = ServerController.getTimeStringOfMS(.getRemaining)
             Me.txtDelay.Text = .getDelay
             Me.ckbAuto.Checked = .isAutoStarting
             Me.ckbParallel.Checked = .isParallel
             Me.ckbLoop.Checked = .isLooping
             Me.pbPlayed.Value = .getPlayed
-            RaiseEvent changedPlaying()
         End With
+        RaiseEvent changedPlaying()
     End Sub
 
     Private Sub init()
         RaiseEvent dataChanged()
 
+        layoutHeaderContentSplit_DoubleClick(Nothing, Nothing)
+
         '' ChildLayout füllen
-        If playlist.getItemType > -1 Then
-            '' Kein BlockItem, also ChildLayout anders fülen
-        Else
-            '' BlockItem, schauen ob childs geladen werden können
-            For Each item In playlist.getChildItems(False)
-                Dim child As New TestPlaylistView(item)
-                child.Parent = Me.layoutChild
-                child.Show()
-                childs.Add(child)
-            Next
-            Me.Height = Me.layoutChild.ClientSize.Height + Me.layoutHeaderContentSplit.Panel1MinSize
-        End If
+        Select Case playlist.getItemType
+            Case PlaylistItem.PlaylistItemTypes.MOVIE, PlaylistItem.PlaylistItemTypes.AUDIO, PlaylistItem.PlaylistItemTypes.STILL
+
+            Case PlaylistItem.PlaylistItemTypes.TEMPLATE
+
+            Case PlaylistItem.PlaylistItemTypes.BLOCK
+                '' BlockItem, schauen ob childs geladen werden können
+                For Each item In playlist.getChildItems(False)
+                    Dim child As New TestPlaylistView(item, startCompact)
+                    child.Parent = Me.layoutChild
+                    child.Show()
+                    childs.Add(child)
+                Next
+        End Select
+        layoutHeaderContentSplit_DoubleClick(Nothing, Nothing)
+        If startCompact Then layoutHeaderContentSplit_DoubleClick(Nothing, Nothing)
     End Sub
 
     Friend Sub atResize(ByVal sender As Object, ByVal e As EventArgs) Handles Me.Resize
         For Each child In childs
+            ' Let child use the whole width
             child.Width = Me.layoutChild.ClientRectangle.Width
         Next
     End Sub
 
     Private Sub layoutHeaderContentSplit_DoubleClick(ByVal sender As Object, ByVal e As System.EventArgs) Handles lblExpand.Click, layoutHeaderContentSplit.DoubleClick
         If layoutHeaderContentSplit.Panel2Collapsed Then
-            lblExpand.Text = "+"
-            Me.Height = fullHeight
-        Else
-            fullHeight = Me.Height
-            Me.Height = layoutHeaderContentSplit.Panel1MinSize
             lblExpand.Text = "-"
+            If layoutChild.HasChildren Then
+                Me.Height = layoutHeaderContentSplit.Panel1.Height + layoutChild.Height + (2 * layoutHeaderContentSplit.Panel2.Padding.Vertical) + (2 * layoutHeaderContentSplit.Panel2.Margin.Vertical) + 10
+            Else
+                Me.Height = layoutHeaderContentSplit.Panel1.Height + layoutHeaderContentSplit.Panel2MinSize + (2 * layoutHeaderContentSplit.Panel2.Padding.Vertical) + (2 * layoutHeaderContentSplit.Panel2.Margin.Vertical) + 10
+            End If
+        Else
+            Me.Height = layoutHeaderContentSplit.Panel1MinSize
+            lblExpand.Text = "+"
         End If
         layoutHeaderContentSplit.Panel2Collapsed = Not layoutHeaderContentSplit.Panel2Collapsed
     End Sub
@@ -91,12 +105,16 @@
 
     Friend Sub onChangedPlayingState() Handles Me.changedPlaying
         If playlist.isPlaying Then
+            txtName.BackColor = Color.Orange
+            layoutContentSplit.Panel1.BackColor = Color.Orange
             cmbToggleButton.Text = "o"
             layoutInfos.Enabled = False
             layoutButton.Enabled = False
             layoutChannelLayer.Enabled = False
             layoutName.Enabled = False
         Else
+            txtName.BackColor = Color.LightGreen
+            layoutContentSplit.Panel1.BackColor = Color.LightGreen
             cmbToggleButton.Text = ">"
             layoutInfos.Enabled = True
             layoutButton.Enabled = True
@@ -109,26 +127,48 @@
     End Sub
 
     Private Sub ckbParallel_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ckbParallel.CheckedChanged
-        playlist.setParallel(ckbParallel.Checked)
+        If isInit Then
+            playlist.setParallel(ckbParallel.Checked)
+        End If
     End Sub
 
     Private Sub ckbAuto_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ckbAuto.CheckedChanged
-        playlist.setAutoStart(ckbAuto.Checked)
+        If isInit Then
+            playlist.setAutoStart(ckbAuto.Checked)
+        End If
     End Sub
 
     Private Sub ckbLoop_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ckbLoop.CheckedChanged
-        playlist.setLooping(ckbLoop.Checked)
+        If isInit Then
+            playlist.setLooping(ckbLoop.Checked)
+        End If
     End Sub
 
     Private Sub nudLayer_ValueChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles nudLayer.ValueChanged
-        playlist.setLayer(nudLayer.Value)
+        If isInit Then
+            If nudLayer.Value < 0 Then
+                nudLayer.BackColor = Color.Red
+                playlist.setLayer(-1)
+            Else
+                nudLayer.BackColor = Color.White
+                playlist.setLayer(nudLayer.Value)
+            End If
+        End If
     End Sub
 
     Private Sub nudChannel_ValueChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles nudChannel.ValueChanged
-        playlist.setChannel(nudChannel.Value)
+        If isInit Then
+            If nudChannel.Value < 1 Then
+                nudChannel.BackColor = Color.Red
+                playlist.setChannel(-1)
+            Else
+                nudChannel.BackColor = Color.White
+                playlist.setChannel(nudChannel.Value)
+            End If
+        End If
     End Sub
 
-    Private Sub txtDelay_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles txtDelay.TextChanged
+    Private Sub txtDelay_Leave(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles txtDelay.Leave
         playlist.setDelay(TimeSpan.Parse(txtDelay.Text).TotalMilliseconds)
     End Sub
 

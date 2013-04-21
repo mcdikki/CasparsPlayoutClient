@@ -10,7 +10,7 @@ Public Class PlaylistBlockItem
         MyBase.New(name, PlaylistItemTypes.BLOCK, controller, channel, layer, 0)
     End Sub
 
-    Public Overloads Function isPlaying()
+    Public Overrides Function isPlaying() As Boolean
         For Each child In getChildItems()
             If child.isPlaying Then Return True
         Next
@@ -18,23 +18,39 @@ Public Class PlaylistBlockItem
     End Function
 
     Public Overrides Sub start(Optional ByVal noWait As Boolean = False)
-        MyBase.start(noWait)
 
-        While isPlaying() AndAlso Not isParallel()
+        MyBase.start(noWait)
+        While isPlaying() 'AndAlso Not isParallel()
             Thread.Sleep(1)
         End While
     End Sub
 
     Public Overrides Function getPosition() As Long
-        Dim pos As Long
+        If isPlaying() Then
+            Dim pos As Long
+            For Each child In getChildItems()
+                If isParallel() Then
+                    pos = Math.Max(pos, child.getPosition)
+                Else
+                    pos = pos + child.getPosition
+                End If
+            Next
+            Return pos
+        Else
+            Return 0
+        End If
+    End Function
+
+    Public Overrides Function getDuration() As Long
+        Dim duration As Long
         For Each child In getChildItems()
             If isParallel() Then
-                pos = Math.Max(pos, child.getPosition)
+                duration = Math.Max(duration, child.getDuration)
             Else
-                pos = pos + child.getPosition
+                duration = duration + child.getDuration
             End If
         Next
-        Return pos
+        Return duration
     End Function
 
 End Class
