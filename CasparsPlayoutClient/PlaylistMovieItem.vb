@@ -18,8 +18,8 @@
             If movie.getInfos.Count = 0 Then
                 movie.parseXML(getController.getMediaInfo(movie))
             End If
-            If movie.containsInfo("nb-frames") AndAlso (duration > Long.Parse(movie.getInfo("nb-frames")) OrElse duration = -1) Then
-                setDuration(Long.Parse(movie.getInfo("nb-frames")))
+            If movie.containsInfo("nb-frames") AndAlso (duration > ServerController.getTimeInMS(Long.Parse(movie.getInfo("nb-frames")), getFPS) OrElse duration = -1) Then
+                setDuration(ServerController.getTimeInMS(Long.Parse(movie.getInfo("nb-frames")), getFPS))
             End If
             media = movie
         Else
@@ -78,8 +78,8 @@
     End Function
 
     Public Overrides Function getPosition() As Long
-        If getMedia.containsInfo("nb-frames") AndAlso getMedia.containsInfo("frame-number") Then
-            Return Long.Parse(getMedia.getInfo("frame-number"))
+        If getMedia.containsInfo("frame-number") Then
+            Return ServerController.getTimeInMS(Long.Parse(getMedia.getInfo("frame-number")), getFPS())
         Else
             Return 0
         End If

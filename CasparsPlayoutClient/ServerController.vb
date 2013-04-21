@@ -14,6 +14,7 @@ Public Class ServerController
     Private serverPort As Integer = 5250
     Private testChannel As Integer = 2
     Private channels As Integer
+    Private channelFPS() As Integer
     Private opened As Boolean
     Private WithEvents ticker As FrameTicker
     Private updater As mediaUpdater
@@ -61,6 +62,10 @@ Public Class ServerController
         If channels = testChannel - 1 Then
             channels = channels - 1
         End If
+        ReDim channelFPS(channels - 1)
+        For c As Integer = 0 To channels - 1
+            channelFPS(c) = getChannelFPS(c + 1)
+        Next
 
         ' Tick Thread starten
         ticker = New FrameTicker(tickConnection, Me, , 10)
@@ -162,11 +167,7 @@ Public Class ServerController
     ''' <returns></returns>
     ''' <remarks></remarks>
     Public Function containsChannel(ByVal channel As Integer) As Boolean
-        If Not IsNothing(testConnection) Then
-            Return testConnection.sendCommand(CasparCGCommandFactory.getInfo(channel)).isOK
-        Else
-            Return False
-        End If
+        Return channel <= channels AndAlso channel > 0
     End Function
 
     ''' <summary>
@@ -211,7 +212,7 @@ Public Class ServerController
         Return False
     End Function
 
-    Public Function getTimeStringOfMS(ByVal milliseconds As Long) As String
+    Public Shared Function getTimeStringOfMS(ByVal milliseconds As Long) As String
         Dim time As String = Str(milliseconds / 3600000).Substring(0, 2) & ":" & _
                             Str(milliseconds / 60000).Substring(0, 2) & ":" & _
                             Str(milliseconds / 1000).Substring(0, 2) & "." & _
@@ -227,8 +228,15 @@ Public Class ServerController
     ''' <param name="fps">the framerate multiplied by 100 to avoid floating numbers like 59.94.</param> 
     ''' <returns></returns>
     ''' <remarks></remarks>
-    Public Function getTimeInMS(ByVal frames As Long, ByVal fps As Integer) As Long
+    Public Shared Function getTimeInMS(ByVal frames As Long, ByVal fps As Integer) As Long
         Return (frames * 1000) / (fps / 100)
+    End Function
+
+    Public Function getFPS(ByVal channel As Integer) As Integer
+        If containsChannel(channel) Then
+            Return channelFPS(channel - 1)
+        End If
+        Return 0
     End Function
 
     ''' <summary>
@@ -237,30 +245,34 @@ Public Class ServerController
     ''' <param name="channel"></param>
     ''' <returns></returns>
     ''' <remarks></remarks>
-    Public Function getFPS(ByVal channel As Integer) As Integer
-        Dim result = testConnection.sendCommand(CasparCGCommandFactory.getInfo(channel))
-        Dim infoDoc As New MSXML2.DOMDocument
-        If infoDoc.loadXML(result.getXMLData()) Then
-            If infoDoc.hasChildNodes Then
-                If Not IsNothing(infoDoc.selectSingleNode("channel")) AndAlso Not IsNothing(infoDoc.selectSingleNode("channel").selectSingleNode("video-mode")) Then
-                    Select Case infoDoc.selectSingleNode("channel").selectSingleNode("video-mode").nodeTypedValue
-                        Case "PAL"
-                            Return 2500
-                        Case "NTSC"
-                            Return 2994
-                        Case Else
-                            If infoDoc.selectSingleNode("channel").selectSingleNode("video-mode").nodeTypedValue.Contains("i") Then
-                                Return Integer.Parse(infoDoc.selectSingleNode("channel").selectSingleNode("video-mode").nodeTypedValue.Substring(infoDoc.selectSingleNode("channel").selectSingleNode("video-mode").nodeTypedValue.IndexOf("i") + 1)) / 2
-                            ElseIf infoDoc.selectSingleNode("channel").selectSingleNode("video-mode").nodeTypedValue.Contains("p") Then
-                                Return Integer.Parse(infoDoc.selectSingleNode("channel").selectSingleNode("video-mode").nodeTypedValue.Substring(infoDoc.selectSingleNode("channel").selectSingleNode("video-mode").nodeTypedValue.IndexOf("p") + 1))
-                            End If
-                    End Select
+    Private Function getChannelFPS(ByVal channel As Integer) As Integer
+        If containsChannel(channel) Then
+            Dim result = testConnection.sendCommand(CasparCGCommandFactory.getInfo(channel))
+            Dim infoDoc As New MSXML2.DOMDocument
+            If infoDoc.loadXML(result.getXMLData()) Then
+                If infoDoc.hasChildNodes Then
+                    If Not IsNothing(infoDoc.selectSingleNode("channel")) AndAlso Not IsNothing(infoDoc.selectSingleNode("channel").selectSingleNode("video-mode")) Then
+                        Select Case infoDoc.selectSingleNode("channel").selectSingleNode("video-mode").nodeTypedValue
+                            Case "PAL"
+                                Return 2500
+                            Case "NTSC"
+                                Return 2994
+                            Case Else
+                                If infoDoc.selectSingleNode("channel").selectSingleNode("video-mode").nodeTypedValue.Contains("i") Then
+                                    Return Integer.Parse(infoDoc.selectSingleNode("channel").selectSingleNode("video-mode").nodeTypedValue.Substring(infoDoc.selectSingleNode("channel").selectSingleNode("video-mode").nodeTypedValue.IndexOf("i") + 1)) / 2
+                                ElseIf infoDoc.selectSingleNode("channel").selectSingleNode("video-mode").nodeTypedValue.Contains("p") Then
+                                    Return Integer.Parse(infoDoc.selectSingleNode("channel").selectSingleNode("video-mode").nodeTypedValue.Substring(infoDoc.selectSingleNode("channel").selectSingleNode("video-mode").nodeTypedValue.IndexOf("p") + 1))
+                                End If
+                        End Select
+                    End If
                 End If
+            Else
+                logger.err("ServerController.getChannelFPS: Could not get channel fps. Error in server response: " & infoDoc.parseError.reason & " @" & vbNewLine & result.getServerMessage)
             End If
         Else
-            logger.err("ServerController.getFPS: Could not get channel fps. Error in server response: " & infoDoc.parseError.reason & " @" & vbNewLine & result.getServerMessage)
+            logger.err("ServerController.getChannelFPS: Could not get channel fps for channel " & channel & ". Channel does not exist.")
         End If
-        Return 0
+        Return -1
     End Function
 
     Public Function getMediaInfo(ByRef media As CasparCGMedia) As String

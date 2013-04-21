@@ -5,7 +5,7 @@
 
     Private Sub MainWindow_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
         sc = New ServerController()
-        sc.open("localhost", 5250)
+        sc.open("casparcg", 5250)
         AddPlaylist()
         sc.startTicker()
     End Sub
@@ -22,18 +22,18 @@
         pp.setParallel(True)
         'p2.setAutoStart(True)
 
-        p1 = New PlaylistMovieItem("1. AMB 2-1", sc, mediaLib.getItem("amb"), 2, 1)
+        p1 = New PlaylistMovieItem("1. AMB 2-1", sc, mediaLib.getItem("amb").clone, 2, 1)
         ps.addItem(p1)
-        p1 = New PlaylistMovieItem("2. cg1080i50 2-1", sc, mediaLib.getItem("cg1080i50"), 2, 1)
+        p1 = New PlaylistMovieItem("2. cg1080i50 2-1", sc, mediaLib.getItem("cg1080i50").clone, 2, 1)
         ps.addItem(p1)
-        p1 = New PlaylistMovieItem("3. AMB 2-1", sc, mediaLib.getItem("amb"), 2, 1)
+        p1 = New PlaylistMovieItem("3. AMB 2-1", sc, mediaLib.getItem("amb").clone, 2, 1)
         ps.addItem(p1)
 
-        p1 = New PlaylistMovieItem("P. go1080p25 3-1", sc, mediaLib.getItem("go1080p25"), 1, 1)
+        p1 = New PlaylistMovieItem("P. go1080p25 3-1", sc, mediaLib.getItem("go1080p25").clone, 1, 1)
         'p1.setLooping(True)
         pp.addItem(p1)
 
-        p1 = New PlaylistMovieItem("P. cg1080i50 1-2", sc, mediaLib.getItem("cg1080i50"), 1, 2)
+        p1 = New PlaylistMovieItem("P. cg1080i50 1-2", sc, mediaLib.getItem("cg1080i50").clone, 1, 2)
         'p1.setLooping(True)
         pp.addItem(p1)
 

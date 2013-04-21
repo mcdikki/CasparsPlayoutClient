@@ -1,20 +1,21 @@
 ﻿Public MustInherit Class PlaylistItem
     Implements IPlaylistItem
 
-    Private _name As String
+    Private name As String
     Private layer As Integer
     Private channel As Integer
     Private delay As Long
     Private looping As Boolean
     Private autoStart As Boolean
     Private parallel As Boolean
+    Private fps As Integer
 
     ' Die (Kinder)Items dieses Items
     Private items As List(Of IPlaylistItem)
     Private WithEvents controller As ServerController
-    Private _Duration As Long ' Gesamtlaufzeit in Frames
-    Private _Position As Long ' aktuelle Frame
-    Private _Remaining As Long ' noch zu spielende Frames
+    Private Duration As Long ' Gesamtlaufzeit in Frames
+    Private Position As Long ' aktuelle Frame
+    Private Remaining As Long ' noch zu spielende Frames
     Private ItemType As PlaylistItem.PlaylistItemTypes ' Typ des Item
     Friend playing As Boolean
     Private paused As Boolean
@@ -39,7 +40,7 @@
     ''' <param name="duration"></param>
     ''' <remarks></remarks>
     Protected Sub New(ByVal name As String, ByVal itemType As PlaylistItemTypes, ByRef controller As ServerController, Optional ByVal channel As Integer = -1, Optional ByVal layer As Integer = -1, Optional ByVal duration As Long = -1)
-        Me._name = name
+        Me.name = name
         Me.ItemType = itemType
         Me.controller = controller
         setChannel(channel)
@@ -89,7 +90,7 @@
         '' wecker der nach dieser Zeit die Pause aufhebt.
         If frames >= 0 Then
             pauseThread = New Threading.Thread(AddressOf Me.unPause)
-            pauseThread.Start(controller.getTimeInMS(frames, channel))
+            pauseThread.Start(ServerController.getTimeInMS(frames, getFPS))
         End If
         paused = True
     End Sub
@@ -143,14 +144,14 @@
 
     Public Function toXML() As String Implements IPlaylistItem.toXML
         Dim xml As String = "<item><name>" & _
-            _name & "</name><type>" & _
+            name & "</name><type>" & _
             getItemType.ToString & "</type><layer>" & _
             layer.ToString & "</layer><channel>" & _
             channel.ToString & "</channel><autostarting>" & _
             isAutoStarting.ToString & "</autostarting><isParallel>" & _
             isParallel.ToString & "</isParallel><isLooping>" & _
             isLooping.ToString & "</isLooping><duration>" & _
-            _Duration.ToString & "</duration><delay>" & _
+            Duration.ToString & "</duration><delay>" & _
             delay.ToString & "</delay> "
         For Each item As IPlaylistItem In items
             xml = xml & item.toXML
@@ -179,7 +180,7 @@
     End Function
 
     Public Function getName() As String Implements IPlaylistItem.getName
-        Return _name
+        Return name
     End Function
 
     Public Function isAutoStarting() As Boolean Implements IPlaylistItem.isAutoStarting
@@ -195,7 +196,7 @@
     End Function
 
     Public Overridable Function getDuration() As Long Implements IPlaylistItem.getDuration
-        Return _Duration
+        Return Duration
     End Function
 
     Public Function getItemType() As PlaylistItemTypes Implements IPlaylistItem.getItemType
@@ -203,7 +204,7 @@
     End Function
 
     Public Overridable Function getPosition() As Long Implements IPlaylistItem.getPosition
-        Return _Position
+        Return Position
     End Function
 
     Public Overridable Function getRemaining() As Long Implements IPlaylistItem.getRemaining
@@ -266,12 +267,20 @@
         Return Nothing
     End Function
 
+    Friend Function getFPS() As Integer Implements IPlaylistItem.getFPS
+        If fps <= 0 Then
+            Return getController.getFPS(getChannel)
+        Else
+            Return fps
+        End If
+    End Function
+
 
     '' SETTER:
     ''---------
 
     Public Sub setName(ByVal Name As String) Implements IPlaylistItem.setName
-        Me._name = Name
+        Me.name = Name
     End Sub
 
     Public Sub setChildItems(ByRef items As System.Collections.Generic.List(Of IPlaylistItem)) Implements IPlaylistItem.setChildItems
@@ -282,15 +291,15 @@
     End Sub
 
     Public Sub setDuration(ByVal duration As Long) Implements IPlaylistItem.setDuration
-        Me._Duration = duration
+        Me.Duration = duration
     End Sub
 
     Public Sub setPosition(ByVal position As Long) Implements IPlaylistItem.setPosition
-        Me._Position = position
+        Me.Position = position
     End Sub
 
     Public Sub setRemaining(ByVal remaining As Long) Implements IPlaylistItem.setRemaining
-        Me._Remaining = remaining
+        Me.Remaining = remaining
     End Sub
 
     Public Sub addItem(ByRef item As IPlaylistItem) Implements IPlaylistItem.addItem
@@ -320,6 +329,9 @@
         If channel <> -1 Then
             If Not controller.containsChannel(channel) Then
                 logger.warn("PlaylistItem.setChannel: Playlist " & getName() & ": The channel " & channel & " is not configured at the given server. This could lead to errors during playlist playback.")
+                fps = -1
+            Else
+                fps = getController.getFPS(channel)
             End If
         End If
         Me.channel = channel
