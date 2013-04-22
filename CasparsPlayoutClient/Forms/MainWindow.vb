@@ -1,18 +1,29 @@
 ﻿Public Class MainWindow
 
     Private sc As ServerController
+    Private mediaLib As Library
     Dim WithEvents playlistView As PlaylistView
+    Dim WithEvents libraryView As LibraryView
 
     Private Sub MainWindow_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
         sc = New ServerController()
         sc.open("casparcg", 5250)
+        mediaLib = New Library(sc)
         AddPlaylist()
+        AddLibrary()
         sc.startTicker()
+    End Sub
+
+    Private Sub AddLibrary()
+        libraryView = New LibraryView(mediaLib)
+        libraryView.Dock = DockStyle.Fill
+        layoutCgLib.Panel2.Controls.Add(libraryView)
+        layoutCgLib.Panel2MinSize = libraryView.MinimumSize.Width
+        libraryView.Show()
     End Sub
 
     Private Sub AddPlaylist()
 
-        Dim mediaLib As New Library(sc)
         mediaLib.refreshLibrary()
 
         Dim p1 As IPlaylistItem

@@ -92,6 +92,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CasparCG.vb" />
+    <Compile Include="Controls\LibraryView.Designer.vb">
+      <DependentUpon>LibraryView.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\LibraryView.vb">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\LibraryViewItem.Designer.vb">
+      <DependentUpon>LibraryViewItem.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\LibraryViewItem.vb">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Forms\Form1.vb">
       <SubType>Form</SubType>
     </Compile>
@@ -147,6 +159,12 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Controls\LibraryView.resx">
+      <DependentUpon>LibraryView.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\LibraryViewItem.resx">
+      <DependentUpon>LibraryViewItem.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\Form1.resx">
       <DependentUpon>Form1.vb</DependentUpon>
     </EmbeddedResource>
