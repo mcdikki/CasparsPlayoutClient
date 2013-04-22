@@ -5,6 +5,8 @@ Partial Class MainWindow
     'Das Formular überschreibt den Löschvorgang, um die Komponentenliste zu bereinigen.
     <System.Diagnostics.DebuggerNonUserCode()> _
     Protected Overrides Sub Dispose(ByVal disposing As Boolean)
+        RemoveHandler sc.getTicker.frameTick, AddressOf onTick
+        sc.close()
         Try
             If disposing AndAlso components IsNot Nothing Then
                 components.Dispose()

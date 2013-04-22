@@ -32,8 +32,14 @@ Public Class ServerController
     Public Sub close()
         logger.debug("ServerController.close: Close servercontroller...")
         opened = False
-        If Not IsNothing(updateThread) Then updateThread.Abort()
-        If Not IsNothing(tickThread) Then tickThread.Abort()
+        If Not IsNothing(tickThread) Then
+            tickThread.Interrupt()
+            tickThread.Abort()
+        End If
+        If Not IsNothing(updateThread) Then
+            updateThread.Interrupt()
+            updateThread.Abort()
+        End If
         updateConnection.close()
         tickConnection.close()
         testConnection.close()
@@ -593,7 +599,7 @@ Public Class mediaUpdater
         ' Damit nicht zu viele updates gleichzeitig laufen, 
         ' muss jedes update exlusiv updaten. Kann es das in einer milliseconde
         ' nicht erreichen, verwirft es das update für diesen Tick
-        If controller.readyForUpdate.WaitOne(1) Then
+        If controller.readyForUpdate.WaitOne(1) AndAlso controller.isOpen Then
             '' Listen und variablen vorbereiten
             xml = ""
             mediaName = ""

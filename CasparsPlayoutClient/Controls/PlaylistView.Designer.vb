@@ -1,5 +1,5 @@
 ﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
-Partial Class TestPlaylistView
+Partial Class PlaylistView
     Inherits System.Windows.Forms.UserControl
 
     'UserControl überschreibt den Löschvorgang, um die Komponentenliste zu bereinigen.
@@ -464,7 +464,7 @@ Partial Class TestPlaylistView
         Me.layoutHeaderContentSplit.SplitterDistance = 65
         Me.layoutHeaderContentSplit.TabIndex = 0
         '
-        'TestPlaylistView
+        'PlaylistView
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(96.0!, 96.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi
@@ -472,7 +472,7 @@ Partial Class TestPlaylistView
         Me.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
         Me.Controls.Add(Me.layoutHeaderContentSplit)
         Me.MinimumSize = New System.Drawing.Size(260, 65)
-        Me.Name = "TestPlaylistView"
+        Me.Name = "PlaylistView"
         Me.Size = New System.Drawing.Size(260, 150)
         Me.layoutContentSplit.Panel1.ResumeLayout(False)
         Me.layoutContentSplit.Panel1.PerformLayout()

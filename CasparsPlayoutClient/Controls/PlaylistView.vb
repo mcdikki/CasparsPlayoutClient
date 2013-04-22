@@ -1,8 +1,8 @@
-﻿Public Class TestPlaylistView
+﻿Public Class PlaylistView
 
     Private isInit As Boolean = False
     Private playlist As IPlaylistItem
-    Private childs As List(Of TestPlaylistView)
+    Private childs As List(Of PlaylistView)
     Private startCompact As Boolean
     Private Delegate Sub updateDelegate()
 
@@ -12,7 +12,7 @@
     Public Sub New(ByRef playlist As IPlaylistItem, Optional ByVal startCompact As Boolean = True)
         Me.playlist = playlist
         Me.startCompact = startCompact
-        childs = New List(Of TestPlaylistView)
+        childs = New List(Of PlaylistView)
         InitializeComponent()
         isInit = True
         init()
@@ -62,7 +62,7 @@
             Case PlaylistItem.PlaylistItemTypes.BLOCK
                 '' BlockItem, schauen ob childs geladen werden können
                 For Each item In playlist.getChildItems(False)
-                    Dim child As New TestPlaylistView(item, startCompact)
+                    Dim child As New PlaylistView(item, startCompact)
                     child.Parent = Me.layoutChild
                     child.Show()
                     childs.Add(child)

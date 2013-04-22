@@ -1,7 +1,7 @@
 ﻿Public Class MainWindow
 
     Private sc As ServerController
-    Dim WithEvents playlistView As TestPlaylistView
+    Dim WithEvents playlistView As PlaylistView
 
     Private Sub MainWindow_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
         sc = New ServerController()
@@ -42,9 +42,7 @@
         sc.getPlaylistRoot.addItem(pp)
 
 
-        'Dim playlistView As New PlaylistView(sc.getPlaylistRoot)
-        playlistView = New TestPlaylistView(sc.getPlaylistRoot)
-        'playlistview.Height = Me.Height - 100
+        playlistView = New PlaylistView(sc.getPlaylistRoot)
         playlistview.Dock = DockStyle.Fill
         playlistView.Parent = layoutPlaylistSplit.Panel1
 
@@ -53,11 +51,5 @@
 
     Private Sub onTick(ByVal sender As Object, ByVal e As frameTickEventArgs)
         playlistView.onDataChanged()
-    End Sub
-
-    Protected Overrides Sub Finalize()
-        sc.stopTicker()
-        RemoveHandler sc.getTicker.frameTick, AddressOf onTick
-        MyBase.Finalize()
     End Sub
 End Class
