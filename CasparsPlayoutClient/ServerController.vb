@@ -129,12 +129,13 @@ Public Class ServerController
                     '' load it now
                     media.parseXML(getMediaInfo(media))
                 End If
-                If media.containsInfo("nb-frames") AndAlso media.containsInfo("fps") AndAlso media.containsInfo("progressive") Then
-                    Dim fps As Integer = Integer.Parse(media.getInfo("fps"))
-                    If Not Boolean.Parse(media.getInfo("progressive")) Then
+                If media.containsInfo("file-nb-frames") AndAlso media.containsInfo("fps") AndAlso media.containsInfo("progressive") Then
+                    Dim fps As Integer = Single.Parse(media.getInfo("fps")) * 100
+                    Dim progressive = Boolean.Parse(media.getInfo("progressive"))
+                    If Not progressive Then
                         fps = fps / 2
                     End If
-                    Return getTimeInMS(media.getInfo("nb-frames"), fps)
+                    Return getTimeInMS(media.getInfo("file-nb-frames"), fps)
                 End If
                 logger.err("ServerController.getOriginalMediaDuration: Could not get media duration of " & media.getFullName & "(" & media.getMediaType.ToString & ").")
                 Return 0
@@ -244,6 +245,7 @@ Public Class ServerController
     ''' <returns></returns>
     ''' <remarks></remarks>
     Public Shared Function getTimeInMS(ByVal frames As Long, ByVal fps As Integer) As Long
+        If fps = 0 Then fps = -100
         Return (frames * 1000) / (fps / 100)
     End Function
 
@@ -329,7 +331,7 @@ Public Class ServerController
     ''' </summary>
     ''' <returns></returns>
     ''' <remarks></remarks>
-    Public Function getMediaList(Optional ByVal withMediaInfo As Boolean = True) As Dictionary(Of String, CasparCGMedia)
+    Public Function getMediaList() As Dictionary(Of String, CasparCGMedia)
         Dim media As New Dictionary(Of String, CasparCGMedia)
         '' Catch the media list and create the media objects
         Dim response = testConnection.sendCommand(CasparCGCommandFactory.getCls)
@@ -344,11 +346,14 @@ Public Class ServerController
                     Select Case values(0)
                         Case "MOVIE"
                             media.Add(name, New CasparCGMovie(name))
+                            media.Item(name).setInfo("Duration", getTimeStringOfMS(getOriginalMediaDuration(media.Item(name))))
                         Case "AUDIO"
                             media.Add(name, New CasparCGAudio(name))
+                            'media.Item(name).setInfo("Duration", getTimeStringOfMS(getOriginalMediaDuration(media.Item(name))))
                         Case "STILL"
                             media.Add(name, New CasparCGStill(name))
                     End Select
+                    media.Item(name).parseXML(getMediaInfo(media.Item(name)))
                 End If
             Next
         End If
@@ -362,13 +367,6 @@ Public Class ServerController
                     Dim name = line.Substring(1, line.LastIndexOf("""") - 1).ToUpper
                     media.Add(name, New CasparCGTemplate(name))
                 End If
-            Next
-        End If
-
-        '' Add mediaInfo if requested
-        If withMediaInfo Then
-            For Each item In media.Values
-                item.parseXML(getMediaInfo(item))
             Next
         End If
 

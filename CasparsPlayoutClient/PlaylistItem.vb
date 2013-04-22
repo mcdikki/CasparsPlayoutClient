@@ -239,7 +239,11 @@
     End Function
 
     Public Overridable Function getPlayed() As Byte Implements IPlaylistItem.getPlayed
-        Return (100 / getDuration()) * getPosition()
+        If getDuration() > 0 Then
+            Return (100 / getDuration()) * getPosition()
+        Else
+            Return 0
+        End If
     End Function
 
     Public Overridable Function isPlaying() As Boolean Implements IPlaylistItem.isPlaying

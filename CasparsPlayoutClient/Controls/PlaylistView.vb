@@ -31,6 +31,7 @@
     End Sub
 
     Private Sub setData()
+        On Error GoTo err
         '' Werte eintragen
         With playlist
             Me.txtName.Text = .getName
@@ -46,6 +47,9 @@
             Me.pbPlayed.Value = .getPlayed
         End With
         RaiseEvent changedPlaying()
+        Exit Sub
+err:
+        MsgBox("Fehler")
     End Sub
 
     Private Sub init()
