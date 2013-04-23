@@ -168,7 +168,7 @@
 
     Private Sub nudChannel_ValueChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles nudChannel.ValueChanged
         If isInit Then
-            If nudChannel.Value < 1 Then
+            If nudChannel.Value < 1 OrElse Not playlist.getController.containsChannel(nudChannel.Value) Then
                 nudChannel.BackColor = Color.Red
                 playlist.setChannel(-1)
             Else

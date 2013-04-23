@@ -43,9 +43,9 @@
         p1 = New PlaylistMovieItem("3. AMB 2-1", sc, mediaLib.getItem("amb").clone, 2, 1)
         ps.addItem(p1)
 
-        'p1 = New PlaylistMovieItem("P. go1080p25 3-1", sc, mediaLib.getItem("go1080p25").clone, 3, 1)
-        ''p1.setLooping(True)
-        'pp.addItem(p1)
+        p1 = New PlaylistMovieItem("P. go1080p25 3-1", sc, mediaLib.getItem("go1080p25").clone, 3, 1)
+        'p1.setLooping(True)
+        pp.addItem(p1)
 
         p1 = New PlaylistMovieItem("P. cg1080i50 1-2", sc, mediaLib.getItem("cg1080i50").clone, 1, 2)
         'p1.setLooping(True)

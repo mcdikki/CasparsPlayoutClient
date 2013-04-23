@@ -91,6 +91,14 @@
         End If
     End Sub
 
+    Public Overrides Sub setChannel(ByVal channel As Integer)
+        MyBase.setChannel(channel)
+        If getController.containsChannel(channel) AndAlso Not IsNothing(getMedia) AndAlso getMedia.containsInfo("nb-frames") Then
+            setDuration(ServerController.getTimeInMS(getMedia.getInfo("nb-frames"), getFPS))
+        End If
+    End Sub
+
+
     '' Methoden die Überschrieben werden müssen weil sie leer sind
     ''-------------------------------------------------------------
     Public Overloads Sub addItem(ByVal item As IPlaylistItem)

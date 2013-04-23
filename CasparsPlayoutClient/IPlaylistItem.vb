@@ -21,6 +21,7 @@
     Function getPlayingChildItems(Optional ByVal recursiv As Boolean = False, Optional ByVal onlyPlayable As Boolean = False) As IEnumerable(Of IPlaylistItem) ' alle activen, spielenden Items in diesem Item
     Function getMedia() As CasparCGMedia
     Function getFPS() As Integer
+    Function getController() As ServerController
     'Function getLayerUser(Optional ByVal recursiv As Boolean = False) As Dictionary(Of Integer, Integer)
     Function toXML() As String
     Function toString() As String

@@ -263,7 +263,7 @@
         End Select
     End Function
 
-    Public Function getController() As ServerController
+    Public Function getController() As ServerController Implements IPlaylistItem.getController
         Return controller
     End Function
 
@@ -329,7 +329,7 @@
         Me.autoStart = autoStart
     End Sub
 
-    Public Sub setChannel(ByVal channel As Integer) Implements IPlaylistItem.setChannel
+    Public Overridable Sub setChannel(ByVal channel As Integer) Implements IPlaylistItem.setChannel
         If channel <> -1 Then
             If Not controller.containsChannel(channel) Then
                 logger.warn("PlaylistItem.setChannel: Playlist " & getName() & ": The channel " & channel & " is not configured at the given server. This could lead to errors during playlist playback.")
