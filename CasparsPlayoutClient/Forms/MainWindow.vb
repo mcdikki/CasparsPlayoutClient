@@ -19,40 +19,41 @@
     Private Sub AddLibrary()
         libraryView = New LibraryView(mediaLib)
         libraryView.Dock = DockStyle.Fill
-        layoutCgLib.Panel2.Controls.Add(libraryView)
         layoutCgLib.Panel2MinSize = libraryView.MinimumSize.Width
-        libraryView.Show()
+        layoutCgLib.SplitterDistance = layoutCgLib.Width - libraryView.MinimumSize.Width - layoutCgLib.SplitterWidth
+        layoutCgLib.Panel2.Controls.Add(libraryView)
+        'libraryView.Show()
     End Sub
 
     Private Sub AddPlaylist()
 
-        'mediaLib.refreshLibrary()
+        mediaLib.refreshLibrary()
 
-        'Dim p1 As IPlaylistItem
-        'Dim pp As New PlaylistBlockItem("Paralelle Playlist", sc)
-        'Dim ps As New PlaylistBlockItem("Seq. Playlist", sc)
+        Dim p1 As IPlaylistItem
+        Dim pp As New PlaylistBlockItem("Paralelle Playlist", sc)
+        Dim ps As New PlaylistBlockItem("Seq. Playlist", sc)
 
-        'pp.setParallel(True)
-        ''p2.setAutoStart(True)
+        pp.setParallel(True)
+        'p2.setAutoStart(True)
 
-        'p1 = New PlaylistMovieItem("1. AMB 2-1", sc, mediaLib.getItem("amb").clone, 2, 1)
-        'ps.addItem(p1)
-        'p1 = New PlaylistMovieItem("2. cg1080i50 2-1", sc, mediaLib.getItem("cg1080i50").clone, 2, 1)
-        'ps.addItem(p1)
-        'p1 = New PlaylistMovieItem("3. AMB 2-1", sc, mediaLib.getItem("amb").clone, 2, 1)
-        'ps.addItem(p1)
+        p1 = New PlaylistMovieItem("1. AMB 2-1", sc, mediaLib.getItem("amb").clone, 2, 1)
+        ps.addItem(p1)
+        p1 = New PlaylistMovieItem("2. cg1080i50 2-1", sc, mediaLib.getItem("cg1080i50").clone, 2, 1)
+        ps.addItem(p1)
+        p1 = New PlaylistMovieItem("3. AMB 2-1", sc, mediaLib.getItem("amb").clone, 2, 1)
+        ps.addItem(p1)
 
         'p1 = New PlaylistMovieItem("P. go1080p25 3-1", sc, mediaLib.getItem("go1080p25").clone, 3, 1)
         ''p1.setLooping(True)
         'pp.addItem(p1)
 
-        'p1 = New PlaylistMovieItem("P. cg1080i50 1-2", sc, mediaLib.getItem("cg1080i50").clone, 1, 2)
-        ''p1.setLooping(True)
-        'pp.addItem(p1)
+        p1 = New PlaylistMovieItem("P. cg1080i50 1-2", sc, mediaLib.getItem("cg1080i50").clone, 1, 2)
+        'p1.setLooping(True)
+        pp.addItem(p1)
 
 
-        'sc.getPlaylistRoot.addItem(ps)
-        'sc.getPlaylistRoot.addItem(pp)
+        sc.getPlaylistRoot.addItem(ps)
+        sc.getPlaylistRoot.addItem(pp)
 
 
         playlistView = New PlaylistView(sc.getPlaylistRoot)

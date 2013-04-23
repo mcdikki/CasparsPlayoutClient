@@ -34,7 +34,6 @@ Partial Class PlaylistView
         Me.pbPlayed = New System.Windows.Forms.ProgressBar()
         Me.layoutInfos = New System.Windows.Forms.FlowLayoutPanel()
         Me.grbChannelLayer = New System.Windows.Forms.GroupBox()
-        Me.layoutChannelLayer = New System.Windows.Forms.FlowLayoutPanel()
         Me.grbDelay = New System.Windows.Forms.GroupBox()
         Me.txtDelay = New System.Windows.Forms.TextBox()
         Me.grbDuration = New System.Windows.Forms.GroupBox()
@@ -55,7 +54,6 @@ Partial Class PlaylistView
         Me.layoutButton.SuspendLayout()
         Me.layoutHeaderTable.SuspendLayout()
         Me.layoutInfos.SuspendLayout()
-        Me.grbChannelLayer.SuspendLayout()
         Me.grbDelay.SuspendLayout()
         Me.grbDuration.SuspendLayout()
         Me.grpPosition.SuspendLayout()
@@ -212,16 +210,16 @@ Partial Class PlaylistView
         '
         'cmbToggleButton
         '
-        Me.cmbToggleButton.AutoSize = True
         Me.cmbToggleButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
-        Me.cmbToggleButton.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.cmbToggleButton.FlatAppearance.BorderSize = 0
+        Me.cmbToggleButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.cmbToggleButton.Location = New System.Drawing.Point(0, 0)
         Me.cmbToggleButton.Margin = New System.Windows.Forms.Padding(0)
         Me.cmbToggleButton.Name = "cmbToggleButton"
+        Me.cmbToggleButton.Padding = New System.Windows.Forms.Padding(1)
         Me.layoutHeaderTable.SetRowSpan(Me.cmbToggleButton, 2)
-        Me.cmbToggleButton.Size = New System.Drawing.Size(24, 35)
+        Me.cmbToggleButton.Size = New System.Drawing.Size(24, 25)
         Me.cmbToggleButton.TabIndex = 16
-        Me.cmbToggleButton.Text = ">"
         Me.cmbToggleButton.UseVisualStyleBackColor = True
         '
         'pbPlayed
@@ -259,7 +257,6 @@ Partial Class PlaylistView
                     Or System.Windows.Forms.AnchorStyles.Left) _
                     Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.grbChannelLayer.AutoSize = True
-        Me.grbChannelLayer.Controls.Add(Me.layoutChannelLayer)
         Me.grbChannelLayer.Font = New System.Drawing.Font("Microsoft Sans Serif", 6.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.grbChannelLayer.Location = New System.Drawing.Point(0, 0)
         Me.grbChannelLayer.Margin = New System.Windows.Forms.Padding(0)
@@ -269,17 +266,6 @@ Partial Class PlaylistView
         Me.grbChannelLayer.TabIndex = 7
         Me.grbChannelLayer.TabStop = False
         Me.grbChannelLayer.Text = "Channel-Layer"
-        '
-        'layoutChannelLayer
-        '
-        Me.layoutChannelLayer.AutoSize = True
-        Me.layoutChannelLayer.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
-        Me.layoutChannelLayer.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.layoutChannelLayer.Location = New System.Drawing.Point(0, 10)
-        Me.layoutChannelLayer.Margin = New System.Windows.Forms.Padding(0)
-        Me.layoutChannelLayer.Name = "layoutChannelLayer"
-        Me.layoutChannelLayer.Size = New System.Drawing.Size(0, 25)
-        Me.layoutChannelLayer.TabIndex = 0
         '
         'grbDelay
         '
@@ -486,8 +472,6 @@ Partial Class PlaylistView
         Me.layoutHeaderTable.PerformLayout()
         Me.layoutInfos.ResumeLayout(False)
         Me.layoutInfos.PerformLayout()
-        Me.grbChannelLayer.ResumeLayout(False)
-        Me.grbChannelLayer.PerformLayout()
         Me.grbDelay.ResumeLayout(False)
         Me.grbDelay.PerformLayout()
         Me.grbDuration.ResumeLayout(False)
@@ -519,7 +503,6 @@ Partial Class PlaylistView
     Friend WithEvents pbPlayed As System.Windows.Forms.ProgressBar
     Friend WithEvents layoutInfos As System.Windows.Forms.FlowLayoutPanel
     Friend WithEvents grbChannelLayer As System.Windows.Forms.GroupBox
-    Friend WithEvents layoutChannelLayer As System.Windows.Forms.FlowLayoutPanel
     Friend WithEvents grbDelay As System.Windows.Forms.GroupBox
     Friend WithEvents txtDelay As System.Windows.Forms.TextBox
     Friend WithEvents grbDuration As System.Windows.Forms.GroupBox

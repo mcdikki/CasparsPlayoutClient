@@ -9,12 +9,18 @@
     Private Event changedPlaying()
     Public Event dataChanged()
 
-    Public Sub New(ByRef playlist As IPlaylistItem, Optional ByVal startCompact As Boolean = True)
+    Public Sub New(ByRef playlist As IPlaylistItem, Optional ByVal startCompact As Boolean = False)
         Me.playlist = playlist
         Me.startCompact = startCompact
         childs = New List(Of PlaylistView)
         InitializeComponent()
         isInit = True
+        Dim imgList As New ImageList
+        imgList.ImageSize = New Size(24, 24)
+        imgList.ColorDepth = 16
+        imgList.Images.Add(Image.FromFile("../../../img/Play-Green-Button-icon.png"))
+        imgList.Images.Add(Image.FromFile("../../../img/Stop-Red-Button-icon.png"))
+        cmbToggleButton.ImageList = imgList
         init()
     End Sub
 
@@ -31,7 +37,6 @@
     End Sub
 
     Private Sub setData()
-        On Error GoTo err
         '' Werte eintragen
         With playlist
             Me.txtName.Text = .getName
@@ -47,9 +52,6 @@
             Me.pbPlayed.Value = .getPlayed
         End With
         RaiseEvent changedPlaying()
-        Exit Sub
-err:
-        MsgBox("Fehler")
     End Sub
 
     Private Sub init()
@@ -111,19 +113,23 @@ err:
         If playlist.isPlaying Then
             txtName.BackColor = Color.Orange
             layoutContentSplit.Panel1.BackColor = Color.Orange
-            cmbToggleButton.Text = "o"
-            layoutInfos.Enabled = False
+            'cmbToggleButton.Text = "o"
+            cmbToggleButton.ImageIndex = 1
+            'layoutInfos.Enabled = False
             layoutButton.Enabled = False
-            layoutChannelLayer.Enabled = False
-            layoutName.Enabled = False
+            nudChannel.Enabled = False
+            nudLayer.Enabled = False
+            txtName.ReadOnly = True
         Else
             txtName.BackColor = Color.LightGreen
             layoutContentSplit.Panel1.BackColor = Color.LightGreen
-            cmbToggleButton.Text = ">"
-            layoutInfos.Enabled = True
+            'cmbToggleButton.Text = ">"
+            cmbToggleButton.ImageIndex = 0
+            'layoutInfos.Enabled = True
             layoutButton.Enabled = True
-            layoutChannelLayer.Enabled = True
-            layoutName.Enabled = True
+            nudChannel.Enabled = True
+            nudLayer.Enabled = True
+            txtName.ReadOnly = False
         End If
         For Each child In childs
             child.onChangedPlayingState()

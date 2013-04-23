@@ -25,4 +25,11 @@
         End If
     End Sub
 
+    Private Sub lblExpand_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles lblExpand.Click
+        Dim metadata As String = "Metadata"
+        For Each info In MediaItem.getInfos.Keys
+            metadata = metadata & vbNewLine & info & ": " & MediaItem.getInfo(info)
+        Next
+        MsgBox(metadata, vbOKOnly, "Metadata for " & MediaItem.getName)
+    End Sub
 End Class

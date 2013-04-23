@@ -366,6 +366,7 @@ Public Class ServerController
                 If line <> "" AndAlso line.Split(" ").Length > 2 Then
                     Dim name = line.Substring(1, line.LastIndexOf("""") - 1).ToUpper
                     media.Add(name, New CasparCGTemplate(name))
+                    media.Item(name).parseXML(getMediaInfo(media.Item(name)))
                 End If
             Next
         End If

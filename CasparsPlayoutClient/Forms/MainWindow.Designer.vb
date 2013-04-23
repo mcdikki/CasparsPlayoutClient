@@ -74,7 +74,7 @@ Partial Class MainWindow
         Me.layoutCgLib.Location = New System.Drawing.Point(0, 0)
         Me.layoutCgLib.Name = "layoutCgLib"
         Me.layoutCgLib.Size = New System.Drawing.Size(520, 426)
-        Me.layoutCgLib.SplitterDistance = 375
+        Me.layoutCgLib.SplitterDistance = 454
         Me.layoutCgLib.TabIndex = 0
         '
         'MainWindow
@@ -82,10 +82,12 @@ Partial Class MainWindow
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.AutoScroll = True
+        Me.AutoSize = True
         Me.ClientSize = New System.Drawing.Size(784, 562)
         Me.Controls.Add(Me.layoutPlaylistSplit)
         Me.Name = "MainWindow"
-        Me.Text = "MainWindow"
+        Me.Text = "Caspar's PlayoutClient"
+        Me.WindowState = System.Windows.Forms.FormWindowState.Maximized
         Me.layoutPlaylistSplit.Panel2.ResumeLayout(False)
         CType(Me.layoutPlaylistSplit, System.ComponentModel.ISupportInitialize).EndInit()
         Me.layoutPlaylistSplit.ResumeLayout(False)

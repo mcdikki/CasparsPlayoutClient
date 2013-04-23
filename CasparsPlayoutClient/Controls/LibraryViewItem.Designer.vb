@@ -30,7 +30,6 @@ Partial Class LibraryViewItem
         Me.lblExpand = New System.Windows.Forms.Label()
         Me.lblType = New System.Windows.Forms.Label()
         Me.lblDuration = New System.Windows.Forms.Label()
-        Me.lsvInfo = New System.Windows.Forms.ListView()
         Me.toolTip = New System.Windows.Forms.ToolTip(Me.components)
         Me.layoutHeaderTable.SuspendLayout()
         Me.layoutHeaderInfoPanel.SuspendLayout()
@@ -113,6 +112,7 @@ Partial Class LibraryViewItem
         Me.lblExpand.TabIndex = 2
         Me.lblExpand.Text = "+"
         Me.lblExpand.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+        Me.toolTip.SetToolTip(Me.lblExpand, "Show all Metadata to this media")
         '
         'lblType
         '
@@ -145,27 +145,11 @@ Partial Class LibraryViewItem
         Me.lblDuration.TabIndex = 0
         Me.lblDuration.Text = "00:00:00.00"
         '
-        'lsvInfo
-        '
-        Me.lsvInfo.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-                    Or System.Windows.Forms.AnchorStyles.Left) _
-                    Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.lsvInfo.GridLines = True
-        Me.lsvInfo.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None
-        Me.lsvInfo.Location = New System.Drawing.Point(0, 39)
-        Me.lsvInfo.MinimumSize = New System.Drawing.Size(145, 4)
-        Me.lsvInfo.MultiSelect = False
-        Me.lsvInfo.Name = "lsvInfo"
-        Me.lsvInfo.Size = New System.Drawing.Size(145, 4)
-        Me.lsvInfo.TabIndex = 2
-        Me.lsvInfo.UseCompatibleStateImageBehavior = False
-        '
         'LibraryViewItem
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(96.0!, 96.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi
         Me.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        Me.Controls.Add(Me.lsvInfo)
         Me.Controls.Add(Me.layoutHeaderTable)
         Me.MinimumSize = New System.Drawing.Size(145, 32)
         Me.Name = "LibraryViewItem"
@@ -184,7 +168,6 @@ Partial Class LibraryViewItem
     Friend WithEvents lblExpand As System.Windows.Forms.Label
     Friend WithEvents lblType As System.Windows.Forms.Label
     Friend WithEvents lblDuration As System.Windows.Forms.Label
-    Friend WithEvents lsvInfo As System.Windows.Forms.ListView
     Friend WithEvents toolTip As System.Windows.Forms.ToolTip
 
 End Class
