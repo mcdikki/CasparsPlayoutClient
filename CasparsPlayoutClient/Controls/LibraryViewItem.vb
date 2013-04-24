@@ -5,7 +5,6 @@
     Public Sub New(ByVal mediaItem As CasparCGMedia)
         Me.MediaItem = mediaItem
         InitializeComponent()
-
         init()
     End Sub
 
@@ -37,11 +36,11 @@
     '' DragDrop verarbeiten
 
     Private MouseIsDown As Boolean = False
-    Private Sub handleMouseDown(ByVal sender As Object, ByVal e As MouseEventArgs) Handles MyBase.MouseDown, layoutHeaderInfoPanel.MouseDown, layoutHeaderTable.MouseDown
+    Private Sub handleMouseDown(ByVal sender As Object, ByVal e As MouseEventArgs) Handles MyBase.MouseDown, layoutHeaderInfoPanel.MouseDown, layoutHeaderTable.MouseDown, cmbAdd.MouseDown, lblDuration.MouseDown, lblExpand.MouseDown, lblName.MouseDown, lblType.MouseDown
         ' Set a flag to show that the mouse is down. 
         MouseIsDown = True
     End Sub
-    Private Sub handleMouseMove(ByVal sender As Object, ByVal e As MouseEventArgs) Handles MyBase.MouseMove, layoutHeaderInfoPanel.MouseMove, layoutHeaderTable.MouseMove
+    Private Sub handleMouseMove(ByVal sender As Object, ByVal e As MouseEventArgs) Handles MyBase.MouseMove, layoutHeaderInfoPanel.MouseMove, layoutHeaderTable.MouseMove, cmbAdd.MouseMove, lblDuration.MouseMove, lblExpand.MouseMove, lblName.MouseMove, lblType.MouseMove
         If MouseIsDown Then
             ' Initiate dragging. 
             DoDragDrop(MediaItem, DragDropEffects.Copy)

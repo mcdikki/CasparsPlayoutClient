@@ -6,6 +6,7 @@
     Private startCompact As Boolean
     Private waiting As Boolean = False
     Private Delegate Sub updateDelegate()
+    Private cMenu As ContextMenuStrip
 
     Private Event changedPlaying()
     Public Event dataChanged()
@@ -23,8 +24,36 @@
         imgList.Images.Add(Image.FromFile("../../../img/Stop-Red-Button-icon.png"))
         imgList.Images.Add(Image.FromFile("../../../img/Play-Blue-Button-icon.png"))
         cmbToggleButton.ImageList = imgList
-        init()
+        init() 
         AddHandler playlist.waitForNext, AddressOf waitForNext
+    End Sub
+
+    Private Sub init()
+        RaiseEvent dataChanged()
+
+        layoutHeaderContentSplit_DoubleClick(Nothing, Nothing)
+
+        '' ChildLayout füllen
+        Select Case playlist.getItemType
+            Case PlaylistItem.PlaylistItemTypes.MOVIE, PlaylistItem.PlaylistItemTypes.AUDIO, PlaylistItem.PlaylistItemTypes.STILL
+
+            Case PlaylistItem.PlaylistItemTypes.TEMPLATE
+
+            Case PlaylistItem.PlaylistItemTypes.BLOCK
+                '' BlockItem, schauen ob childs geladen werden können
+                For Each item In playlist.getChildItems(False)
+                    addChild(item)
+                Next
+        End Select
+        layoutHeaderContentSplit_DoubleClick(Nothing, Nothing)
+        If startCompact Then layoutHeaderContentSplit_DoubleClick(Nothing, Nothing)
+
+
+        '' ContexMenü hinzufügen
+        cMenu = New ContextMenuStrip
+        cMenu.Items.Add(New ToolStripMenuItem("Add Block", Nothing, New EventHandler(AddressOf addBlockItem)))
+        cMenu.Items.Add(New ToolStripMenuItem("Remove item", Nothing, New EventHandler(AddressOf removeItem)))
+        Me.ContextMenuStrip = cMenu
     End Sub
 
     Public Sub onDataChanged() Handles Me.dataChanged
@@ -55,27 +84,6 @@
             Me.pbPlayed.Value = .getPlayed
         End With
         RaiseEvent changedPlaying()
-    End Sub
-
-    Private Sub init()
-        RaiseEvent dataChanged()
-
-        layoutHeaderContentSplit_DoubleClick(Nothing, Nothing)
-
-        '' ChildLayout füllen
-        Select Case playlist.getItemType
-            Case PlaylistItem.PlaylistItemTypes.MOVIE, PlaylistItem.PlaylistItemTypes.AUDIO, PlaylistItem.PlaylistItemTypes.STILL
-
-            Case PlaylistItem.PlaylistItemTypes.TEMPLATE
-
-            Case PlaylistItem.PlaylistItemTypes.BLOCK
-                '' BlockItem, schauen ob childs geladen werden können
-                For Each item In playlist.getChildItems(False)
-                    addChild(item)
-                Next
-        End Select
-        layoutHeaderContentSplit_DoubleClick(Nothing, Nothing)
-        If startCompact Then layoutHeaderContentSplit_DoubleClick(Nothing, Nothing)
     End Sub
 
     Private Sub addChild(ByRef childList As IPlaylistItem)
@@ -206,6 +214,23 @@
         waiting = True
     End Sub
 
+
+    ''
+    '' Hinzufügen / entfernen von Blöcken
+    ''
+
+    Public Sub addBlockItem()
+        Dim bi As New PlaylistBlockItem("BlockItem", playlist.getController)
+        playlist.addItem(bi)
+        addChild(bi)
+    End Sub
+
+    Public Sub removeItem()
+        If Not IsNothing(playlist.getParent) Then
+            playlist.getParent.removeChild(playlist)
+            Me.Parent.Controls.Remove(Me)
+        End If
+    End Sub
 
 
     ''
