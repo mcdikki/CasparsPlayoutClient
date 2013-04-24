@@ -547,7 +547,9 @@ End Class
 
 
 '' Base Class for all playable media in CasparCG which are
-'' movies, stills, audios, colors and templates
+'' movies, stills, audios, colors and template
+
+<Serializable()> _
 Public MustInherit Class CasparCGMedia
     Private name As String
     Private path As String
@@ -660,6 +662,7 @@ Public MustInherit Class CasparCGMedia
     End Function
 End Class
 
+<Serializable()> _
 Public Class CasparCGColor
     Inherits CasparCGMedia
 
@@ -684,6 +687,7 @@ Public Class CasparCGColor
     End Function
 End Class
 
+<Serializable()> _
 Public Class CasparCGMovie
     Inherits CasparCGMedia
 
@@ -709,6 +713,7 @@ Public Class CasparCGMovie
 
 End Class
 
+<Serializable()> _
 Public Class CasparCGStill
     Inherits CasparCGMedia
 
@@ -733,6 +738,7 @@ Public Class CasparCGStill
     End Function
 End Class
 
+<Serializable()> _
 Public Class CasparCGAudio
     Inherits CasparCGMedia
 
@@ -758,6 +764,7 @@ Public Class CasparCGAudio
 
 End Class
 
+<Serializable()> _
 Public Class CasparCGTemplate
     Inherits CasparCGMedia
 

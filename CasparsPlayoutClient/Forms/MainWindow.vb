@@ -6,6 +6,7 @@
     Dim WithEvents libraryView As LibraryView
 
     Private Sub MainWindow_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+        logger.addLogAction(New consoleLogger(3))
         sc = New ServerController()
         sc.open("casparcg", 5250)
         mediaLib = New Library(sc)

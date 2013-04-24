@@ -80,7 +80,7 @@
     ''' <remarks></remarks>
     Private Sub addMediaItem(ByRef mediaItem As CasparCGMedia)
         Dim libItem As New LibraryViewItem(mediaItem)
-        layoutItemsFlow.Controls.Add(libItem)
+        layoutItemsFlow.Controls.Add(libItem) 
         libItem.Width = libItem.Parent.ClientRectangle.Width - libItem.Parent.Margin.Horizontal
     End Sub
 
@@ -101,4 +101,5 @@
             item.Width = item.Parent.ClientRectangle.Width - item.Parent.Margin.Horizontal
         Next
     End Sub
+
 End Class

@@ -42,7 +42,13 @@
     Sub setRemaining(ByVal remaining As Long) ' noch zu spielende Frames
     Sub setChildItems(ByRef items As List(Of IPlaylistItem))
     Sub addItem(ByRef item As IPlaylistItem)
+    Sub removeChild(ByRef child As IPlaylistItem)
+    Sub insertChildAt(ByRef child As IPlaylistItem, ByRef position As IPlaylistItem)
+
+
     Sub loadXML(ByVal xml As String) ' Erstellt ein IPlaylistItem aus einer xml definition)
+
+
 
     Sub load() ' lädt wenn möglich item schon im Hintergrund (ACMP loadbg)
     Sub start(Optional ByVal noWait As Boolean = False)

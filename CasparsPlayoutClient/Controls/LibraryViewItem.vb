@@ -32,4 +32,21 @@
         Next
         MsgBox(metadata, vbOKOnly, "Metadata for " & MediaItem.getName)
     End Sub
+
+
+    '' DragDrop verarbeiten
+
+    Private MouseIsDown As Boolean = False
+    Private Sub handleMouseDown(ByVal sender As Object, ByVal e As MouseEventArgs) Handles MyBase.MouseDown, layoutHeaderInfoPanel.MouseDown, layoutHeaderTable.MouseDown
+        ' Set a flag to show that the mouse is down. 
+        MouseIsDown = True
+    End Sub
+    Private Sub handleMouseMove(ByVal sender As Object, ByVal e As MouseEventArgs) Handles MyBase.MouseMove, layoutHeaderInfoPanel.MouseMove, layoutHeaderTable.MouseMove
+        If MouseIsDown Then
+            ' Initiate dragging. 
+            DoDragDrop(MediaItem, DragDropEffects.Copy)
+        End If
+        MouseIsDown = False
+    End Sub
+
 End Class

@@ -71,14 +71,18 @@
             Case PlaylistItem.PlaylistItemTypes.BLOCK
                 '' BlockItem, schauen ob childs geladen werden können
                 For Each item In playlist.getChildItems(False)
-                    Dim child As New PlaylistView(item, startCompact)
-                    child.Parent = Me.layoutChild
-                    child.Show()
-                    childs.Add(child)
+                    addChild(item)
                 Next
         End Select
         layoutHeaderContentSplit_DoubleClick(Nothing, Nothing)
         If startCompact Then layoutHeaderContentSplit_DoubleClick(Nothing, Nothing)
+    End Sub
+
+    Private Sub addChild(ByRef childList As IPlaylistItem)
+        Dim child As New PlaylistView(childList, startCompact)
+        child.Parent = Me.layoutChild
+        child.Show()
+        childs.Add(child)
     End Sub
 
     Friend Sub atResize(ByVal sender As Object, ByVal e As EventArgs) Handles Me.Resize
@@ -200,6 +204,70 @@
 
     Private Sub waitForNext()
         waiting = True
+    End Sub
+
+
+
+    ''
+    '' DragDrop verarbeiten
+    '
+    Private Overloads Sub handleDragDrop(ByVal sender As Object, ByVal e As DragEventArgs) Handles Me.DragDrop
+        If e.Data.GetDataPresent("CasparsPlayoutClient.CasparCGMovie") Then
+            ''
+            '' Neue MediaItems einfügen
+            ''
+            Dim media As CasparCGMedia = e.Data.GetData("CasparsPlayoutClient.CasparCGMovie")
+            Dim child As IPlaylistItem
+            child = New PlaylistMovieItem(media.getFullName, playlist.getController, media)
+            playlist.addItem(child)
+            addChild(child)
+        ElseIf e.Data.GetDataPresent("CasparsPlayoutClient.PlaylistView") Then
+            ''
+            '' PlaylistItems verschieben
+            ''
+            Dim item As PlaylistView = e.Data.GetData("CasparsPlayoutClient.PlaylistView")
+            If Not IsNothing(item.playlist.getParent) Then
+                ' Playlist von seiner alten liste lösen
+                item.playlist.getParent.removeChild(item.playlist)
+                If Not IsNothing(playlist.getParent) Then
+                    ' und an den platz dieser Playlist in dem Vater einfügen
+                    playlist.getParent.insertChildAt(item.playlist, playlist)
+                    'jetzt noch die Controls entsprechend verschieben.
+                    item.Parent = Me.Parent
+                    Me.Parent.Controls.SetChildIndex(item, Me.Parent.Controls.GetChildIndex(Me))
+                Else
+                    ' oder, wenn es auf den Freiraum der neuen liste 
+                    playlist.addItem(item.playlist)
+                    item.Parent = Me.layoutChild
+                End If
+            End If
+        End If
+    End Sub
+
+    Private Overloads Sub handleDragEnter(ByVal sender As Object, ByVal e As DragEventArgs) Handles Me.dragEnter
+        ' Check the format of the data being dropped. 
+        If (e.Data.GetDataPresent("CasparsPlayoutClient.CasparCGMovie")) Then
+            ' Display the copy cursor. 
+            e.Effect = DragDropEffects.Copy
+        ElseIf e.Data.GetDataPresent("CasparsPlayoutClient.PlaylistView") Then
+            e.Effect = DragDropEffects.Move
+        Else
+            ' Display the no-drop cursor. 
+            e.Effect = DragDropEffects.None
+        End If
+    End Sub
+
+    Private MouseIsDown As Boolean = False
+    Private Sub handleMouseDown(ByVal sender As Object, ByVal e As MouseEventArgs) Handles MyBase.MouseDown, layoutButton.MouseDown, layoutContentSplit.MouseDown, layoutInfos.MouseDown, layoutName.MouseDown, layoutHeaderTable.MouseDown
+        ' Set a flag to show that the mouse is down. 
+        MouseIsDown = True
+    End Sub
+    Private Sub handleMouseMove(ByVal sender As Object, ByVal e As MouseEventArgs) Handles MyBase.MouseMove, layoutButton.MouseMove, layoutContentSplit.MouseMove, layoutInfos.MouseMove, layoutName.MouseMove, layoutHeaderTable.MouseMove
+        If MouseIsDown Then
+            ' Initiate dragging. 
+            DoDragDrop(Me, DragDropEffects.Move)
+        End If
+        MouseIsDown = False
     End Sub
 
 End Class

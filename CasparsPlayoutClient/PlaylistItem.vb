@@ -407,5 +407,16 @@
         Me.parallel = parallel
     End Sub
 
+    Public Sub removeChild(ByRef child As IPlaylistItem) Implements IPlaylistItem.removeChild
+        If items.Contains(child) Then
+            items.Remove(child)
+        End If
+    End Sub
+
+    Public Sub insertChildAt(ByRef child As IPlaylistItem, ByRef position As IPlaylistItem) Implements IPlaylistItem.insertChildAt
+        If items.Contains(position) Then
+            items.Insert(items.IndexOf(position), child)
+        End If
+    End Sub
 
 End Class
