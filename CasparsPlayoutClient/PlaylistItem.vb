@@ -9,6 +9,7 @@
     Private autoStart As Boolean
     Private parallel As Boolean
     Private fps As Integer
+    Private parent As IPlaylistItem
 
     ' Die (Kinder)Items dieses Items
     Private items As List(Of IPlaylistItem)
@@ -21,6 +22,10 @@
     Private paused As Boolean
     Private startThread As Threading.Thread
     Private pauseThread As Threading.Thread
+    Private playNext As Boolean = False
+    Private waiting As Boolean = False
+
+    Public Event waitForNext() Implements IPlaylistItem.waitForNext
 
     Enum PlaylistItemTypes
         BLOCK = -1
@@ -115,9 +120,9 @@
     ''' <param name="noWait"></param>
     ''' <remarks></remarks>
     Public Overridable Sub start(Optional ByVal noWait As Boolean = False) Implements IPlaylistItem.start
-        logger.log("PlaylistItem.start: " & getName() & ": received start at thread " & Threading.Thread.CurrentThread.ManagedThreadId)
+        logger.debug("PlaylistItem.start: " & getName() & ": received start at thread " & Threading.Thread.CurrentThread.ManagedThreadId)
         If noWait Then
-            logger.log("PlaylistItem.start: " & getName() & ": noWait is true. Start new thread")
+            logger.debug("PlaylistItem.start: " & getName() & ": noWait is true. Start new thread")
             If Not IsNothing(startThread) Then
                 startThread.Abort()
             End If
@@ -131,11 +136,30 @@
             ' Wenn parallel, dann wird nicht gewaret und alle starten
             ' semi gleichzeitig
             ' Sost startet das nächste erst wenn das vorherige fertig ist.
+            If Not isAutoStarting() AndAlso Not playNext Then
+                RaiseEvent waitForNext()
+                waiting = True
+                While Not playNext
+                    Threading.Thread.Sleep(1)
+                End While
+                playNext = False
+                waiting = False
+            End If
             For Each item In items
                 item.start(isParallel)
             Next
+            If isLooping() Then
+                While isPlaying()
+                    Threading.Thread.Sleep(1)
+                End While
+                start()
+            End If
         End If
         logger.debug("PlaylistItem.start: Start " & getName() & " has been completed")
+    End Sub
+
+    Public Sub playNextItem() Implements IPlaylistItem.playNextItem
+        playNext = True
     End Sub
 
     Public Overrides Function toString() As String Implements IPlaylistItem.toString
@@ -167,6 +191,10 @@
     '' GETTER:
     ''--------
 
+    Public Function getParent() As IPlaylistItem Implements IPlaylistItem.getParent
+        Return parent
+    End Function
+
     Public Function getChannel() As Integer Implements IPlaylistItem.getChannel
         Return channel
     End Function
@@ -193,6 +221,10 @@
 
     Public Function isParallel() As Boolean Implements IPlaylistItem.isParallel
         Return parallel
+    End Function
+
+    Public Function isWaiting() As Boolean Implements IPlaylistItem.isWaiting
+        Return waiting
     End Function
 
     Public Overridable Function getDuration() As Long Implements IPlaylistItem.getDuration
@@ -279,9 +311,21 @@
         End If
     End Function
 
+    Public Function hasPlayingParent() As Boolean Implements IPlaylistItem.hasPlayingParent
+        If IsNothing(getParent) Then
+            Return False
+        Else
+            Return getParent.isPlaying OrElse getParent.hasPlayingParent
+        End If
+    End Function
+
 
     '' SETTER:
     ''---------
+
+    Public Sub setParent(ByRef parent As IPlaylistItem) Implements IPlaylistItem.setParent
+        Me.parent = parent
+    End Sub
 
     Public Sub setName(ByVal Name As String) Implements IPlaylistItem.setName
         Me.name = Name
@@ -316,6 +360,7 @@
                 item.setLayer(getLayer)
             End If
 
+            item.setParent(Me)
             items.Add(item)
             If isParallel() Then
                 setDuration(Math.Max(getDuration, item.getDuration))
@@ -361,5 +406,6 @@
     Public Sub setParallel(ByVal parallel As Boolean) Implements IPlaylistItem.setParallel
         Me.parallel = parallel
     End Sub
+
 
 End Class

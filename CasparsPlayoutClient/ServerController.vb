@@ -647,7 +647,7 @@ Public Class mediaUpdater
                                     mediaName = foregroundProducer.selectSingleNode("filename").nodeTypedValue
                                     '' CASPARCG BUG WORKAROUND für doppelte // bei image-producern
                                     mediaName = mediaName.Replace("\\", "\")
-                                    mediaName = mediaName.Substring(mediaName.IndexOf("\") + 1, mediaName.LastIndexOf(".") - (mediaName.IndexOf("\") + 1)).ToUpper
+                                    mediaName = mediaName.Substring(mediaName.LastIndexOf("\") + 1, mediaName.LastIndexOf(".") - (mediaName.LastIndexOf("\") + 1)).ToUpper
                                 End If
                                 xml = foregroundProducer.xml
                                 If activeItems(c).Item(layer).ContainsKey(mediaName) Then

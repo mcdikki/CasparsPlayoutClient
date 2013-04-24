@@ -11,14 +11,19 @@ Public Class PlaylistBlockItem
     End Sub
 
     Public Overrides Function isPlaying() As Boolean
+        If isWaiting() Then Return True
         For Each child In getChildItems()
-            If child.isPlaying Then Return True
+            If child.isPlaying OrElse child.isWaiting Then Return True
         Next
         Return False
     End Function
 
     Public Overrides Sub start(Optional ByVal noWait As Boolean = False)
-
+        For Each child In getChildItems(True)
+            If child.isPlayable Then
+                child.setPosition(0)
+            End If
+        Next
         MyBase.start(noWait)
         While isPlaying() 'AndAlso Not isParallel()
             Thread.Sleep(1)
@@ -26,7 +31,7 @@ Public Class PlaylistBlockItem
     End Sub
 
     Public Overrides Function getPosition() As Long
-        If isPlaying() Then
+        If IsNothing(getParent) OrElse getParent.isPlaying() Then
             Dim pos As Long
             For Each child In getChildItems()
                 If isParallel() Then

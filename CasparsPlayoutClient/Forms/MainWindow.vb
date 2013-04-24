@@ -7,7 +7,7 @@
 
     Private Sub MainWindow_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
         sc = New ServerController()
-        sc.open("localhost", 5250)
+        sc.open("casparcg", 5250)
         mediaLib = New Library(sc)
         mediaLib.refreshLibrary()
         AddPlaylist()

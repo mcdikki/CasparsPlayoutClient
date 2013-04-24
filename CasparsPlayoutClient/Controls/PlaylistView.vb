@@ -4,6 +4,7 @@
     Private playlist As IPlaylistItem
     Private childs As List(Of PlaylistView)
     Private startCompact As Boolean
+    Private waiting As Boolean = False
     Private Delegate Sub updateDelegate()
 
     Private Event changedPlaying()
@@ -20,8 +21,10 @@
         imgList.ColorDepth = 16
         imgList.Images.Add(Image.FromFile("../../../img/Play-Green-Button-icon.png"))
         imgList.Images.Add(Image.FromFile("../../../img/Stop-Red-Button-icon.png"))
+        imgList.Images.Add(Image.FromFile("../../../img/Play-Blue-Button-icon.png"))
         cmbToggleButton.ImageList = imgList
         init()
+        AddHandler playlist.waitForNext, AddressOf waitForNext
     End Sub
 
     Public Sub onDataChanged() Handles Me.dataChanged
@@ -101,16 +104,21 @@
     End Sub
 
     Private Sub cmbToggleButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmbToggleButton.Click
-        If playlist.isPlaying Then
+        If waiting Then
+            waiting = False
+            playlist.playNextItem()
+        ElseIf playlist.isPlaying Then
             playlist.abort()
         Else
+            ' Damit nicht gewartet wird falls der button manuel betätigt wurde aber auto nicht gesetzt ist
+            playlist.playNextItem()
             playlist.start(True)
         End If
         RaiseEvent changedPlaying()
     End Sub
 
     Friend Sub onChangedPlayingState() Handles Me.changedPlaying
-        If playlist.isPlaying Then
+        If playlist.isPlaying And Not playlist.isWaiting Then
             txtName.BackColor = Color.Orange
             layoutContentSplit.Panel1.BackColor = Color.Orange
             'cmbToggleButton.Text = "o"
@@ -120,6 +128,10 @@
             nudChannel.Enabled = False
             nudLayer.Enabled = False
             txtName.ReadOnly = True
+        ElseIf waiting Then
+            txtName.BackColor = Color.LightBlue
+            layoutContentSplit.Panel1.BackColor = Color.LightBlue
+            cmbToggleButton.ImageIndex = 2
         Else
             txtName.BackColor = Color.LightGreen
             layoutContentSplit.Panel1.BackColor = Color.LightGreen
@@ -184,6 +196,10 @@
 
     Private Sub txtName_Leave(ByVal sender As Object, ByVal e As System.EventArgs) Handles txtName.Leave
         playlist.setName(txtName.Text)
+    End Sub
+
+    Private Sub waitForNext()
+        waiting = True
     End Sub
 
 End Class

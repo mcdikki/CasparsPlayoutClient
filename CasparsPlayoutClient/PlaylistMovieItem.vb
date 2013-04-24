@@ -78,7 +78,7 @@
     End Function
 
     Public Overrides Function getPosition() As Long
-        If getMedia.containsInfo("frame-number") Then
+        If getMedia.containsInfo("frame-number") AndAlso (isPlaying() OrElse hasPlayingParent()) Then
             Return ServerController.getTimeInMS(Long.Parse(getMedia.getInfo("frame-number")), getFPS())
         Else
             Return 0
@@ -87,7 +87,7 @@
 
     Public Overrides Sub setPosition(ByVal position As Long)
         If Not isPlaying() AndAlso getMedia.containsInfo("frame-number") Then
-            getMedia.setInfo("frame-number", 0)
+            getMedia.setInfo("frame-number", "0")
         End If
     End Sub
 
