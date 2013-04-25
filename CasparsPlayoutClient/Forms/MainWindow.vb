@@ -8,15 +8,12 @@
 
     Private Sub MainWindow_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
         logger.addLogAction(New consoleLogger(3))
-        sc = New ServerController()
-        sc.open("casparcg", 5250)
+        sc = New ServerController
+        'sc.open("casparcg", 5250)
         mediaLib = New Library(sc)
-        mediaLib.refreshLibrary()
         AddPlaylist()
         AddLibrary()
         setMonitor()
-        AddHandler sc.getTicker.frameTick, AddressOf onTick
-        sc.startTicker()
     End Sub
 
     Private Sub AddLibrary()
@@ -54,6 +51,42 @@
         End With
         'AddHandler sc.getTicker.frameTick, AddressOf Updater_Tick
         'AddHandler sc.getTicker.frameTick, AddressOf Clock_Tick
+    End Sub
+
+
+    Private Sub connect() Handles cmbConnect.Click
+        If Not sc.isConnected Then
+            sc.open(txtAddress.Text, Integer.Parse(txtPort.Text))
+            For i = 1 To sc.getChannels
+                cbbClearChannel.Items.Add(i)
+            Next
+            mediaLib.refreshLibrary()
+            AddHandler sc.getTicker.frameTick, AddressOf onTick
+            sc.startTicker()
+            libraryView.cmbRefresh.PerformClick()
+        Else
+            MsgBox("Allready connected")
+        End If
+    End Sub
+
+    Private Sub disconnect() Handles cmbDisconnect.Click
+        If sc.isConnected Then
+            sc.close()
+            RemoveHandler sc.getTicker.frameTick, AddressOf onTick
+            libraryView.cmbRefresh.PerformClick()
+        End If
+    End Sub
+
+    Private Sub clearAll() Handles cmdClearAll.Click
+        For i = 1 To sc.getChannels
+            sc.getCommandConnection.sendCommand(CasparCGCommandFactory.getClear(i))
+        Next
+    End Sub
+
+    Private Sub clearChannel() Handles cmbClearChannel.Click
+        If sc.containsChannel(Integer.Parse(cbbClearChannel.Text)) Then
+            sc.getCommandConnection.sendCommand(CasparCGCommandFactory.getClear(Integer.Parse(cbbClearChannel.Text)))
+        End If
     End Sub
 
     Private Sub onTick(ByVal sender As Object, ByVal e As frameTickEventArgs)

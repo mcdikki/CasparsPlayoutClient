@@ -28,10 +28,6 @@ Partial Class MainWindow
         Me.layoutUpDownSplit = New System.Windows.Forms.SplitContainer()
         Me.layoutCgLib = New System.Windows.Forms.SplitContainer()
         Me.lsvPlayingMedia = New System.Windows.Forms.ListView()
-        Me.layoutAdressPanel = New System.Windows.Forms.Panel()
-        Me.lblAddress = New System.Windows.Forms.Label()
-        Me.txtPort = New System.Windows.Forms.TextBox()
-        Me.txtAddress = New System.Windows.Forms.TextBox()
         Me.layoutButtonsPanel = New System.Windows.Forms.Panel()
         Me.layoutButtonsFlow = New System.Windows.Forms.FlowLayoutPanel()
         Me.cmbConnect = New System.Windows.Forms.Button()
@@ -39,6 +35,10 @@ Partial Class MainWindow
         Me.cmdClearAll = New System.Windows.Forms.Button()
         Me.cbbClearChannel = New System.Windows.Forms.ComboBox()
         Me.cmbClearChannel = New System.Windows.Forms.Button()
+        Me.layoutAdressPanel = New System.Windows.Forms.Panel()
+        Me.lblAddress = New System.Windows.Forms.Label()
+        Me.txtPort = New System.Windows.Forms.TextBox()
+        Me.txtAddress = New System.Windows.Forms.TextBox()
         CType(Me.layoutPlaylistSplit, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.layoutPlaylistSplit.Panel2.SuspendLayout()
         Me.layoutPlaylistSplit.SuspendLayout()
@@ -49,9 +49,9 @@ Partial Class MainWindow
         CType(Me.layoutCgLib, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.layoutCgLib.Panel1.SuspendLayout()
         Me.layoutCgLib.SuspendLayout()
-        Me.layoutAdressPanel.SuspendLayout()
         Me.layoutButtonsPanel.SuspendLayout()
         Me.layoutButtonsFlow.SuspendLayout()
+        Me.layoutAdressPanel.SuspendLayout()
         Me.SuspendLayout()
         '
         'layoutPlaylistSplit
@@ -113,50 +113,6 @@ Partial Class MainWindow
         Me.lsvPlayingMedia.Size = New System.Drawing.Size(465, 467)
         Me.lsvPlayingMedia.TabIndex = 1
         Me.lsvPlayingMedia.UseCompatibleStateImageBehavior = False
-        '
-        'layoutAdressPanel
-        '
-        Me.layoutAdressPanel.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-                    Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.layoutAdressPanel.Controls.Add(Me.lblAddress)
-        Me.layoutAdressPanel.Controls.Add(Me.txtPort)
-        Me.layoutAdressPanel.Controls.Add(Me.txtAddress)
-        Me.layoutAdressPanel.Location = New System.Drawing.Point(2, 1)
-        Me.layoutAdressPanel.MinimumSize = New System.Drawing.Size(0, 40)
-        Me.layoutAdressPanel.Name = "layoutAdressPanel"
-        Me.layoutAdressPanel.Size = New System.Drawing.Size(524, 40)
-        Me.layoutAdressPanel.TabIndex = 1
-        '
-        'lblAddress
-        '
-        Me.lblAddress.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-                    Or System.Windows.Forms.AnchorStyles.Left) _
-                    Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.lblAddress.AutoSize = True
-        Me.lblAddress.Location = New System.Drawing.Point(3, 0)
-        Me.lblAddress.Name = "lblAddress"
-        Me.lblAddress.Size = New System.Drawing.Size(122, 13)
-        Me.lblAddress.TabIndex = 2
-        Me.lblAddress.Text = "Server Adresse und Port"
-        '
-        'txtPort
-        '
-        Me.txtPort.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.txtPort.Location = New System.Drawing.Point(470, 16)
-        Me.txtPort.Name = "txtPort"
-        Me.txtPort.Size = New System.Drawing.Size(36, 20)
-        Me.txtPort.TabIndex = 1
-        Me.txtPort.Text = "5250"
-        '
-        'txtAddress
-        '
-        Me.txtAddress.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-                    Or System.Windows.Forms.AnchorStyles.Left) _
-                    Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.txtAddress.Location = New System.Drawing.Point(6, 16)
-        Me.txtAddress.Name = "txtAddress"
-        Me.txtAddress.Size = New System.Drawing.Size(458, 20)
-        Me.txtAddress.TabIndex = 0
         '
         'layoutButtonsPanel
         '
@@ -228,6 +184,51 @@ Partial Class MainWindow
         Me.cmbClearChannel.Text = "CLEAR"
         Me.cmbClearChannel.UseVisualStyleBackColor = True
         '
+        'layoutAdressPanel
+        '
+        Me.layoutAdressPanel.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+                    Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.layoutAdressPanel.Controls.Add(Me.lblAddress)
+        Me.layoutAdressPanel.Controls.Add(Me.txtPort)
+        Me.layoutAdressPanel.Controls.Add(Me.txtAddress)
+        Me.layoutAdressPanel.Location = New System.Drawing.Point(2, 1)
+        Me.layoutAdressPanel.MinimumSize = New System.Drawing.Size(0, 40)
+        Me.layoutAdressPanel.Name = "layoutAdressPanel"
+        Me.layoutAdressPanel.Size = New System.Drawing.Size(524, 40)
+        Me.layoutAdressPanel.TabIndex = 1
+        '
+        'lblAddress
+        '
+        Me.lblAddress.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+                    Or System.Windows.Forms.AnchorStyles.Left) _
+                    Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.lblAddress.AutoSize = True
+        Me.lblAddress.Location = New System.Drawing.Point(3, 0)
+        Me.lblAddress.Name = "lblAddress"
+        Me.lblAddress.Size = New System.Drawing.Size(122, 13)
+        Me.lblAddress.TabIndex = 2
+        Me.lblAddress.Text = "Server Adresse und Port"
+        '
+        'txtPort
+        '
+        Me.txtPort.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.txtPort.Location = New System.Drawing.Point(470, 16)
+        Me.txtPort.Name = "txtPort"
+        Me.txtPort.Size = New System.Drawing.Size(36, 20)
+        Me.txtPort.TabIndex = 1
+        Me.txtPort.Text = "5250"
+        '
+        'txtAddress
+        '
+        Me.txtAddress.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+                    Or System.Windows.Forms.AnchorStyles.Left) _
+                    Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.txtAddress.Location = New System.Drawing.Point(6, 16)
+        Me.txtAddress.Name = "txtAddress"
+        Me.txtAddress.Size = New System.Drawing.Size(458, 20)
+        Me.txtAddress.TabIndex = 0
+        Me.txtAddress.Text = "localhost"
+        '
         'MainWindow
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -249,10 +250,10 @@ Partial Class MainWindow
         Me.layoutCgLib.Panel1.ResumeLayout(False)
         CType(Me.layoutCgLib, System.ComponentModel.ISupportInitialize).EndInit()
         Me.layoutCgLib.ResumeLayout(False)
-        Me.layoutAdressPanel.ResumeLayout(False)
-        Me.layoutAdressPanel.PerformLayout()
         Me.layoutButtonsPanel.ResumeLayout(False)
         Me.layoutButtonsFlow.ResumeLayout(False)
+        Me.layoutAdressPanel.ResumeLayout(False)
+        Me.layoutAdressPanel.PerformLayout()
         Me.ResumeLayout(False)
 
     End Sub
