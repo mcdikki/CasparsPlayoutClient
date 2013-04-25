@@ -20,9 +20,9 @@
         Dim imgList As New ImageList
         imgList.ImageSize = New Size(24, 24)
         imgList.ColorDepth = 16
-        imgList.Images.Add(Image.FromFile("../../../img/Play-Green-Button-icon.png"))
-        imgList.Images.Add(Image.FromFile("../../../img/Stop-Red-Button-icon.png"))
-        imgList.Images.Add(Image.FromFile("../../../img/Play-Blue-Button-icon.png"))
+        imgList.Images.Add(Image.FromFile("img/Play-Green-Button-icon.png"))
+        imgList.Images.Add(Image.FromFile("img/Stop-Red-Button-icon.png"))
+        imgList.Images.Add(Image.FromFile("img/Play-Blue-Button-icon.png"))
         cmbToggleButton.ImageList = imgList
         init() 
         AddHandler playlist.waitForNext, AddressOf waitForNext
