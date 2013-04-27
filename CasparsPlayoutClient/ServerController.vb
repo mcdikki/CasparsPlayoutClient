@@ -147,9 +147,9 @@ Public Class ServerController
                     If media.containsInfo("file-nb-frames") AndAlso media.containsInfo("fps") AndAlso media.containsInfo("progressive") Then
                         Dim fps As Integer = Single.Parse(media.getInfo("fps")) * 100
                         Dim progressive = Boolean.Parse(media.getInfo("progressive"))
-                        If Not progressive Then
-                            fps = fps / 2
-                        End If
+                        'If Not progressive Then
+                        '    fps = fps / 2
+                        'End If
                         Return getTimeInMS(media.getInfo("file-nb-frames"), fps)
                     End If
                     logger.err("ServerController.getOriginalMediaDuration: Could not get media duration of " & media.getFullName & "(" & media.getMediaType.ToString & ").")
@@ -165,6 +165,11 @@ Public Class ServerController
     ''' <returns></returns>
     ''' <remarks></remarks>
     Public Function getMediaDuration(ByRef media As CasparCGMedia, ByVal channel As Integer) As Long
+
+        Return getOriginalMediaDuration(media)
+
+        '' Scheint nicht nötig zu sein da die videos IMMER so lange spielen wie sie sollen
+        '' zumindest wenn die metadaten stimmen - aber erst noch ausgiebig testen!
         If isConnected() Then
             Select Case media.getMediaType
                 Case CasparCGMedia.MediaType.COLOR, CasparCGMedia.MediaType.STILL, CasparCGMedia.MediaType.TEMPLATE
@@ -551,7 +556,9 @@ Public Class FrameTicker
                     ' oder soviele Frames wie im frameInterval angegeben
                     iterationEnd = timer.ElapsedMilliseconds
                     If iterationEnd - iterationStart < (minFrameTime * frameInterval) Then
-                        Thread.Sleep((minFrameTime * frameInterval) - (iterationEnd - iterationStart))
+                        While timer.ElapsedMilliseconds < iterationEnd + (minFrameTime * frameInterval) - (iterationEnd - iterationStart)
+                            'Thread.Sleep((minFrameTime * frameInterval) - (iterationEnd - iterationStart))
+                        End While
                     End If
                 End While
             End While

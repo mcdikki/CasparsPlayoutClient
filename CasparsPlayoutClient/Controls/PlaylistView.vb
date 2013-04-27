@@ -71,7 +71,7 @@
     Private Sub setData()
         '' Werte eintragen
         With playlist
-            Me.txtName.Text = .getName
+            If Not txtName.Focused Then Me.txtName.Text = .getName
             Me.nudChannel.Value = Math.Max(.getChannel, 0)
             Me.nudLayer.Value = Math.Max(.getLayer, -1)
             Me.txtPosition.Text = ServerController.getTimeStringOfMS(.getPosition)
@@ -144,6 +144,10 @@
             txtName.BackColor = Color.LightBlue
             layoutContentSplit.Panel1.BackColor = Color.LightBlue
             cmbToggleButton.ImageIndex = 2
+            layoutButton.Enabled = False
+            nudChannel.Enabled = False
+            nudLayer.Enabled = False
+            txtName.ReadOnly = True
         Else
             txtName.BackColor = Color.LightGreen
             layoutContentSplit.Panel1.BackColor = Color.LightGreen

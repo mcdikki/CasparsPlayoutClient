@@ -18,8 +18,8 @@
             If movie.getInfos.Count = 0 Then
                 movie.parseXML(getController.getMediaInfo(movie))
             End If
-            If movie.containsInfo("nb-frames") AndAlso (duration > ServerController.getTimeInMS(Long.Parse(movie.getInfo("nb-frames")), getFPS) OrElse duration = -1) Then
-                setDuration(ServerController.getTimeInMS(Long.Parse(movie.getInfo("nb-frames")), getFPS))
+            If movie.containsInfo("nb-frames") AndAlso (duration > getController.getOriginalMediaDuration(movie) OrElse duration = -1) Then
+                setDuration(getController.getOriginalMediaDuration(movie))
             End If
             media = movie
         Else
@@ -49,7 +49,8 @@
 
         While isPlaying() AndAlso Not noWait
             'getController.update()
-            Threading.Thread.Sleep(1)
+
+            '#@#Threading.Thread.Sleep(1)
         End While
     End Sub
 
@@ -93,8 +94,8 @@
 
     Public Overrides Sub setChannel(ByVal channel As Integer)
         MyBase.setChannel(channel)
-        If getController.containsChannel(channel) AndAlso Not IsNothing(getMedia) AndAlso getMedia.containsInfo("nb-frames") Then
-            setDuration(ServerController.getTimeInMS(getMedia.getInfo("nb-frames"), getFPS))
+        If getController.containsChannel(channel) AndAlso Not IsNothing(getMedia) Then
+            setDuration(getController.getOriginalMediaDuration(getMedia))
         End If
     End Sub
 

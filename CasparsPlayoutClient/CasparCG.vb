@@ -42,7 +42,11 @@ Public Class CasparCGConnection
                     connectionAttemp = connectionAttemp + 1
                     logger.warn("CasparCGConnection.connect: Try to reconnect " & connectionAttemp & "/" & reconnectTries)
                     Dim i As Integer = 0
-                    Threading.Thread.Sleep(reconnectTimeout)
+                    Dim sw As New Stopwatch
+                    sw.Start()
+                    While sw.ElapsedMilliseconds < reconnectTimeout
+                        '#@#Threading.Thread.Sleep(reconnectTimeout)
+                    End While
                     Return connect()
                 Else
                     logger.err("CasparCGConnection.connect: Could not connect to " & serveraddress & ":" & serverport.ToString)
@@ -143,7 +147,7 @@ Public Class CasparCGConnection
                     ' Ein Zeichen gelesen
                     input = input & ChrW(readByte)
                 Else
-                    Threading.Thread.Sleep(1)
+                    '#@#Threading.Thread.Sleep(1)
                 End If
             Loop
 

@@ -227,7 +227,7 @@ Partial Class MainWindow
         Me.txtAddress.Name = "txtAddress"
         Me.txtAddress.Size = New System.Drawing.Size(458, 20)
         Me.txtAddress.TabIndex = 0
-        Me.txtAddress.Text = "localhost"
+        Me.txtAddress.Text = "casparcg"
         '
         'MainWindow
         '

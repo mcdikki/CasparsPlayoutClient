@@ -7,7 +7,7 @@
     Delegate Sub updateDelegate()
 
     Private Sub MainWindow_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
-        logger.addLogAction(New consoleLogger(3))
+        'logger.addLogAction(New consoleLogger(3))
         sc = New ServerController
         'sc.open("casparcg", 5250)
         mediaLib = New Library(sc)
@@ -84,7 +84,7 @@
     End Sub
 
     Private Sub clearChannel() Handles cmbClearChannel.Click
-        If sc.containsChannel(Integer.Parse(cbbClearChannel.Text)) Then
+        If cbbClearChannel.Text.Length > 0 AndAlso IsNumeric(cbbClearChannel.Text) AndAlso sc.containsChannel(Integer.Parse(cbbClearChannel.Text)) Then
             sc.getCommandConnection.sendCommand(CasparCGCommandFactory.getClear(Integer.Parse(cbbClearChannel.Text)))
         End If
     End Sub

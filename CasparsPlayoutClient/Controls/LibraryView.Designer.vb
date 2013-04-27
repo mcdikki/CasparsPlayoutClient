@@ -160,8 +160,6 @@ Partial Class LibraryView
         'ckbAudio
         '
         Me.ckbAudio.AutoSize = True
-        Me.ckbAudio.Checked = True
-        Me.ckbAudio.CheckState = System.Windows.Forms.CheckState.Checked
         Me.ckbAudio.Location = New System.Drawing.Point(55, 0)
         Me.ckbAudio.Margin = New System.Windows.Forms.Padding(0)
         Me.ckbAudio.Name = "ckbAudio"
@@ -173,8 +171,6 @@ Partial Class LibraryView
         'ckbStill
         '
         Me.ckbStill.AutoSize = True
-        Me.ckbStill.Checked = True
-        Me.ckbStill.CheckState = System.Windows.Forms.CheckState.Checked
         Me.ckbStill.Location = New System.Drawing.Point(108, 0)
         Me.ckbStill.Margin = New System.Windows.Forms.Padding(0)
         Me.ckbStill.Name = "ckbStill"
@@ -186,8 +182,6 @@ Partial Class LibraryView
         'ckbTemplate
         '
         Me.ckbTemplate.AutoSize = True
-        Me.ckbTemplate.Checked = True
-        Me.ckbTemplate.CheckState = System.Windows.Forms.CheckState.Checked
         Me.ckbTemplate.Location = New System.Drawing.Point(167, 0)
         Me.ckbTemplate.Margin = New System.Windows.Forms.Padding(0)
         Me.ckbTemplate.Name = "ckbTemplate"
