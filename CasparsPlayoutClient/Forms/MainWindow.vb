@@ -58,6 +58,7 @@
         If Not sc.isConnected Then
             sc.open(txtAddress.Text, Integer.Parse(txtPort.Text))
             For i = 1 To sc.getChannels
+                cbbClearChannel.Text = i
                 cbbClearChannel.Items.Add(i)
             Next
             mediaLib.refreshLibrary()
@@ -86,6 +87,12 @@
     Private Sub clearChannel() Handles cmbClearChannel.Click
         If cbbClearChannel.Text.Length > 0 AndAlso IsNumeric(cbbClearChannel.Text) AndAlso sc.containsChannel(Integer.Parse(cbbClearChannel.Text)) Then
             sc.getCommandConnection.sendCommand(CasparCGCommandFactory.getClear(Integer.Parse(cbbClearChannel.Text)))
+        End If
+    End Sub
+
+    Private Sub clearLayer() Handles cmbClearLayer.Click
+        If cbbClearChannel.Text.Length > 0 AndAlso IsNumeric(cbbClearChannel.Text) AndAlso sc.containsChannel(Integer.Parse(cbbClearChannel.Text)) Then
+            sc.getCommandConnection.sendCommand(CasparCGCommandFactory.getClear(Integer.Parse(cbbClearChannel.Text), nudLayerClear.Value))
         End If
     End Sub
 
@@ -128,4 +135,5 @@
             End If
         Next
     End Sub
+
 End Class

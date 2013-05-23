@@ -34,24 +34,28 @@
     Public Overrides Sub start(Optional ByVal noWait As Boolean = False)
         '' CMD an ServerController schicken
         logger.log("PlaylistMovieItem.start: Starte " & getChannel() & "-" & getLayer() & ": " & getMedia.toString)
-        Dim result = getController.getCommandConnection.sendCommand(CasparCGCommandFactory.getPlay(getChannel, getLayer, getMedia, isLooping, , getDuration))
-        If result.isOK Then
-            While Not getController.readyForUpdate.WaitOne()
-                logger.warn("PlaylistMovieItem.start: " & getName() & ": Could not get handel to update my status")
+        If getController.containsChannel(getChannel) AndAlso getLayer() > -1 Then
+            Dim result = getController.getCommandConnection.sendCommand(CasparCGCommandFactory.getPlay(getChannel, getLayer, getMedia, isLooping, , getDuration))
+            If result.isOK Then
+                While Not getController.readyForUpdate.WaitOne()
+                    logger.warn("PlaylistMovieItem.start: " & getName() & ": Could not get handel to update my status")
+                End While
+                playing = True
+                getController.readyForUpdate.Release()
+                getController.getCommandConnection.sendAsyncCommand(CasparCGCommandFactory.getLoadbg(getChannel, getLayer, "empty", True))
+                logger.log("PlaylistMovieItem.start: ...gestartet " & getChannel() & "-" & getLayer() & ": " & getMedia.toString)
+            Else
+                logger.err("PlaylistMovieItem.start: Could not start " & media.getFullName & ". ServerMessage was: " & result.getServerMessage)
+            End If
+
+            While isPlaying() AndAlso Not noWait
+                'getController.update()
+
+                '#@#Threading.Thread.Sleep(1)
             End While
-            playing = True
-            getController.readyForUpdate.Release()
-            getController.getCommandConnection.sendAsyncCommand(CasparCGCommandFactory.getLoadbg(getChannel, getLayer, "empty", True))
-            logger.log("PlaylistMovieItem.start: ...gestartet " & getChannel() & "-" & getLayer() & ": " & getMedia.toString)
         Else
-            logger.err("PlaylistMovieItem.start: Could not start " & media.getFullName & ". ServerMessage was: " & result.getServerMessage)
+            logger.err("PlaylistMovieItem.start: Error playing " & getName() & ". The channel " & getChannel() & " does not exist on the server. Aborting start.")
         End If
-
-        While isPlaying() AndAlso Not noWait
-            'getController.update()
-
-            '#@#Threading.Thread.Sleep(1)
-        End While
     End Sub
 
     Public Overloads Sub abort()

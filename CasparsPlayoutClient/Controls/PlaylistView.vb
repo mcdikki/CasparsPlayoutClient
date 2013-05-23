@@ -123,8 +123,12 @@
             playlist.abort()
         Else
             ' Damit nicht gewartet wird falls der button manuel betätigt wurde aber auto nicht gesetzt ist
-            playlist.playNextItem()
-            playlist.start(True)
+            If playlist.getController.containsChannel(playlist.getChannel) OrElse Not playlist.isPlayable Then
+                playlist.playNextItem()
+                playlist.start(True)
+            Else
+                MsgBox("Error, unknown channel.")
+            End If
         End If
         RaiseEvent changedPlaying()
     End Sub

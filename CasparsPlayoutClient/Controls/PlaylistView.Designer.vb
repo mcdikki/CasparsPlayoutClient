@@ -86,7 +86,7 @@ Partial Class PlaylistView
         Me.layoutContentSplit.Panel2.AutoScroll = True
         Me.layoutContentSplit.Panel2.Controls.Add(Me.layoutChild)
         Me.layoutContentSplit.Panel2MinSize = 0
-        Me.layoutContentSplit.Size = New System.Drawing.Size(260, 81)
+        Me.layoutContentSplit.Size = New System.Drawing.Size(263, 81)
         Me.layoutContentSplit.SplitterDistance = 25
         Me.layoutContentSplit.TabIndex = 0
         '
@@ -166,7 +166,7 @@ Partial Class PlaylistView
         Me.layoutChild.Location = New System.Drawing.Point(0, 0)
         Me.layoutChild.Margin = New System.Windows.Forms.Padding(0)
         Me.layoutChild.Name = "layoutChild"
-        Me.layoutChild.Size = New System.Drawing.Size(231, 4)
+        Me.layoutChild.Size = New System.Drawing.Size(234, 4)
         Me.layoutChild.TabIndex = 6
         Me.layoutChild.WrapContents = False
         '
@@ -191,7 +191,7 @@ Partial Class PlaylistView
         Me.layoutHeaderTable.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25.0!))
         Me.layoutHeaderTable.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
         Me.layoutHeaderTable.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30.0!))
-        Me.layoutHeaderTable.Size = New System.Drawing.Size(260, 65)
+        Me.layoutHeaderTable.Size = New System.Drawing.Size(263, 65)
         Me.layoutHeaderTable.TabIndex = 0
         '
         'lblExpand
@@ -230,7 +230,7 @@ Partial Class PlaylistView
         Me.pbPlayed.Location = New System.Drawing.Point(24, 25)
         Me.pbPlayed.Margin = New System.Windows.Forms.Padding(0)
         Me.pbPlayed.Name = "pbPlayed"
-        Me.pbPlayed.Size = New System.Drawing.Size(236, 10)
+        Me.pbPlayed.Size = New System.Drawing.Size(239, 10)
         Me.pbPlayed.Style = System.Windows.Forms.ProgressBarStyle.Continuous
         Me.pbPlayed.TabIndex = 11
         '
@@ -248,7 +248,7 @@ Partial Class PlaylistView
         Me.layoutInfos.Location = New System.Drawing.Point(24, 35)
         Me.layoutInfos.Margin = New System.Windows.Forms.Padding(0)
         Me.layoutInfos.Name = "layoutInfos"
-        Me.layoutInfos.Size = New System.Drawing.Size(236, 30)
+        Me.layoutInfos.Size = New System.Drawing.Size(239, 30)
         Me.layoutInfos.TabIndex = 12
         '
         'grbChannelLayer
@@ -356,8 +356,8 @@ Partial Class PlaylistView
         Me.grpRemaining.Location = New System.Drawing.Point(174, 0)
         Me.grpRemaining.Margin = New System.Windows.Forms.Padding(0)
         Me.grpRemaining.Name = "grpRemaining"
-        Me.grpRemaining.Padding = New System.Windows.Forms.Padding(1)
-        Me.grpRemaining.Size = New System.Drawing.Size(58, 35)
+        Me.grpRemaining.Padding = New System.Windows.Forms.Padding(0)
+        Me.grpRemaining.Size = New System.Drawing.Size(65, 35)
         Me.grpRemaining.TabIndex = 11
         Me.grpRemaining.TabStop = False
         Me.grpRemaining.Text = "Remaining"
@@ -384,7 +384,7 @@ Partial Class PlaylistView
         Me.layoutName.Margin = New System.Windows.Forms.Padding(0)
         Me.layoutName.MinimumSize = New System.Drawing.Size(70, 27)
         Me.layoutName.Name = "layoutName"
-        Me.layoutName.Size = New System.Drawing.Size(236, 27)
+        Me.layoutName.Size = New System.Drawing.Size(239, 27)
         Me.layoutName.TabIndex = 15
         '
         'nudLayer
@@ -392,7 +392,7 @@ Partial Class PlaylistView
         Me.nudLayer.Anchor = System.Windows.Forms.AnchorStyles.Right
         Me.nudLayer.AutoSize = True
         Me.nudLayer.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.nudLayer.Location = New System.Drawing.Point(193, 3)
+        Me.nudLayer.Location = New System.Drawing.Point(196, 3)
         Me.nudLayer.Margin = New System.Windows.Forms.Padding(0)
         Me.nudLayer.Maximum = New Decimal(New Integer() {1000, 0, 0, 0})
         Me.nudLayer.Minimum = New Decimal(New Integer() {1, 0, 0, -2147483648})
@@ -405,7 +405,7 @@ Partial Class PlaylistView
         Me.nudChannel.Anchor = System.Windows.Forms.AnchorStyles.Right
         Me.nudChannel.AutoSize = True
         Me.nudChannel.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.nudChannel.Location = New System.Drawing.Point(151, 3)
+        Me.nudChannel.Location = New System.Drawing.Point(154, 3)
         Me.nudChannel.Margin = New System.Windows.Forms.Padding(0)
         Me.nudChannel.Maximum = New Decimal(New Integer() {1000, 0, 0, 0})
         Me.nudChannel.Name = "nudChannel"
@@ -422,7 +422,7 @@ Partial Class PlaylistView
         Me.txtName.Location = New System.Drawing.Point(2, 3)
         Me.txtName.Margin = New System.Windows.Forms.Padding(0)
         Me.txtName.Name = "txtName"
-        Me.txtName.Size = New System.Drawing.Size(148, 20)
+        Me.txtName.Size = New System.Drawing.Size(151, 20)
         Me.txtName.TabIndex = 10
         Me.txtName.Text = "Name"
         '
@@ -446,7 +446,7 @@ Partial Class PlaylistView
         '
         Me.layoutHeaderContentSplit.Panel2.Controls.Add(Me.layoutContentSplit)
         Me.layoutHeaderContentSplit.Panel2MinSize = 0
-        Me.layoutHeaderContentSplit.Size = New System.Drawing.Size(260, 150)
+        Me.layoutHeaderContentSplit.Size = New System.Drawing.Size(263, 150)
         Me.layoutHeaderContentSplit.SplitterDistance = 65
         Me.layoutHeaderContentSplit.TabIndex = 0
         '
@@ -458,9 +458,9 @@ Partial Class PlaylistView
         Me.AutoScroll = True
         Me.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
         Me.Controls.Add(Me.layoutHeaderContentSplit)
-        Me.MinimumSize = New System.Drawing.Size(260, 65)
+        Me.MinimumSize = New System.Drawing.Size(265, 65)
         Me.Name = "PlaylistView"
-        Me.Size = New System.Drawing.Size(260, 150)
+        Me.Size = New System.Drawing.Size(263, 150)
         Me.layoutContentSplit.Panel1.ResumeLayout(False)
         Me.layoutContentSplit.Panel1.PerformLayout()
         Me.layoutContentSplit.Panel2.ResumeLayout(False)

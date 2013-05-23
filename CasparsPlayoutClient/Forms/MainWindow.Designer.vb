@@ -39,6 +39,8 @@ Partial Class MainWindow
         Me.lblAddress = New System.Windows.Forms.Label()
         Me.txtPort = New System.Windows.Forms.TextBox()
         Me.txtAddress = New System.Windows.Forms.TextBox()
+        Me.nudLayerClear = New System.Windows.Forms.NumericUpDown()
+        Me.cmbClearLayer = New System.Windows.Forms.Button()
         CType(Me.layoutPlaylistSplit, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.layoutPlaylistSplit.Panel2.SuspendLayout()
         Me.layoutPlaylistSplit.SuspendLayout()
@@ -52,6 +54,7 @@ Partial Class MainWindow
         Me.layoutButtonsPanel.SuspendLayout()
         Me.layoutButtonsFlow.SuspendLayout()
         Me.layoutAdressPanel.SuspendLayout()
+        CType(Me.nudLayerClear, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'layoutPlaylistSplit
@@ -65,8 +68,8 @@ Partial Class MainWindow
         'layoutPlaylistSplit.Panel2
         '
         Me.layoutPlaylistSplit.Panel2.Controls.Add(Me.layoutUpDownSplit)
-        Me.layoutPlaylistSplit.Size = New System.Drawing.Size(799, 562)
-        Me.layoutPlaylistSplit.SplitterDistance = 264
+        Me.layoutPlaylistSplit.Size = New System.Drawing.Size(926, 562)
+        Me.layoutPlaylistSplit.SplitterDistance = 305
         Me.layoutPlaylistSplit.TabIndex = 0
         '
         'layoutUpDownSplit
@@ -86,7 +89,7 @@ Partial Class MainWindow
         Me.layoutUpDownSplit.Panel2.Controls.Add(Me.layoutButtonsPanel)
         Me.layoutUpDownSplit.Panel2.Controls.Add(Me.layoutAdressPanel)
         Me.layoutUpDownSplit.Panel2MinSize = 75
-        Me.layoutUpDownSplit.Size = New System.Drawing.Size(531, 562)
+        Me.layoutUpDownSplit.Size = New System.Drawing.Size(617, 562)
         Me.layoutUpDownSplit.SplitterDistance = 469
         Me.layoutUpDownSplit.TabIndex = 0
         '
@@ -100,8 +103,8 @@ Partial Class MainWindow
         'layoutCgLib.Panel1
         '
         Me.layoutCgLib.Panel1.Controls.Add(Me.lsvPlayingMedia)
-        Me.layoutCgLib.Size = New System.Drawing.Size(531, 469)
-        Me.layoutCgLib.SplitterDistance = 467
+        Me.layoutCgLib.Size = New System.Drawing.Size(617, 469)
+        Me.layoutCgLib.SplitterDistance = 542
         Me.layoutCgLib.TabIndex = 0
         '
         'lsvPlayingMedia
@@ -110,7 +113,7 @@ Partial Class MainWindow
         Me.lsvPlayingMedia.GridLines = True
         Me.lsvPlayingMedia.Location = New System.Drawing.Point(0, 0)
         Me.lsvPlayingMedia.Name = "lsvPlayingMedia"
-        Me.lsvPlayingMedia.Size = New System.Drawing.Size(465, 467)
+        Me.lsvPlayingMedia.Size = New System.Drawing.Size(540, 467)
         Me.lsvPlayingMedia.TabIndex = 1
         Me.lsvPlayingMedia.UseCompatibleStateImageBehavior = False
         '
@@ -123,7 +126,7 @@ Partial Class MainWindow
         Me.layoutButtonsPanel.Controls.Add(Me.layoutButtonsFlow)
         Me.layoutButtonsPanel.Location = New System.Drawing.Point(3, 48)
         Me.layoutButtonsPanel.Name = "layoutButtonsPanel"
-        Me.layoutButtonsPanel.Size = New System.Drawing.Size(523, 36)
+        Me.layoutButtonsPanel.Size = New System.Drawing.Size(609, 36)
         Me.layoutButtonsPanel.TabIndex = 2
         '
         'layoutButtonsFlow
@@ -133,11 +136,13 @@ Partial Class MainWindow
         Me.layoutButtonsFlow.Controls.Add(Me.cmdClearAll)
         Me.layoutButtonsFlow.Controls.Add(Me.cbbClearChannel)
         Me.layoutButtonsFlow.Controls.Add(Me.cmbClearChannel)
+        Me.layoutButtonsFlow.Controls.Add(Me.nudLayerClear)
+        Me.layoutButtonsFlow.Controls.Add(Me.cmbClearLayer)
         Me.layoutButtonsFlow.Dock = System.Windows.Forms.DockStyle.Fill
         Me.layoutButtonsFlow.Location = New System.Drawing.Point(0, 0)
         Me.layoutButtonsFlow.MinimumSize = New System.Drawing.Size(0, 30)
         Me.layoutButtonsFlow.Name = "layoutButtonsFlow"
-        Me.layoutButtonsFlow.Size = New System.Drawing.Size(523, 36)
+        Me.layoutButtonsFlow.Size = New System.Drawing.Size(609, 36)
         Me.layoutButtonsFlow.TabIndex = 0
         '
         'cmbConnect
@@ -170,7 +175,8 @@ Partial Class MainWindow
         'cbbClearChannel
         '
         Me.cbbClearChannel.FormattingEnabled = True
-        Me.cbbClearChannel.Location = New System.Drawing.Point(246, 3)
+        Me.cbbClearChannel.Location = New System.Drawing.Point(246, 4)
+        Me.cbbClearChannel.Margin = New System.Windows.Forms.Padding(3, 4, 3, 3)
         Me.cbbClearChannel.Name = "cbbClearChannel"
         Me.cbbClearChannel.Size = New System.Drawing.Size(121, 21)
         Me.cbbClearChannel.TabIndex = 3
@@ -181,7 +187,7 @@ Partial Class MainWindow
         Me.cmbClearChannel.Name = "cmbClearChannel"
         Me.cmbClearChannel.Size = New System.Drawing.Size(75, 23)
         Me.cmbClearChannel.TabIndex = 4
-        Me.cmbClearChannel.Text = "CLEAR"
+        Me.cmbClearChannel.Text = "CLEAR CH."
         Me.cmbClearChannel.UseVisualStyleBackColor = True
         '
         'layoutAdressPanel
@@ -194,7 +200,7 @@ Partial Class MainWindow
         Me.layoutAdressPanel.Location = New System.Drawing.Point(2, 1)
         Me.layoutAdressPanel.MinimumSize = New System.Drawing.Size(0, 40)
         Me.layoutAdressPanel.Name = "layoutAdressPanel"
-        Me.layoutAdressPanel.Size = New System.Drawing.Size(524, 40)
+        Me.layoutAdressPanel.Size = New System.Drawing.Size(610, 40)
         Me.layoutAdressPanel.TabIndex = 1
         '
         'lblAddress
@@ -212,7 +218,7 @@ Partial Class MainWindow
         'txtPort
         '
         Me.txtPort.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.txtPort.Location = New System.Drawing.Point(470, 16)
+        Me.txtPort.Location = New System.Drawing.Point(556, 16)
         Me.txtPort.Name = "txtPort"
         Me.txtPort.Size = New System.Drawing.Size(36, 20)
         Me.txtPort.TabIndex = 1
@@ -225,9 +231,27 @@ Partial Class MainWindow
                     Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.txtAddress.Location = New System.Drawing.Point(6, 16)
         Me.txtAddress.Name = "txtAddress"
-        Me.txtAddress.Size = New System.Drawing.Size(458, 20)
+        Me.txtAddress.Size = New System.Drawing.Size(544, 20)
         Me.txtAddress.TabIndex = 0
         Me.txtAddress.Text = "casparcg"
+        '
+        'nudLayerClear
+        '
+        Me.nudLayerClear.Location = New System.Drawing.Point(454, 5)
+        Me.nudLayerClear.Margin = New System.Windows.Forms.Padding(3, 5, 3, 3)
+        Me.nudLayerClear.Maximum = New Decimal(New Integer() {10000, 0, 0, 0})
+        Me.nudLayerClear.Name = "nudLayerClear"
+        Me.nudLayerClear.Size = New System.Drawing.Size(36, 20)
+        Me.nudLayerClear.TabIndex = 5
+        '
+        'cmbClearLayer
+        '
+        Me.cmbClearLayer.Location = New System.Drawing.Point(496, 3)
+        Me.cmbClearLayer.Name = "cmbClearLayer"
+        Me.cmbClearLayer.Size = New System.Drawing.Size(99, 23)
+        Me.cmbClearLayer.TabIndex = 6
+        Me.cmbClearLayer.Text = "CLEAR LAYER"
+        Me.cmbClearLayer.UseVisualStyleBackColor = True
         '
         'MainWindow
         '
@@ -235,7 +259,7 @@ Partial Class MainWindow
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.AutoScroll = True
         Me.AutoSize = True
-        Me.ClientSize = New System.Drawing.Size(799, 562)
+        Me.ClientSize = New System.Drawing.Size(926, 562)
         Me.Controls.Add(Me.layoutPlaylistSplit)
         Me.Name = "MainWindow"
         Me.Text = "Caspar's PlayoutClient"
@@ -254,6 +278,7 @@ Partial Class MainWindow
         Me.layoutButtonsFlow.ResumeLayout(False)
         Me.layoutAdressPanel.ResumeLayout(False)
         Me.layoutAdressPanel.PerformLayout()
+        CType(Me.nudLayerClear, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
 
     End Sub
@@ -281,4 +306,6 @@ Partial Class MainWindow
     Friend WithEvents cmdClearAll As System.Windows.Forms.Button
     Friend WithEvents cbbClearChannel As System.Windows.Forms.ComboBox
     Friend WithEvents cmbClearChannel As System.Windows.Forms.Button
+    Friend WithEvents nudLayerClear As System.Windows.Forms.NumericUpDown
+    Friend WithEvents cmbClearLayer As System.Windows.Forms.Button
 End Class
