@@ -66,4 +66,8 @@ Partial Class MediaMonitor
     Friend WithEvents lsvPlayingMedia As System.Windows.Forms.ListView
     Friend WithEvents tmUpdater As System.Windows.Forms.Timer
     Friend WithEvents lblClock As System.Windows.Forms.Label
+
+    Protected Overrides Sub Finalize()
+        MyBase.Finalize()
+    End Sub
 End Class

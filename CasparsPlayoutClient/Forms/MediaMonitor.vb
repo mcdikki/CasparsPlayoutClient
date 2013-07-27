@@ -12,13 +12,14 @@
 
     Private Sub MediaMonitor_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
         lsvPlayingMedia.View = View.Details
+        lsvPlayingMedia.HeaderStyle = ColumnHeaderStyle.Clickable
         With lsvPlayingMedia.Columns
-            .Add("Name")
-            .Add("Channel")
-            .Add("Layer")
-            .Add("Laufzeit")
-            .Add("Verbleibend")
-            .Add("% gespielt")
+            .Add("name", "Name", 200)
+            .Add("channel", "Channel", 50)
+            .Add("layer", "Layer", 50)
+            .Add("duration", "Laufzeit", 100)
+            .Add("remaining", "Verbleibend", 100)
+            .Add("played", "% gespielt", 75)
         End With
         AddHandler sc.getTicker.frameTick, AddressOf Updater_Tick
         AddHandler sc.getTicker.frameTick, AddressOf Clock_Tick
@@ -52,19 +53,29 @@
         'lsvPlayingMedia.Items.Clear()
         For Each item In sc.getPlaylistRoot.getChildItems(True)
             If (item.isPlayable AndAlso item.isPlaying) Then 'OrElse lsvPlayingMedia.Items.ContainsKey(item.toString) Then
-                Dim line As New ListViewItem(item.getName)
-                line.Name = item.toString
-                With line.SubItems
-                    .Add(item.getChannel)
-                    .Add(item.getLayer)
-                    .Add(ServerController.getTimeStringOfMS(item.getDuration))
-                    .Add(ServerController.getTimeStringOfMS(item.getRemaining))
-                    .Add(item.getPlayed)
-                End With
+                'Dim line As New ListViewItem(item.getName)
+                'line.Name = item.toString
+                'With line.SubItems
+                '    .Add(item.getChannel)
+                '    .Add(item.getLayer)
+                '    .Add(ServerController.getTimeStringOfMS(item.getDuration))
+                '    .Add(ServerController.getTimeStringOfMS(item.getRemaining))
+                '    .Add(item.getPlayed)
+                'End With
                 If lsvPlayingMedia.Items.ContainsKey(item.toString) Then
                     lsvPlayingMedia.Items(item.toString).Remove()
+                    lsvPlayingMedia.Items.Add(item.toString)
+
+                    Dim lsvItem = lsvPlayingMedia.Items.Item(item.toString)
+                    With lsvItem.SubItems
+                        .Add(item.getChannel)
+                        .Add(item.getLayer)
+                        .Add(ServerController.getTimeStringOfMS(item.getDuration))
+                        .Add(ServerController.getTimeStringOfMS(item.getRemaining))
+                        .Add(item.getPlayed)
+                    End With
                 End If
-                lsvPlayingMedia.Items.Add(line)
+                'lsvPlayingMedia.Items.Add(line)
             End If
         Next
     End Sub

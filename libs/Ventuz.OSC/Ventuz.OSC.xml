@@ -1,0 +1,877 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Ventuz.OSC</name>
+    </assembly>
+    <members>
+        <member name="T:Ventuz.OSC.OscException">
+            <summary>
+            This exception is thrown, if any errors occured regarding the OSC protocol
+            </summary>
+        </member>
+        <member name="M:Ventuz.OSC.OscException.#ctor(System.String)">
+            <summary>
+            Creates an OscException with a specified message
+            </summary>
+            <param name="message">message of the exception</param>
+        </member>
+        <member name="M:Ventuz.OSC.OscException.#ctor(System.String,System.Exception)">
+            <summary>
+            Creates an OscException with a specified message
+            </summary>
+            <param name="message">message of the exception</param>
+            <param name="innerException">inner exception caught by the OSC classes</param>
+        </member>
+        <member name="T:Ventuz.OSC.OscMessage">
+            <summary>
+            OscMessage is the base class of OscElement and OscBundle. 
+            It represents the smallest to be send/received via the OSC protocol
+            </summary>
+        </member>
+        <member name="M:Ventuz.OSC.OscMessage.ToStream(System.IO.Stream)">
+            <summary>
+            Write the message to the stream.
+            </summary>
+            <param name="stream"></param>
+        </member>
+        <member name="M:Ventuz.OSC.OscMessage.FromStream(System.IO.Stream)">
+            <summary>
+            Reads an OSC message from a given stream.
+            </summary>
+            <param name="stream">The stream to read the OSC message from</param>
+            <returns>The read message can represent a bundle or an element</returns>
+        </member>
+        <member name="T:Ventuz.OSC.OscBundle">
+             <summary>
+             An OscBundle holds one or more OscElements and bundles them to one message.
+             Only OscBundle can be sent or received. Therefore the simplest Osc message is a OscBundle
+             holding one OscElement
+             </summary>
+             <example>
+             <code>
+            	class MyClass 
+            	{
+            		UdpWriter	udpWriter;
+            
+            		public MyClass() 
+            		{
+            			this.udpWriter = new UdpWriter( "228.1.1.1", 7000 );
+            		}
+            
+            		public void Send() 
+            		{
+            			udpWriter.SendBundle( new OscBundle( 0, new OscElement( "/Target", 1 ) ) );
+            		}
+            	}
+             </code>
+             </example>
+        </member>
+        <member name="F:Ventuz.OSC.OscBundle.Immediate">
+            <summary>
+            represents the OSC time tag 'Immediate' and has the value 1
+            </summary>
+        </member>
+        <member name="M:Ventuz.OSC.OscBundle.AddElement(Ventuz.OSC.OscMessage)">
+            <summary>
+            Adds one further OscElement to the OscBundle
+            </summary>
+            <param name="element">OscMessage to be added</param>
+        </member>
+        <member name="M:Ventuz.OSC.OscBundle.FromStream(Ventuz.OSC.OscMessage.OscBinaryReader,System.Boolean,System.Int64)">
+            <summary>
+            Creates an OSCBundle by reading the stream encapsulated in the OscBinaryReader.
+            NOTE: an OscBundle can contain other OscBundles!!!
+            </summary>
+            <param name="bin">OscBinaryReader which encapsulates the actual data stream</param>
+            <param name="continueRead">indicates if the second part of the '#bundle' tag should be read</param>
+            <param name="bytesToRead">number of bytes that the OscBundle consists of. if value is set to -1 the complete stream should be read. values > 0 indicate an nested OscBundle.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Ventuz.OSC.OscBundle.ToStream(System.IO.Stream)">
+            <summary>
+            Writes the OscBundle to a stream according to the OSC protocol
+            </summary>
+            <param name="stream">stream to write this OscBundle to</param>
+        </member>
+        <member name="M:Ventuz.OSC.OscBundle.ToTimeStamp(System.DateTime)">
+            <summary>
+            Convert a .Net DateTime object into an OSC-Timestamp (NTP-Timestamp)
+            A DateTime value before 1st Jan 1900 return an OSC/NTP immediate (1UL)
+            </summary>
+            <param name="dateTime">DateTime object to convert</param>
+            <returns>OSC-Timestamp</returns>
+        </member>
+        <member name="M:Ventuz.OSC.OscBundle.ToDateTime(System.UInt64)">
+            <summary>
+            Convert an OSC-Timestamp (NTP-Timestamp) into a .Net DateTime object.
+            A value of one or zero return DateTime.MinValue
+            </summary>
+            <param name="timeStamp">OSC-Timestamp to convert</param>
+            <returns>DateTime</returns>
+        </member>
+        <member name="M:Ventuz.OSC.OscBundle.#ctor">
+            <summary>
+            Creates a new empty OscBundle.
+            Use the AddElement method to add OscElements to this OscBundle.
+            The TimeStamp will be set to 'immediate' (1)
+            </summary>
+        </member>
+        <member name="M:Ventuz.OSC.OscBundle.#ctor(System.UInt64)">
+            <summary>
+            Creates a new empty OscBundle with the specified TimeTag.
+            The TimeTag can be changed later as well.
+            Use the AddElement method to add OscElements to this OscBundle.
+            </summary>
+            <param name="timeTag">TimeTag for the new OscBundle</param>
+        </member>
+        <member name="M:Ventuz.OSC.OscBundle.#ctor(System.DateTime)">
+            <summary>
+            Creates a new empty OscBundle with the specified TimeTag.
+            The TimeTag can be changed later as well.
+            Use the AddElement method to add OscElements to this OscBundle.
+            </summary>
+            <param name="timeTag">TimeTag for the new OscBundle</param>
+        </member>
+        <member name="M:Ventuz.OSC.OscBundle.#ctor(System.UInt64,Ventuz.OSC.OscMessage)">
+            <summary>
+            Creates an OscBundle with the specified TimeTag
+            and adds one OscElement to it.
+            The TimeTag can be changed later as well.
+            Use the AddElement method to add more OscElements.
+            </summary>
+            <param name="timeTag">TimeTag for the new OscBundle</param>
+            <param name="element1">OscMessage to add</param>
+        </member>
+        <member name="M:Ventuz.OSC.OscBundle.#ctor(System.DateTime,Ventuz.OSC.OscMessage)">
+            <summary>
+            Creates an OscBundle with the specified TimeTag
+            and adds one OscElement to it.
+            The TimeTag can be changed later as well.
+            Use the AddElement method to add more OscElements.
+            </summary>
+            <param name="timeTag">TimeTag for the new OscBundle</param>
+            <param name="element1">OscMessage to add</param>
+        </member>
+        <member name="M:Ventuz.OSC.OscBundle.#ctor(System.UInt64,Ventuz.OSC.OscMessage,Ventuz.OSC.OscMessage)">
+            <summary>
+            Creates an OscBundle with the specified TimeTag
+            and adds two OscElements to it.
+            The TimeTag can be changed later as well.
+            Use the AddElement method to add more OscElements.
+            </summary>
+            <param name="timeTag">TimeTag for the new OscBundle</param>
+            <param name="element1">First OscMessage to add</param>
+            <param name="element2">Second OscMessage to add</param>
+        </member>
+        <member name="M:Ventuz.OSC.OscBundle.#ctor(System.DateTime,Ventuz.OSC.OscMessage,Ventuz.OSC.OscMessage)">
+            <summary>
+            Creates an OscBundle with the specified TimeTag
+            and adds two OscElements to it.
+            The TimeTag can be changed later as well.
+            Use the AddElement method to add more OscElements.
+            </summary>
+            <param name="timeTag">TimeTag for the new OscBundle</param>
+            <param name="element1">First OscMessage to add</param>
+            <param name="element2">Second OscMessage to add</param>
+        </member>
+        <member name="M:Ventuz.OSC.OscBundle.#ctor(System.UInt64,Ventuz.OSC.OscMessage,Ventuz.OSC.OscMessage,Ventuz.OSC.OscMessage)">
+            <summary>
+            Creates an OscBundle with the specified TimeTag
+            and adds three OscElements to it.
+            The TimeTag can be changed later as well.
+            Use the AddElement method to add more OscElements.
+            </summary>
+            <param name="timeTag">TimeTag for the new OscBundle</param>
+            <param name="element1">First OscMessage to add</param>
+            <param name="element2">Second OscMessage to add</param>
+            <param name="element3">Third OscMessage to add</param>
+        </member>
+        <member name="M:Ventuz.OSC.OscBundle.#ctor(System.DateTime,Ventuz.OSC.OscMessage,Ventuz.OSC.OscMessage,Ventuz.OSC.OscMessage)">
+            <summary>
+            Creates an OscBundle with the specified TimeTag
+            and adds three OscElements to it.
+            The TimeTag can be changed later as well.
+            Use the AddElement method to add more OscElements.
+            </summary>
+            <param name="timeTag">TimeTag for the new OscBundle</param>
+            <param name="element1">First OscMessage to add</param>
+            <param name="element2">Second OscMessage to add</param>
+            <param name="element3">Third OscMessage to add</param>
+        </member>
+        <member name="M:Ventuz.OSC.OscBundle.#ctor(System.UInt64,Ventuz.OSC.OscElement[])">
+            <summary>
+            Creates an OscBundle with the specified TimeTag
+            and adds a list of OscElements to it.
+            The TimeTag can be changed later as well.
+            Use the AddElement method to add more OscElements.
+            </summary>
+            <param name="timeTag">TimeTag for the new OscBundle</param>
+            <param name="elements">List of OscElements to add</param>
+        </member>
+        <member name="M:Ventuz.OSC.OscBundle.#ctor(System.DateTime,Ventuz.OSC.OscElement[])">
+            <summary>
+            Creates an OscBundle with the specified TimeTag
+            and adds a list of OscElements to it.
+            The TimeTag can be changed later as well.
+            Use the AddElement method to add more OscElements.
+            </summary>
+            <param name="timeTag">TimeTag for the new OscBundle</param>
+            <param name="elements">List of OscElements to add</param>
+        </member>
+        <member name="P:Ventuz.OSC.OscBundle.Elements">
+            <summary>
+            Gets a collection of all OscElements in the OscBundle
+            </summary>
+        </member>
+        <member name="P:Ventuz.OSC.OscBundle.TimeTag">
+            <summary>
+            Get or sets the TimeTag attached to this OscBundle
+            </summary>
+        </member>
+        <member name="P:Ventuz.OSC.OscBundle.DateTime">
+            <summary>
+            Get or sets the TimeTag attached to this OscBundle as DateTime.
+            A DateTime value of DateTime.MinValue represents the OSC/NTP immediate (1UL)
+            </summary>
+        </member>
+        <member name="T:Ventuz.OSC.OscElement">
+            <summary>
+            OscElement holds the real data send/received to/from a OSC host in the network, so called Arguments.
+            An OscElement is addressing an OSC address, which the receiver is listening to.
+            One Element can transfer one or more data words. Following types are supported:<br/>
+            primitive types:<br/>
+            <code>int, float, string, long, ulong, double, char, bool</code><br/>
+            complex types:<br/>
+            <code>byte[] (binary data), OscSymbol, Color, OscMidiMessage</code><br/>
+            extended types (not part of the OSC specification):<br/>
+            <code>OscUnicodeString, OscImage</code>
+            </summary>
+        </member>
+        <member name="F:Ventuz.OSC.OscElement.Infinitum">
+            <summary>
+            Constant argument to be used to transfer OSC-type 'Infinitum' ('I').
+            The value is float.PositiveInfinity
+            </summary>
+        </member>
+        <member name="M:Ventuz.OSC.OscElement.ToStream(System.IO.Stream)">
+            <summary>
+            Writes the OscElement to a stream in the format of an OscMessage:<br/>
+            1. Length of message<br/>
+            2. OSC Address Pattern<br/>
+            3. OSC Type Tag String<br/>
+            4. binary argument data<br/>
+            </summary>
+            <param name="stream">stream to write the element to.</param>
+        </member>
+        <member name="M:Ventuz.OSC.OscElement.ValidateServerAddress(System.String)">
+            <summary>
+            Checks if a given OSC address is conforms to the OSC address rules for a server address.
+            </summary>
+            <param name="address">OSC address to validate</param>
+        </member>
+        <member name="M:Ventuz.OSC.OscElement.ValidateAddressPattern(System.String)">
+            <summary>
+            Checks if a given OSC address is conforms the OSC address rules for address pattern matching
+            multiple server addresses.<br/>
+            These are the matching rules for characters in the OSC Address Pattern:<br/><br/>
+            <code>
+            '?' in the OSC Address Pattern matches any single character<br/>
+            '*' in the OSC Address Pattern matches any sequence of zero or more characters<br/>
+            A string of characters in square brackets (e.g., "[string]") in the OSC Address Pattern matches any character in the string. Inside square brackets, the minus sign (-) and exclamation point (!) have special meanings:<br/>
+            1. two characters separated by a minus sign indicate the range of characters between the given two in ASCII collating sequence. (A minus sign at the end of the string has no special meaning.)<br/>
+            2. An exclamation point at the beginning of a bracketed string negates the sense of the list, meaning that the list matches any character not in the list. (An exclamation point anywhere besides the first character after the open bracket has no special meaning.)<br/>
+            A comma-separated list of strings enclosed in curly braces (e.g., "{foo,bar}") in the OSC Address Pattern matches any of the strings in the list.<br/>
+            Any other character in an OSC Address Pattern can match only the same character.</code>
+            </summary>
+            <param name="address">OSC address to validate</param>
+        </member>
+        <member name="M:Ventuz.OSC.OscElement.GetRegex(System.String)">
+            <summary>
+            Generates a .NET Regular Expression by a given OSC address
+            </summary>
+            <param name="address">OSC address</param>
+            <returns>A valid Regex object</returns>
+        </member>
+        <member name="M:Ventuz.OSC.OscElement.#ctor(System.String,System.Object[])">
+            <summary>
+            Creates an OscElement addressing the specified OSC Address and Arguments.
+            The arguments are one or more of any supported types:
+            primitive types:<br/>
+            <code>int, float, string, long, ulong, double, char, bool</code><br/>
+            complex types:<br/>
+            <code>byte[] (binary data), OscSymbol, Color, OscMidiMessage</code><br/>
+            extended types (not part of the OSC specification):<br/>
+            <code>OscUnicodeString, OscImage</code>
+            </summary>
+            <param name="address">OSC address the OscElement is addressing</param>
+            <param name="args">list of arguments for this OscElement</param>
+        </member>
+        <member name="M:Ventuz.OSC.OscElement.Match(System.String)">
+            <summary>
+            Returns true, if the Address of the OscElement matches the given address. Case sensitive!
+            </summary>
+            <param name="address">OSC Address to check for match</param>
+            <returns></returns>
+        </member>
+        <member name="M:Ventuz.OSC.OscElement.ToString">
+            <summary>
+            Writes out a text dump of this OscElement.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:Ventuz.OSC.OscElement.Address">
+            <summary>
+            Gets the OSC address this OscElement is addressing on the receivers side
+            </summary>
+        </member>
+        <member name="P:Ventuz.OSC.OscElement.Regex">
+            <summary>
+            Get the .Net Regular Expression for the OSC address of this OscElement
+            </summary>
+        </member>
+        <member name="P:Ventuz.OSC.OscElement.Args">
+            <summary>
+            Gets the arguments the OscElement is holding.
+            </summary>
+        </member>
+        <member name="T:Ventuz.OSC.OscMidiMessage">
+            <summary>
+            The OscMidiMessage structure combines the components of a Midi Message 
+            and allows to use it as an argument of an OscElement.
+            </summary>
+        </member>
+        <member name="F:Ventuz.OSC.OscMidiMessage.PortId">
+            <summary>
+            PortID of the Midi message
+            </summary>
+        </member>
+        <member name="F:Ventuz.OSC.OscMidiMessage.Status">
+            <summary>
+            Status of the Midi message
+            </summary>
+        </member>
+        <member name="F:Ventuz.OSC.OscMidiMessage.Data1">
+            <summary>
+            Data1 of the Midi message
+            </summary>
+        </member>
+        <member name="F:Ventuz.OSC.OscMidiMessage.Data2">
+            <summary>
+            Data2 of the Midi message
+            </summary>
+        </member>
+        <member name="M:Ventuz.OSC.OscMidiMessage.#ctor(System.Byte,System.Byte,System.Byte,System.Byte)">
+            <summary>
+            Creates a new MidiMessage with the specified components of a Midi message.
+            See Midi protocol specifications for further details.
+            </summary>
+            <param name="portId">PortID component of a Midi message</param>
+            <param name="status">Status component of a Midi message</param>
+            <param name="data1">Data1 component of a Midi message</param>
+            <param name="data2">Data2 component of a Midi message</param>
+        </member>
+        <member name="M:Ventuz.OSC.OscMidiMessage.ToInt32">
+            <summary>
+            Converts the Midi components to a 32 bit word (binary Midi message or short message)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Ventuz.OSC.OscSymbol">
+            <summary>
+            The OscSymbol is a special version of a string argument in an OscElement.
+            It's not transferred as a simple string. It's using the Symbol tagging.
+            See OSC specifications for further details.
+            </summary>
+        </member>
+        <member name="F:Ventuz.OSC.OscSymbol.Symbol">
+            <summary>
+            the Symbol content 
+            </summary>
+        </member>
+        <member name="M:Ventuz.OSC.OscSymbol.#ctor(System.String)">
+            <summary>
+            Creates an OscSymbol by the given symbol-content string
+            </summary>
+            <param name="symbol">the content of the symbol</param>
+        </member>
+        <member name="P:Ventuz.OSC.OscSymbol.Length">
+            <summary>
+            Get the length of the symbol content or zero if the symbol string is null (Nothing in VB)
+            </summary>
+        </member>
+        <member name="T:Ventuz.OSC.OscUnicodeString">
+            <summary>
+            The OscUnicodeString is an OSC extension (not specified in the OSC specification)
+            It simply transfers a BigEndianUnicode encoded string (.NET-String) as a binary argument.
+            The binary data is marked with the bytes 'B' 'E' 'U' 'C' (Big-Endian-Uni-Code)
+            If the receiving side uses the same Ventuz.OSC as well, the OscElement recognizes the argument
+            as an OscUnicodeString. Other implementation will receive a binary data argument.
+            </summary>
+        </member>
+        <member name="F:Ventuz.OSC.OscUnicodeString.String">
+            <summary>
+            The embedded string
+            </summary>
+        </member>
+        <member name="M:Ventuz.OSC.OscUnicodeString.#ctor(System.Byte[])">
+            <summary>
+            Creates an OscUnicodeString from its binary representation
+            </summary>
+            <param name="bin"></param>
+        </member>
+        <member name="M:Ventuz.OSC.OscUnicodeString.#ctor(System.String)">
+            <summary>
+            Creates an OscUnicodeString from a string
+            </summary>
+            <param name="String"></param>
+        </member>
+        <member name="M:Ventuz.OSC.OscUnicodeString.GetBytes">
+            <summary>
+            Encodes the OscUnicodeString to its binary representation.
+            The byte array is filled with 4 leading bytes: 'B' 'E' 'U' 'C'
+            so the shortest returned buffer has a length of 4
+            </summary>
+            <returns>the byte array holding the encoded string including the mark</returns>
+        </member>
+        <member name="M:Ventuz.OSC.OscUnicodeString.IsOscUnicodeString(System.Byte[])">
+            <summary>
+            Tests if a byte array is marked with 'B' 'E' 'U' 'C'
+            </summary>
+            <param name="b">byte array to test</param>
+            <returns>true, if the first 4 bytes in buffer matches the mark</returns>
+        </member>
+        <member name="M:Ventuz.OSC.OscUnicodeString.GetString(System.Byte[])">
+            <summary>
+            Decodes a byte array into a string.
+            </summary>
+            <param name="b">byte array to decode</param>
+            <returns>the decoded string, or null if the byte array doesn't represent an encoded string</returns>
+        </member>
+        <member name="T:Ventuz.OSC.OscImage">
+            <summary>
+            Experimental!<br/>
+            The OscImage is an OSC extension (not specified in the OSC specification).
+            OscImage allows to use an Image as an argument of an OscElement.
+            The image is saved in PNG format and transferred as a binary argument where
+            the first 4 bytes are filled with 'P' 'N' 'G' 'I' (PNG-Image)<br/>
+            If the receiving side uses the same Ventuz.OSC as well, the OscElement recognizes the argument
+            as an OscImage. Other implementation will receive a binary data argument.
+            </summary>
+        </member>
+        <member name="F:Ventuz.OSC.OscImage.data">
+            <summary>
+            binary data of the Image (PNG-format)
+            </summary>
+        </member>
+        <member name="F:Ventuz.OSC.OscImage.length">
+            <summary>
+            length of used bytes in <see cref="F:Ventuz.OSC.OscImage.data"/>
+            </summary>
+        </member>
+        <member name="M:Ventuz.OSC.OscImage.#ctor(System.Drawing.Image)">
+            <summary>
+            Creates an OscImage from a given Image
+            </summary>
+            <param name="image">image to convert into an OscImage</param>
+        </member>
+        <member name="M:Ventuz.OSC.OscImage.GetBytes">
+            <summary>
+            Encodes the OscImage to its binary representation.
+            the byte array is filled with 4 leading bytes: 'P' 'N' 'G' 'I'
+            </summary>
+            <returns>the byte array holding the encoded image including the mark</returns>
+        </member>
+        <member name="M:Ventuz.OSC.OscImage.IsOscImage(System.Byte[])">
+            <summary>
+            Tests if a byte array is marked with 'P' 'N' 'G' 'I'
+            </summary>
+            <param name="b">byte array to test</param>
+            <returns>true, if the first 4 bytes in buffer matche the mark</returns>
+        </member>
+        <member name="M:Ventuz.OSC.OscImage.GetImage(System.Byte[])">
+            <summary>
+            Decodes a byte array into an Image.
+            </summary>
+            <param name="b">byte array to decode</param>
+            <returns>the decoded Image, or null if the byte array doesn't represent an encoded Image</returns>
+        </member>
+        <member name="T:Ventuz.OSC.OscManager">
+            <summary>
+            The OscManagerComponent controls one OSC sending channels.
+            All Controls attached to this Manager are sending their messages to the target OSC receiver
+            specified in this manager
+            </summary>
+        </member>
+        <member name="M:Ventuz.OSC.OscManager.OnNetworkChanged">
+            <summary>
+            Occurs if the network configuration has changed (<see>DestIP</see> or <see>DestPort</see>)
+            </summary>
+        </member>
+        <member name="M:Ventuz.OSC.OscManager.Evaluate(System.Windows.Forms.Control)">
+            <summary>
+            Creates an OscElement containing the arguments given by the control. e.g. the Text property of a TextBox
+            The Control must be attachted to this manager to return a valid OscElement
+            </summary>
+            <param name="c">The control to form an OscElement for</param>
+            <returns>OscElement with address and argument of the given control, or null if the control is not managed by this manager</returns>
+        </member>
+        <member name="M:Ventuz.OSC.OscManager.Send(Ventuz.OSC.OscBundle)">
+            <summary>
+            Sends an OscBundle to the destination as configured in the OscManager
+            </summary>
+            <param name="bundle"></param>
+        </member>
+        <member name="M:Ventuz.OSC.OscManager.#ctor">
+            <summary>
+            Creates a new <see>OscManager</see>
+            </summary>
+        </member>
+        <member name="M:Ventuz.OSC.OscManager.#ctor(System.ComponentModel.IContainer)">
+            <summary>
+            Creates a new <see>OscManager</see> and adds it to the given Container
+            </summary>
+            <param name="container"></param>
+        </member>
+        <member name="M:Ventuz.OSC.OscManager.Dispose(System.Boolean)">
+            <summary>
+            Disposes (closes) the <see>OscManager</see> and closes all open network sockets
+            </summary>
+            <param name="disposing"></param>
+        </member>
+        <member name="M:Ventuz.OSC.OscManager.GetAddress(System.Windows.Forms.Control)">
+            <summary>
+            Gets the OSC Element Address of an attached Control
+            </summary>
+            <param name="control">the control this extended property belongs to</param>
+            <returns>the IP address</returns>
+        </member>
+        <member name="M:Ventuz.OSC.OscManager.SetAddress(System.Windows.Forms.Control,System.String)">
+            <summary>
+            Sets the OSC Element Address of an attached Control
+            </summary>
+            <param name="control">the control this extended property belongs to</param>
+            <param name="value">OSC Element Address</param>
+        </member>
+        <member name="M:Ventuz.OSC.OscManager.GetGroup(System.Windows.Forms.Control)">
+            <summary>
+            Gets the <see>OscGroup</see> of an attached Control
+            </summary>
+            <param name="control">the control this extended property belongs to</param>
+            <returns>OscGroup of the given Control</returns>
+        </member>
+        <member name="M:Ventuz.OSC.OscManager.SetGroup(System.Windows.Forms.Control,Ventuz.OSC.OscGroup)">
+            <summary>
+            Sets the <see>OscGroup</see> of an attached Control
+            </summary>
+            <param name="control">the control this extended property belongs to</param>
+            <param name="value">OscGroup of the given Control</param>
+        </member>
+        <member name="M:Ventuz.OSC.OscManager.GetGroupTrigger(System.Windows.Forms.Control)">
+            <summary>
+            Gets the GroupTrigger property of an attached Control
+            </summary>
+            <param name="control">the control this extended property belongs to</param>
+            <returns>value GroupTrigger of the given Control</returns>
+        </member>
+        <member name="M:Ventuz.OSC.OscManager.SetGroupTrigger(System.Windows.Forms.Control,System.Boolean)">
+            <summary>
+            Sets the GroupTrigger property of an attached Control
+            </summary>
+            <param name="control">the control this extended property belongs to</param>
+            <param name="value">value GroupTrigger of the given Control</param>
+        </member>
+        <member name="P:Ventuz.OSC.OscManager.DestIP">
+            <summary>
+            Destination IP this manager sends OscBundles to. (unicast or multicast)
+            </summary>
+        </member>
+        <member name="P:Ventuz.OSC.OscManager.DestPort">
+            <summary>
+            Destination Port number this manager sends OscBundles to.
+            </summary>
+        </member>
+        <member name="T:Ventuz.OSC.UdpWriter">
+            <summary>
+            An UdpWriter sends OscBundles to a unicast or multicast IP address.
+            </summary>
+        </member>
+        <member name="T:Ventuz.OSC.NetWriter">
+            <summary>
+            Baseclass for all implementations writing OSC message to the network.
+            </summary>
+        </member>
+        <member name="T:Ventuz.OSC.NetBase">
+            <summary>
+            Baseclass for all network send and receive classes
+            </summary>
+        </member>
+        <member name="M:Ventuz.OSC.NetBase.#ctor">
+            <summary>
+            this constructor does nothing.
+            It´s just there to avoid a direct instancing of an object of this type.
+            </summary>
+        </member>
+        <member name="M:Ventuz.OSC.NetBase.Finalize">
+            <summary>
+            Finalizer
+            </summary>
+        </member>
+        <member name="M:Ventuz.OSC.NetBase.Dispose">
+            <summary>
+            Disposes and closes a network connection
+            </summary>
+        </member>
+        <member name="M:Ventuz.OSC.NetBase.Dispose(System.Boolean)">
+            <summary>
+            Disposes and closes a network connection
+            </summary>
+            <param name="disposing">false, if instance is dispose by the Garbage Collector</param>
+        </member>
+        <member name="M:Ventuz.OSC.NetWriter.#ctor">
+            <summary>
+            This constructor does nothing.
+            It´s just there to avoid a direct instancing of an object of this type.
+            </summary>
+        </member>
+        <member name="M:Ventuz.OSC.NetWriter.SendBundle(Ventuz.OSC.OscBundle)">
+            <summary>
+            sends a bundle to the network
+            </summary>
+            <param name="bundle">OscBundle to be send</param>
+        </member>
+        <member name="M:Ventuz.OSC.NetWriter.Send(Ventuz.OSC.OscMessage)">
+            <summary>
+            sends an OSC message to the network
+            </summary>
+            <param name="message"></param>
+        </member>
+        <member name="M:Ventuz.OSC.UdpWriter.#ctor(System.String,System.Int32)">
+            <summary>
+            Creates an UdpWriter sending OscBundles to the specified UDP IP address and port.
+            The IP address can be a multicast IP, if you like to send the message to multiple
+            hosts within the network.
+            </summary>
+            <param name="address">IP address (or Multicast-IP) to send to</param>
+            <param name="port">port number to send to</param>
+        </member>
+        <member name="M:Ventuz.OSC.UdpWriter.Dispose(System.Boolean)">
+            <summary>
+            Closes the UdpWriter
+            </summary>
+            <param name="disposing">false, if called by the Garbage Collector</param>
+        </member>
+        <member name="M:Ventuz.OSC.UdpWriter.Send(Ventuz.OSC.OscMessage)">
+            <summary>
+            Sends an OscBundle to the network (synchronously).
+            </summary>
+            <param name="message">OscMessage to send</param>
+        </member>
+        <member name="T:Ventuz.OSC.OscGroup">
+            <summary>
+            The OscGroup allows to group multiple controls together so that all <see>OscElement</see>s 
+            created by the Control are send in one <see>OscBundle</see>.
+            To trigger the actual send of this bundle, you need to attach a Button to this <see>OscGroup</see> as well and set the GroupTrigger property to true.
+            </summary>
+        </member>
+        <member name="M:Ventuz.OSC.OscGroup.#ctor">
+            <summary>
+            Creates a new OscGroup Component
+            </summary>
+        </member>
+        <member name="M:Ventuz.OSC.OscGroup.#ctor(System.ComponentModel.IContainer)">
+            <summary>
+            Creates a new OscGroup Component ans attaches it to the given container
+            </summary>
+            <param name="container">container</param>
+        </member>
+        <member name="M:Ventuz.OSC.OscGroup.Attach(Ventuz.OSC.OscManager,System.Windows.Forms.Control)">
+            <summary>
+            Attaches an <see>OscManager</see> and a Control to this OscGroup
+            </summary>
+            <param name="manager">OscManager</param>
+            <param name="control">OscGroup</param>
+        </member>
+        <member name="M:Ventuz.OSC.OscGroup.Detach(Ventuz.OSC.OscManager,System.Windows.Forms.Control)">
+            <summary>
+            Detaches an <see>OscManager</see> and a Control from this OscGroup
+            </summary>
+            <param name="manager">OscManager</param>
+            <param name="control">OscGroup</param>
+        </member>
+        <member name="M:Ventuz.OSC.OscGroup.Send">
+            <summary>
+            Send out all <see>OscElement</see>s of all Controls in this OscGroup
+            </summary>
+        </member>
+        <member name="T:Ventuz.OSC.NetReader">
+            <summary>
+            Baseclass for all implementations reading OSC message from the network.
+            </summary>
+        </member>
+        <member name="M:Ventuz.OSC.NetReader.#ctor">
+            <summary>
+            This constructor does nothing.
+            It´s just there to avoid a direct instancing of an object of this type.
+            </summary>
+        </member>
+        <member name="M:Ventuz.OSC.NetReader.ReceiveBundle">
+            <summary>
+            Reads an OSC bundle from the network synchronously.
+            If a bundle was received (a non null pointer was returned)
+            the caller should call this method again to make sure that
+            the whole input buffer was fetched completly.
+            </summary>
+            <returns>a valid osc bundle or null</returns>
+        </member>
+        <member name="M:Ventuz.OSC.NetReader.Receive">
+            <summary>
+            Reads an OSC message from the network synchronously.
+            If a bundle was received (a non null pointer was returned)
+            the caller should call this method again to make sure that
+            the whole input buffer was fetched completly.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Ventuz.OSC.UdpReader">
+            <summary>
+            An UdpReader receives OscBundles from UDP unicast or multicast sockets.
+            </summary>
+        </member>
+        <member name="M:Ventuz.OSC.UdpReader.#ctor(System.Int32)">
+            <summary>
+            Creates an UdpReader listening to the specified port number.
+            You can assign a negative port number to enable the ReuseAddress socket option. This allows you listen on multiple IP-endpoint at the same port number.
+            </summary>
+            <param name="port">UDP Port number to listen to</param>
+        </member>
+        <member name="M:Ventuz.OSC.UdpReader.#ctor(System.Int32,System.String)">
+            <summary>
+            Creates an UdpReader listening to the specified port number.
+            The read joins the Multicast group specified.
+            You can assign a negative port number to enable the ReuseAddress socket option. This allows you listen on multiple IP-endpoint at the same port number.
+            </summary>
+            <param name="port">UDP Port number to listen to</param>
+            <param name="multicastAddr">multicast IP address to join</param>
+        </member>
+        <member name="M:Ventuz.OSC.UdpReader.#ctor(System.Int32,System.String,System.Int32)">
+            <summary>
+            Creates an UdpReader listening to the specified port number.
+            The read joins the Multicast group specified.<br/>
+            You can assign a negative port number to enable the ReuseAddress socket option. This allows you listen on multiple IP-endpoint at the same port number.
+            </summary>
+            <param name="port">UDP Port number to listen to. If the port number is a negative value, the socket option ReuseAddress will be enabled!</param>
+            <param name="multicastAddr">multicast IP address to join</param>
+            <param name="bufferSize">size of udp receive buffer</param>
+        </member>
+        <member name="M:Ventuz.OSC.UdpReader.Dispose(System.Boolean)">
+            <summary>
+            Closes the UdpReader
+            </summary>
+            <param name="disposing"></param>
+        </member>
+        <member name="M:Ventuz.OSC.UdpReader.Receive">
+            <summary>
+            Receives the OscBundle received by the reader.
+            If a bundle was received to caller should call this method again
+            to ensure a full fetched input buffer.
+            </summary>
+            <returns>OscBundle received or null</returns>
+        </member>
+        <member name="T:Ventuz.OSC.OscBundleHandler">
+            <summary>
+            This event type is thrown by an <see>OscDispatcher</see> after calling <see>OscDispatcher.Purge</see> for each <see>OscBundle</see> 
+            received on any <see>NetReader</see> attached to the <see>OscDispatcher</see>
+            </summary>
+        </member>
+        <member name="T:Ventuz.OSC.OscElementHandler">
+            <summary>
+            This event type is thrown by an <see>OscDispatcher</see> after calling <see>OscDispatcher.Purge</see> for each <see>OscElement</see> 
+            received on any <see>NetReader</see> attached to the <see>OscDispatcher</see>
+            </summary>
+        </member>
+        <member name="T:Ventuz.OSC.OscElementHandlerEx">
+            <summary>
+            This event type is thrown by an <see>OscDispatcher</see> after calling <see>OscDispatcher.Purge</see> for each <see>OscElement</see> 
+            received on any <see>NetReader</see> attached to the <see>OscDispatcher</see><br/>
+            This event provides the NetReader which received the element.
+            </summary>
+        </member>
+        <member name="T:Ventuz.OSC.OscMessagetHandler">
+            <summary>
+            This event type is thrown by an <see>OscDispatcher</see> after calling <see>OscDispatcher.Purge</see> for each <see>OscMessage</see> 
+            received on any <see>NetReader</see> attached to the <see>OscDispatcher</see>
+            This event provides the NetReader which received the message.
+            </summary>
+        </member>
+        <member name="T:Ventuz.OSC.OscDispatcher">
+            <summary>
+            An OscDispatcher manages multiple instances of <see>NetReader</see>s.<br/>
+            It fetches all NetReaders by calling the <see>Purge</see> method. For each received <see>OscBundle</see> and for each <see>OscElement</see> 
+            the <see>OscDispather</see> fires an event (<see>Bundle</see> and <see>Element</see>)
+            </summary>
+        </member>
+        <member name="M:Ventuz.OSC.OscDispatcher.#ctor">
+            <summary>
+            Creates a new empty <see>OscDispatcher</see>
+            </summary>
+        </member>
+        <member name="M:Ventuz.OSC.OscDispatcher.#ctor(System.Boolean)">
+            <summary>
+            Creates a new empty <see>OscDispatcher</see>.
+            If enableCache is set to true, the internal cache for TimeTags is activated. Received OscBundles 
+            are only dispatched if they are due! The received TimeTag will be compared to the DateTime value
+            return by the GetDateTime method.
+            </summary>
+            <param name="enableCache">true, to enable the internal cache</param>
+        </member>
+        <member name="M:Ventuz.OSC.OscDispatcher.AddNetReader(Ventuz.OSC.NetReader)">
+            <summary>
+            Adds a <see>NetReader</see> to the <see>OscDispatcher</see>
+            </summary>
+            <param name="netReader">the NetReader to add</param>
+        </member>
+        <member name="M:Ventuz.OSC.OscDispatcher.RemoveNetReader(Ventuz.OSC.NetReader)">
+            <summary>
+            Removes a <see>NetReader</see> from the <see>OscDispatcher</see>
+            </summary>
+            <param name="netReader">the NetReader to remove</param>
+        </member>
+        <member name="M:Ventuz.OSC.OscDispatcher.Purge">
+            <summary>
+            Purges all NetReaders in this Dispatcher and fires the events <see>Message</see>, <see>Bundle</see> and <see>Element</see>.
+            </summary>
+        </member>
+        <member name="M:Ventuz.OSC.OscDispatcher.GetDateTime">
+            <summary>
+            Override this method to return the correct DateTime for comparison with cached
+            OscBundles. The default implementation returns DateTime.Now (in current system time zone)
+            </summary>
+            <returns>DateTime of 'now'</returns>
+        </member>
+        <member name="M:Ventuz.OSC.OscDispatcher.ClearCache">
+            <summary>
+            Clear all cached OscBundles
+            </summary>
+        </member>
+        <member name="E:Ventuz.OSC.OscDispatcher.Message">
+            <summary>
+            This event is thrown for each <see>OscMessage</see> received before the last call of <see>Purge</see>
+            </summary>
+        </member>
+        <member name="E:Ventuz.OSC.OscDispatcher.Bundle">
+            <summary>
+            This event is thrown for each <see>OscBundle</see> received before the last call of <see>Purge</see>
+            </summary>
+        </member>
+        <member name="E:Ventuz.OSC.OscDispatcher.Element">
+            <summary>
+            This event is thrown for each <see>OscElement</see> received before the last call of <see>Purge</see>
+            </summary>
+        </member>
+        <member name="E:Ventuz.OSC.OscDispatcher.ElementEx">
+            <summary>
+            This event is thrown for each <see>OscElement</see> received before the last call of <see>Purge</see>
+            </summary>
+        </member>
+    </members>
+</doc>

@@ -26,12 +26,12 @@
 
     Private Sub AddPlaylist()
 
-        Dim pp As New PlaylistBlockItem("Paralelle Playlist", sc)
-        Dim ps As New PlaylistBlockItem("Seq. Playlist", sc)
+        'Dim pp As New PlaylistBlockItem("Paralelle Playlist", sc)
+        'Dim ps As New PlaylistBlockItem("Seq. Playlist", sc)
 
-        pp.setParallel(True)
-        sc.getPlaylistRoot.addItem(ps)
-        sc.getPlaylistRoot.addItem(pp)
+        'pp.setParallel(True)
+        'sc.getPlaylistRoot.addItem(ps)
+        'sc.getPlaylistRoot.addItem(pp)
 
         playlistView = New PlaylistView(sc.getPlaylistRoot)
         playlistview.Dock = DockStyle.Fill
@@ -112,9 +112,10 @@
     End Sub
 
     Private Sub updateView()
+
         'lsvPlayingMedia.Items.Clear()
         Dim childs = sc.getPlaylistRoot.getChildItems(True)
-        lsvPlayingMedia.Items.Clear()
+        'lsvPlayingMedia.Items.Clear()
         For Each item In childs
             If (item.isPlayable) Then 'OrElse lsvPlayingMedia.Items.ContainsKey(item.toString) Then
                 'If lsvPlayingMedia.Items.ContainsKey(item.toString) Then
@@ -122,7 +123,7 @@
                 'End If
                 If item.isPlaying Then
                     Dim line As New ListViewItem(item.getName)
-                    line.Name = item.toString
+                    line.Name = item.getName
                     With line.SubItems
                         .Add(item.getChannel)
                         .Add(item.getLayer)
