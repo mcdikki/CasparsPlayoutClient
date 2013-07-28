@@ -35,7 +35,7 @@
         '' CMD an ServerController schicken
         logger.log("PlaylistMovieItem.start: Starte " & getChannel() & "-" & getLayer() & ": " & getMedia.toString)
         If getController.containsChannel(getChannel) AndAlso getLayer() > -1 Then
-            Dim result = getController.getCommandConnection.sendCommand(CasparCGCommandFactory.getPlay(getChannel, getLayer, getMedia, isLooping, , getDuration))
+            Dim result = getController.getCommandConnection.sendCommand(CasparCGCommandFactory.getPlay(getChannel, getLayer, getMedia, isLooping, , ))
             If result.isOK Then
                 While Not getController.readyForUpdate.WaitOne()
                     logger.warn("PlaylistMovieItem.start: " & getName() & ": Could not get handel to update my status")

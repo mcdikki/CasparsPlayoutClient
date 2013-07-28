@@ -9,7 +9,7 @@ There are 5 events:
 	2. Started --> The Playlist has started playing
 	3. Paused --> The Playlist has paused playing
 	4. Changed --> The Playlists parameter has been changed (i.e. duration, type etc.)
-	5. Canceled --> The Playlists canceled an action like play/stop/pause for some reason. 
+	5. Canceled --> The Playlists canceled an action like play/stop/pause for some given reason. 
 Each Playlist is handler for it's child items and may be for it's self.
 Example msg flow (PL = Playlist, SPL = SubPlaylist):
 	PL1 --	SPL1
@@ -27,19 +27,20 @@ Example msg flow (PL = Playlist, SPL = SubPlaylist):
 					SPL1.pause()
 					SPL2.pause()
 	SPL1.pause():	--> SPL1.paused
-					<-- SPL2.paused*
+					<-- SPL1.paused*
 	SPL2.pause():	--> SPL2.paused
 					<-- SPL2.paused*
-					---> SPL2.canceled(NOT PLAYING)
+					---> SPL2.canceled(pause, NOT PLAYING)
 	PL1:			<-- SPL1.paused
 					<-- SPL2.paused
-					<-- SPL2.canceled(NOT PLAYING)
+					<-- SPL2.canceled(pause, NOT PLAYING)
 	PL1.unpause():	--> PL1.started()
 					<-- PL1.started()*
 					SPL1.unpause()
 	SPL1.unpause(): --> SPL1.started
 					<-- SPL1.started*
 	PL1:			<-- SPL1.started
+	...
 	SPL1:			--> SPL1.stopped
 					<-- SPL1.stopped*
 	PL1:			<-- SPL1.stopped
@@ -62,10 +63,20 @@ This way, we make sure that we handle everything in the right thread.
 --- Color
 
 
+- Implement missing save/load Playlist from xml functions
+
+
 - Add new ACMP commands
 --- Layer/Channel routing
 
 
+- Add config class and functions
+
+
+- Inkonsistens frame/ms bei viel funktionen und eigenschaften wie getDuratation()/Position etc. auflösen
+
+
+- Handle problem duration in mediaLib != real duration when playing
 
  =====================================================================================================================
 
@@ -77,3 +88,5 @@ This way, we make sure that we handle everything in the right thread.
  - Remove Add Button at Library, not usefull (and not implemented yet)
 
  - Overwork scaling issues of sub PLItems
+
+ - Handle Excaption at CloseWindow

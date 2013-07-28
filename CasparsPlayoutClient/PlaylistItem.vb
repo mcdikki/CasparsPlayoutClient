@@ -272,7 +272,7 @@
 
     Public Overridable Function getPlayed() As Byte Implements IPlaylistItem.getPlayed
         If getDuration() > 0 Then
-            Return (100 / getDuration()) * getPosition()
+            Return Math.Min(100, (100 / getDuration()) * getPosition())
         Else
             Return 0
         End If

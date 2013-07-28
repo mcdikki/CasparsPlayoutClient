@@ -17,7 +17,7 @@ Public Class ServerController
     Private channelFPS() As Integer
     Private opened As Boolean
     Private WithEvents ticker As FrameTicker
-    Private updater As mediaUpdater
+    Private updater As AbstractMediaUpdater
     Private playlist As IPlaylistItem ' Die Root Playlist unter die alle anderen kommen
 
     Public Sub New()
@@ -85,18 +85,23 @@ Public Class ServerController
             channelFPS(c) = getChannelFPS(c + 1)
         Next
 
+
+        '
+        'ToDo: Hier muss eine Unterscheidung passieren ob INFO oder OSC
+        '
+
         ' Tick Thread starten
-        ticker = New FrameTicker(tickConnection, Me, , 10)
+        ticker = New FrameTicker(tickConnection, Me, 200000, 10)
         'tickThread = New Thread(AddressOf ticker.tick)
         'tickThread.Start()
 
         ' updater starten
-        updater = New mediaUpdater(updateConnection, playlist, Me)
+        updater = MediaUpdaterFactory.getMediaUpdater("", updateConnection, playlist, Me)
         AddHandler ticker.frameTick, AddressOf updater.updateMedia
     End Sub
 
     Public Sub update()
-        updater.updateMedia(Nothing, Nothing)
+        updater.updateMedia()
     End Sub
 
     Public Function getPlaylistRoot() As IPlaylistItem
@@ -586,138 +591,6 @@ Public Class frameTickEventArgs
     End Property
 End Class
 
-Public Class mediaUpdater
-
-    Private controller As ServerController
-    Private WithEvents ticker As FrameTicker
-    Private updateConnection As CasparCGConnection
-    Private channels As Integer
-    Private playlist As IPlaylistItem
-
-    ' Global um häufiges Alloc in updateMedia zu verhindern
-    Private activeItems() As Dictionary(Of Integer, Dictionary(Of String, IPlaylistItem))
-    Private infoDoc As New MSXML2.DOMDocument
-    Private layer As Integer
-    Private mediaName As String
-    Dim xml As String
-    Private foregroundProducer As MSXML2.IXMLDOMElement
-
-    Public Sub New(ByRef updateConnection As CasparCGConnection, ByRef playlist As IPlaylistItem, ByRef controller As ServerController)
-        Me.controller = controller
-        Me.updateConnection = updateConnection
-        Me.channels = controller.getChannels
-        Me.playlist = playlist
-
-        ReDim activeItems(channels)
-        For i = 0 To channels - 1
-            activeItems(i) = New Dictionary(Of Integer, Dictionary(Of String, IPlaylistItem))
-        Next
-    End Sub
-
-    ''' <summary>
-    ''' Updates all playing media items in the playlist
-    ''' </summary>
-    ''' <param name="sender"></param>
-    ''' <param name="e"></param>
-    ''' <remarks></remarks>
-    Public Sub updateMedia(ByVal sender As Object, ByVal e As frameTickEventArgs) 'Handles ticker.frameTick
-        ''
-        '' reads in alle channels as xml
-        '' and checks the state of each layer
-        '' if a media is found, the corresponding 
-        '' IPlaylistItem will be searched within the active 
-        '' Items and updated. If no one of the active Items 
-        '' is not playing anymore, it will be set to stopped.
-        ''
-
-        ' Damit nicht zu viele updates gleichzeitig laufen, 
-        ' muss jedes update exlusiv updaten. Kann es das in einer milliseconde
-        ' nicht erreichen, verwirft es das update für diesen Tick
-        If controller.readyForUpdate.WaitOne(1) AndAlso controller.isOpen Then
-            '' Listen und variablen vorbereiten
-            xml = ""
-            mediaName = ""
-            For Each item In playlist.getPlayingChildItems(True, True)
-                If activeItems(item.getChannel - 1).ContainsKey(item.getLayer) Then
-                    activeItems(item.getChannel - 1).Item(item.getLayer).Add(item.getMedia().getName, item)
-                Else
-                    activeItems(item.getChannel - 1).Add(item.getLayer, New Dictionary(Of String, IPlaylistItem))
-                    activeItems(item.getChannel - 1).Item(item.getLayer).Add(item.getMedia.getName, item)
-                End If
-            Next
-
-            For c = 0 To channels - 1
-                Dim response = updateConnection.sendCommand(CasparCGCommandFactory.getInfo(c + 1))
-                If infoDoc.loadXML(response.getXMLData) Then
-
-                    '' Über alle layer iter.
-                    For Each layerNode As MSXML2.IXMLDOMElement In infoDoc.getElementsByTagName("layer")
-                        layer = Integer.Parse(layerNode.selectSingleNode("index").nodeTypedValue())
-
-                        ' Ich brauche das layer nur zu beachten, wenn es auch aktive Items auf diesem layer gibt
-                        If activeItems(c).ContainsKey(layer) Then
-
-                            '' Zum richtigen Producer navigieren
-                            foregroundProducer = layerNode.selectSingleNode("foreground").selectSingleNode("producer")
-                            Do Until IsNothing(foregroundProducer) _
-                                OrElse foregroundProducer.selectSingleNode("type").nodeTypedValue.Equals("ffmpeg-producer") _
-                                OrElse foregroundProducer.selectSingleNode("type").nodeTypedValue.Equals("image-producer") _
-                                OrElse foregroundProducer.selectSingleNode("type").nodeTypedValue.Equals("color-producer")
-
-                                Select Case foregroundProducer.selectSingleNode("type").nodeTypedValue
-                                    Case "transition-producer"
-                                        foregroundProducer = foregroundProducer.selectSingleNode("destination").selectSingleNode("producer")
-                                    Case "separated-producer"
-                                        foregroundProducer = foregroundProducer.selectSingleNode("fill").selectSingleNode("producer")
-                                    Case Else
-                                        foregroundProducer = Nothing
-                                End Select
-                            Loop
-
-                            ' Name und XML aus dem Producer holen und Pfad und extension wegschneiden
-                            If Not IsNothing(foregroundProducer) Then
-                                If foregroundProducer.selectSingleNode("type").nodeTypedValue.Equals("color-producer") Then
-                                    mediaName = foregroundProducer.selectSingleNode("color").nodeTypedValue
-                                Else
-                                    mediaName = foregroundProducer.selectSingleNode("filename").nodeTypedValue
-                                    '' CASPARCG BUG WORKAROUND für doppelte // bei image-producern
-                                    mediaName = mediaName.Replace("\\", "\")
-                                    mediaName = mediaName.Substring(mediaName.LastIndexOf("\") + 1, mediaName.LastIndexOf(".") - (mediaName.LastIndexOf("\") + 1)).ToUpper
-                                End If
-                                xml = foregroundProducer.xml
-                                If activeItems(c).Item(layer).ContainsKey(mediaName) Then
-                                    '' Daten updaten
-                                    activeItems(c).Item(layer).Item(mediaName).getMedia.parseXML(xml)
-                                    ''danach aus liste entfernen
-                                    activeItems(c).Item(layer).Remove(mediaName)
-                                End If
-                            End If
-                            If activeItems(c).Item(layer).Count = 0 Then Exit For
-                        End If
-                    Next
-                    ' Alle Items in diesem Channel die jetzt noch in der liste sind, sind nicht mehr auf dem Server gestartet 
-                    ' und werden daher als gestoppt markiert
-                    For Each layer As Integer In activeItems(c).Keys
-                        For Each item As IPlaylistItem In activeItems(c).Item(layer).Values
-
-                            '' BUGFIX CasparCG won't ever reach nb-frames with frame-number, so we fake it till this is fixed
-                            If item.getMedia.containsInfo("nb-frames") AndAlso item.getMedia.containsInfo("frame-number") Then
-                                If Long.Parse(item.getMedia.getInfo("nb-frames")) > Long.Parse(item.getMedia.getInfo("frame-number")) Then
-                                    item.getMedia.setInfo("frame-number", item.getMedia.getInfo("nb-frames"))
-                                End If
-                            End If
-                            item.stoppedPlaying()
-                        Next
-                    Next
-                    activeItems(c).Clear()
-                Else
-                    logger.err("mediaUpdater.UpdateMedia: Could not update media at channel " & c + 1 & ". Unable to load xml data. " & infoDoc.parseError.reason)
-                End If
-            Next
-        End If
-        controller.readyForUpdate.Release()
-    End Sub
-End Class
 
 
 

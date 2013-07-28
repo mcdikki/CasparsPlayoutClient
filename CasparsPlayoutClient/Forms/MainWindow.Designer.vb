@@ -35,12 +35,12 @@ Partial Class MainWindow
         Me.cmdClearAll = New System.Windows.Forms.Button()
         Me.cbbClearChannel = New System.Windows.Forms.ComboBox()
         Me.cmbClearChannel = New System.Windows.Forms.Button()
+        Me.nudLayerClear = New System.Windows.Forms.NumericUpDown()
+        Me.cmbClearLayer = New System.Windows.Forms.Button()
         Me.layoutAdressPanel = New System.Windows.Forms.Panel()
         Me.lblAddress = New System.Windows.Forms.Label()
         Me.txtPort = New System.Windows.Forms.TextBox()
         Me.txtAddress = New System.Windows.Forms.TextBox()
-        Me.nudLayerClear = New System.Windows.Forms.NumericUpDown()
-        Me.cmbClearLayer = New System.Windows.Forms.Button()
         CType(Me.layoutPlaylistSplit, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.layoutPlaylistSplit.Panel2.SuspendLayout()
         Me.layoutPlaylistSplit.SuspendLayout()
@@ -53,8 +53,8 @@ Partial Class MainWindow
         Me.layoutCgLib.SuspendLayout()
         Me.layoutButtonsPanel.SuspendLayout()
         Me.layoutButtonsFlow.SuspendLayout()
-        Me.layoutAdressPanel.SuspendLayout()
         CType(Me.nudLayerClear, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.layoutAdressPanel.SuspendLayout()
         Me.SuspendLayout()
         '
         'layoutPlaylistSplit
@@ -120,8 +120,8 @@ Partial Class MainWindow
         'layoutButtonsPanel
         '
         Me.layoutButtonsPanel.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-                    Or System.Windows.Forms.AnchorStyles.Left) _
-                    Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+            Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.layoutButtonsPanel.AutoScroll = True
         Me.layoutButtonsPanel.Controls.Add(Me.layoutButtonsFlow)
         Me.layoutButtonsPanel.Location = New System.Drawing.Point(3, 48)
@@ -190,10 +190,28 @@ Partial Class MainWindow
         Me.cmbClearChannel.Text = "CLEAR CH."
         Me.cmbClearChannel.UseVisualStyleBackColor = True
         '
+        'nudLayerClear
+        '
+        Me.nudLayerClear.Location = New System.Drawing.Point(454, 5)
+        Me.nudLayerClear.Margin = New System.Windows.Forms.Padding(3, 5, 3, 3)
+        Me.nudLayerClear.Maximum = New Decimal(New Integer() {10000, 0, 0, 0})
+        Me.nudLayerClear.Name = "nudLayerClear"
+        Me.nudLayerClear.Size = New System.Drawing.Size(36, 20)
+        Me.nudLayerClear.TabIndex = 5
+        '
+        'cmbClearLayer
+        '
+        Me.cmbClearLayer.Location = New System.Drawing.Point(496, 3)
+        Me.cmbClearLayer.Name = "cmbClearLayer"
+        Me.cmbClearLayer.Size = New System.Drawing.Size(99, 23)
+        Me.cmbClearLayer.TabIndex = 6
+        Me.cmbClearLayer.Text = "CLEAR LAYER"
+        Me.cmbClearLayer.UseVisualStyleBackColor = True
+        '
         'layoutAdressPanel
         '
         Me.layoutAdressPanel.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-                    Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.layoutAdressPanel.Controls.Add(Me.lblAddress)
         Me.layoutAdressPanel.Controls.Add(Me.txtPort)
         Me.layoutAdressPanel.Controls.Add(Me.txtAddress)
@@ -206,8 +224,8 @@ Partial Class MainWindow
         'lblAddress
         '
         Me.lblAddress.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-                    Or System.Windows.Forms.AnchorStyles.Left) _
-                    Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+            Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.lblAddress.AutoSize = True
         Me.lblAddress.Location = New System.Drawing.Point(3, 0)
         Me.lblAddress.Name = "lblAddress"
@@ -227,31 +245,13 @@ Partial Class MainWindow
         'txtAddress
         '
         Me.txtAddress.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-                    Or System.Windows.Forms.AnchorStyles.Left) _
-                    Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+            Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.txtAddress.Location = New System.Drawing.Point(6, 16)
         Me.txtAddress.Name = "txtAddress"
         Me.txtAddress.Size = New System.Drawing.Size(544, 20)
         Me.txtAddress.TabIndex = 0
-        Me.txtAddress.Text = "casparcg"
-        '
-        'nudLayerClear
-        '
-        Me.nudLayerClear.Location = New System.Drawing.Point(454, 5)
-        Me.nudLayerClear.Margin = New System.Windows.Forms.Padding(3, 5, 3, 3)
-        Me.nudLayerClear.Maximum = New Decimal(New Integer() {10000, 0, 0, 0})
-        Me.nudLayerClear.Name = "nudLayerClear"
-        Me.nudLayerClear.Size = New System.Drawing.Size(36, 20)
-        Me.nudLayerClear.TabIndex = 5
-        '
-        'cmbClearLayer
-        '
-        Me.cmbClearLayer.Location = New System.Drawing.Point(496, 3)
-        Me.cmbClearLayer.Name = "cmbClearLayer"
-        Me.cmbClearLayer.Size = New System.Drawing.Size(99, 23)
-        Me.cmbClearLayer.TabIndex = 6
-        Me.cmbClearLayer.Text = "CLEAR LAYER"
-        Me.cmbClearLayer.UseVisualStyleBackColor = True
+        Me.txtAddress.Text = "localhost"
         '
         'MainWindow
         '
@@ -276,9 +276,9 @@ Partial Class MainWindow
         Me.layoutCgLib.ResumeLayout(False)
         Me.layoutButtonsPanel.ResumeLayout(False)
         Me.layoutButtonsFlow.ResumeLayout(False)
+        CType(Me.nudLayerClear, System.ComponentModel.ISupportInitialize).EndInit()
         Me.layoutAdressPanel.ResumeLayout(False)
         Me.layoutAdressPanel.PerformLayout()
-        CType(Me.nudLayerClear, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
 
     End Sub
