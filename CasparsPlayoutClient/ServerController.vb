@@ -85,13 +85,8 @@ Public Class ServerController
             channelFPS(c) = getChannelFPS(c + 1)
         Next
 
-
-        '
-        'ToDo: Hier muss eine Unterscheidung passieren ob INFO oder OSC
-        '
-
         ' Tick Thread starten
-        ticker = New FrameTicker(tickConnection, Me, 200000, 10)
+        ticker = New FrameTicker(tickConnection, Me, 200000, 4)
         'tickThread = New Thread(AddressOf ticker.tick)
         'tickThread.Start()
 
@@ -171,8 +166,9 @@ Public Class ServerController
     ''' <remarks></remarks>
     Public Function getMediaDuration(ByRef media As CasparCGMedia, ByVal channel As Integer) As Long
 
-        Return getOriginalMediaDuration(media)
+        'Return getOriginalMediaDuration(media)
 
+        ''---> Scheint wohl doch nötig zu sein! CD 07/13
         '' Scheint nicht nötig zu sein da die videos IMMER so lange spielen wie sie sollen
         '' zumindest wenn die metadaten stimmen - aber erst noch ausgiebig testen!
         If isConnected() Then

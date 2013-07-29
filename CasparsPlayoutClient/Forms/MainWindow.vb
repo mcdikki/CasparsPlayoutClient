@@ -98,7 +98,7 @@
 
     Private Sub onTick(ByVal sender As Object, ByVal e As frameTickEventArgs)
         playlistView.onDataChanged()
-        Updater_Tick()
+        'Updater_Tick()
     End Sub
 
 

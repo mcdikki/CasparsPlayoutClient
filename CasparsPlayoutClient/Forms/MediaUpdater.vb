@@ -126,13 +126,6 @@ Public Class OscMediaUpdater
                 Case "color"
                 Case "host"
             End Select
-
-            If currentFileInfo.isComplete() Then
-                'Hier alle Arbeiten machen
-                'logger.log("Completet Infos for " & currentFileInfo.path & "[frames: " & currentFileInfo.frame_nb & "/" & currentFileInfo.nb_frames & " time: " & currentFileInfo.time & "/" & currentFileInfo.duration)
-                'update(currentFileInfo, c, l)
-                'currentFileInfo.reset()
-            End If
         End If
     End Sub
 
@@ -142,7 +135,7 @@ Public Class OscMediaUpdater
         ' nicht erreichen, verwirft es das update für diesen Tick
         If controller.readyForUpdate.WaitOne(1) AndAlso controller.isOpen Then
 
-            logger.log("OscMediaUpdater.updateMedia: Start Update")
+            logger.debug("OscMediaUpdater.updateMedia: Start Update")
 
             '' Listen und variablen vorbereiten
             For Each item In playlist.getPlayingChildItems(True, True)
@@ -162,6 +155,10 @@ Public Class OscMediaUpdater
                         logger.log("OscMediaUpdater.updateMedia: Processing " & c + 1 & "-" & fileInfo.layer & ": " & fileInfo.path)
                         If activeItems(c).ContainsKey(fileInfo.layer) AndAlso activeItems(c).Item(fileInfo.layer).ContainsKey(fileInfo.path) Then
                             logger.log("OscMediaUpdater.updateMedia: Update " & fileInfo.path & "[frames: " & fileInfo.frame_nb & "/" & fileInfo.nb_frames & "]")
+                            ''
+                            '' testig BUGFIX:
+                            ''
+                            activeItems(c).Item(fileInfo.layer).Item(fileInfo.path).getMedia().setUpdated()
                             '' Daten updaten
                             activeItems(c).Item(fileInfo.layer).Item(fileInfo.path).getMedia.setInfo("nb-frames", fileInfo.nb_frames)
                             activeItems(c).Item(fileInfo.layer).Item(fileInfo.path).getMedia.setInfo("frame-number", fileInfo.frame_nb)
@@ -170,6 +167,8 @@ Public Class OscMediaUpdater
                             activeItems(c).Item(fileInfo.layer).Item(fileInfo.path).getMedia.setInfo("duration", fileInfo.duration)
                             ''danach aus liste entfernen
                             activeItems(c).Item(fileInfo.layer).Remove(fileInfo.path)
+                        Else
+                            logger.log("OscMediaUpdater.updateMedia: Not an active item: " & c + 1 & "-" & fileInfo.layer & ": " & fileInfo.path)
                         End If
                         fileInfo.reset()
                     End If
@@ -179,14 +178,19 @@ Public Class OscMediaUpdater
                 ' und werden daher als gestoppt markiert
                 For Each layer As Integer In activeItems(c).Keys
                     For Each item As IPlaylistItem In activeItems(c).Item(layer).Values
-
                         '' BUGFIX CasparCG won't ever reach nb-frames with frame-number, so we fake it till this is fixed
                         If item.getMedia.containsInfo("nb-frames") AndAlso item.getMedia.containsInfo("frame-number") Then
                             If Long.Parse(item.getMedia.getInfo("nb-frames")) > Long.Parse(item.getMedia.getInfo("frame-number")) Then
                                 item.getMedia.setInfo("frame-number", item.getMedia.getInfo("nb-frames"))
                             End If
                         End If
-                        item.stoppedPlaying()
+                        ''
+                        '' Test BUGFIX: freshly started items will be removed because osc mesg arriving to slow.
+                        '' Only if at least one osc mesg. arrived the item will be stopped.
+                        ''
+                        If item.getMedia.hasBeenUpdated Then
+                            item.stoppedPlaying()
+                        End If
                     Next
                 Next
                 activeItems(c).Clear()
@@ -215,7 +219,7 @@ Public Class OscMediaUpdater
         End Function
 
         Public Sub setPath(path As String)
-            'logger.log("Set path to: " & path)
+            logger.debug("Set path to: " & path)
             completed(0) = True
             Me.path = path
 
@@ -226,27 +230,27 @@ Public Class OscMediaUpdater
         End Sub
 
         Public Sub setFps(fps As Integer)
-            'logger.log("Set fps to: " & fps)
+            logger.debug("Set fps to: " & fps)
             completed(1) = True
             Me.fps = fps
         End Sub
 
         Public Sub setFrames(frame_nb As Integer, nb_frames As Integer)
-            'logger.log("Set frames to: " & frame_nb & "/" & nb_frames)
+            logger.debug("Set frames to: " & frame_nb & "/" & nb_frames)
             completed(2) = True
             Me.frame_nb = frame_nb
             Me.nb_frames = nb_frames
         End Sub
 
         Public Sub setTime(time As Double, duration As Double)
-            'logger.log("Set times to: " & time & "/" & duration)
+            logger.debug("Set times to: " & time & "/" & duration)
             completed(3) = True
             Me.time = time
             Me.duration = duration
         End Sub
 
         Public Sub reset()
-            'logger.log("Reset fileInfo")
+            logger.debug("Reset fileInfo")
             For i = 0 To 3 Step 1
                 completed(i) = False
             Next

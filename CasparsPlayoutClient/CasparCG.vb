@@ -558,6 +558,7 @@ Public MustInherit Class CasparCGMedia
     Private name As String
     Private path As String
     Private Infos As Dictionary(Of String, String)
+    Private updated As Boolean = False
 
     Public Enum MediaType
         STILL = 0
@@ -664,6 +665,22 @@ Public MustInherit Class CasparCGMedia
         End If
         Return out
     End Function
+
+    ''
+    '' Only for testing!
+    '' To solve the problem that frehly startet items will be marked stopped as 
+    '' the update accur to slow, this flag will be set if the first update arrived.
+    '' Until this flag is true, the item won't be removed.
+    ''
+
+    Public Function hasBeenUpdated() As Boolean
+        Return updated
+    End Function
+
+    Public Sub setUpdated(Optional updated As Boolean = True)
+        Me.updated = updated
+    End Sub
+
 End Class
 
 <Serializable()> _

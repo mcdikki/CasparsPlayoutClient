@@ -19,7 +19,8 @@
                 movie.parseXML(getController.getMediaInfo(movie))
             End If
             If movie.containsInfo("nb-frames") AndAlso (duration > getController.getOriginalMediaDuration(movie) OrElse duration = -1) Then
-                setDuration(getController.getOriginalMediaDuration(movie))
+                'setDuration(getController.getOriginalMediaDuration(movie))
+                setDuration(getController.getMediaDuration(movie, channel))
             End If
             media = movie
         Else
@@ -34,6 +35,12 @@
     Public Overrides Sub start(Optional ByVal noWait As Boolean = False)
         '' CMD an ServerController schicken
         logger.log("PlaylistMovieItem.start: Starte " & getChannel() & "-" & getLayer() & ": " & getMedia.toString)
+
+        ''
+        '' testing BUGFIX slow OSC mesg.
+        ''
+        getMedia.setUpdated(False)
+
         If getController.containsChannel(getChannel) AndAlso getLayer() > -1 Then
             Dim result = getController.getCommandConnection.sendCommand(CasparCGCommandFactory.getPlay(getChannel, getLayer, getMedia, isLooping, , ))
             If result.isOK Then
@@ -99,7 +106,7 @@
     Public Overrides Sub setChannel(ByVal channel As Integer)
         MyBase.setChannel(channel)
         If getController.containsChannel(channel) AndAlso Not IsNothing(getMedia) Then
-            setDuration(getController.getOriginalMediaDuration(getMedia))
+            setDuration(getController.getMediaDuration(getMedia, channel))
         End If
     End Sub
 
