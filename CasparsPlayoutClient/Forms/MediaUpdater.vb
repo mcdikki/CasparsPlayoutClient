@@ -18,6 +18,7 @@ Public Module MediaUpdaterFactory
         ' ToDo
         '
         Return New OscMediaUpdater(updateConnection, playlist, controller)
+        'Return New InfoMediaUpdater(updateConnection, playlist, controller)
     End Function
 End Module
 
@@ -88,8 +89,6 @@ Public Class OscMediaUpdater
     End Sub
 
     Public Sub update(ByVal sender As Object, ByVal e As OscMessageReceivedEventArgs) Handles oscServer.MessageReceived
-        ' ToDo
-
 
         Dim msg As OscMessage = e.Message
         ' Erst mal filtern
@@ -115,7 +114,7 @@ Public Class OscMediaUpdater
                         Case "frame"
                             currentFileInfo.setFrames(Integer.Parse(msg.Data.Item(0)), Integer.Parse(msg.Data.Item(1)))
                         Case "path"
-                            currentFileInfo.setPath(msg.Data.First.ToString)
+                            currentFileInfo.setPath(msg.Data.First.ToString.ToUpper)
                         Case "time"
                             currentFileInfo.setTime(Double.Parse(msg.Data.Item(0)), Double.Parse(msg.Data.Item(1)))
                         Case "fps"
@@ -139,7 +138,7 @@ Public Class OscMediaUpdater
 
             '' Listen und variablen vorbereiten
             For Each item In playlist.getPlayingChildItems(True, True)
-                logger.log("OscMediaUpdater.updateMedia: Add active Item " & item.getMedia.getName)
+                logger.log("OscMediaUpdater.updateMedia: Add active Item " & item.getChannel & "-" & item.getLayer & ": " & item.getMedia.getName & " {" & item.getMedia.getUuid & "}")
                 If activeItems(item.getChannel - 1).ContainsKey(item.getLayer) Then
                     activeItems(item.getChannel - 1).Item(item.getLayer).Add(item.getMedia().getName, item)
                 Else
@@ -154,7 +153,7 @@ Public Class OscMediaUpdater
                     If fileInfo.isComplete Then
                         logger.log("OscMediaUpdater.updateMedia: Processing " & c + 1 & "-" & fileInfo.layer & ": " & fileInfo.path)
                         If activeItems(c).ContainsKey(fileInfo.layer) AndAlso activeItems(c).Item(fileInfo.layer).ContainsKey(fileInfo.path) Then
-                            logger.log("OscMediaUpdater.updateMedia: Update " & fileInfo.path & "[frames: " & fileInfo.frame_nb & "/" & fileInfo.nb_frames & "]")
+                            logger.log("OscMediaUpdater.updateMedia: Update " & activeItems(c).Item(fileInfo.layer).Item(fileInfo.path).getName & " {" & activeItems(c).Item(fileInfo.layer).Item(fileInfo.path).getMedia.getUuid & "} [frames: " & fileInfo.frame_nb & "/" & fileInfo.nb_frames & "]")
                             ''
                             '' testig BUGFIX:
                             ''
@@ -179,11 +178,14 @@ Public Class OscMediaUpdater
                 For Each layer As Integer In activeItems(c).Keys
                     For Each item As IPlaylistItem In activeItems(c).Item(layer).Values
                         '' BUGFIX CasparCG won't ever reach nb-frames with frame-number, so we fake it till this is fixed
-                        If item.getMedia.containsInfo("nb-frames") AndAlso item.getMedia.containsInfo("frame-number") Then
-                            If Long.Parse(item.getMedia.getInfo("nb-frames")) > Long.Parse(item.getMedia.getInfo("frame-number")) Then
-                                item.getMedia.setInfo("frame-number", item.getMedia.getInfo("nb-frames"))
-                            End If
-                        End If
+                        '' --> This BUGFIX made some other Probs.
+                        '' if you have two items wiht same filename, both will be updated as if they where playing
+                        'If item.getMedia.containsInfo("nb-frames") AndAlso item.getMedia.containsInfo("frame-number") Then
+                        '    If Long.Parse(item.getMedia.getInfo("nb-frames")) > Long.Parse(item.getMedia.getInfo("frame-number")) Then
+                        '        item.getMedia.setInfo("frame-number", item.getMedia.getInfo("nb-frames"))
+                        '    End If
+                        'End If
+
                         ''
                         '' Test BUGFIX: freshly started items will be removed because osc mesg arriving to slow.
                         '' Only if at least one osc mesg. arrived the item will be stopped.
@@ -362,11 +364,13 @@ Public Class InfoMediaUpdater
                         For Each item As IPlaylistItem In activeItems(c).Item(layer).Values
 
                             '' BUGFIX CasparCG won't ever reach nb-frames with frame-number, so we fake it till this is fixed
-                            If item.getMedia.containsInfo("nb-frames") AndAlso item.getMedia.containsInfo("frame-number") Then
-                                If Long.Parse(item.getMedia.getInfo("nb-frames")) > Long.Parse(item.getMedia.getInfo("frame-number")) Then
-                                    item.getMedia.setInfo("frame-number", item.getMedia.getInfo("nb-frames"))
-                                End If
-                            End If
+                            '' --> This BUGFIX made some other Probs.
+                            '' if you have two items wiht same filename, both will be updated as if they where playing
+                            'If item.getMedia.containsInfo("nb-frames") AndAlso item.getMedia.containsInfo("frame-number") Then
+                            '    If Long.Parse(item.getMedia.getInfo("nb-frames")) > Long.Parse(item.getMedia.getInfo("frame-number")) Then
+                            '        item.getMedia.setInfo("frame-number", item.getMedia.getInfo("nb-frames"))
+                            '    End If
+                            'End If
                             item.stoppedPlaying()
                         Next
                     Next

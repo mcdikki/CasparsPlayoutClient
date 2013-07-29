@@ -250,6 +250,9 @@
             '' Neue MediaItems einfügen
             ''
             Dim media As CasparCGMedia = e.Data.GetData("CasparsPlayoutClient.CasparCGMovie")
+            logger.log("Clone media " & media.getName & " {" & media.getUuid & "}")
+            media = media.clone
+            logger.log("to media " & media.getName & " {" & media.getUuid & "}")
             Dim child As IPlaylistItem
             child = New PlaylistMovieItem(media.getFullName, playlist.getController, media)
             playlist.addItem(child)

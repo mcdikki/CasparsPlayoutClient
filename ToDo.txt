@@ -53,6 +53,7 @@ This way, we make sure that we handle everything in the right thread.
 
 
 - Enable OSC support
+Done - CD 29/07/13
 --- Add Class to handle OSC msg and update state of playlists.
 --- Choose between INFO/OSC updates depending on versionnumber from ccg server. INFO V <= 2.0.3, OSC V >= 2.0.4
 
@@ -76,7 +77,18 @@ This way, we make sure that we handle everything in the right thread.
 - Inkonsistens frame/ms bei viel funktionen und eigenschaften wie getDuratation()/Position etc. auflösen
 
 
+Done - CD 27/07/13
 - Handle problem duration in mediaLib != real duration when playing
+
+
+Fixed - CD 29/07/13
+- BUG: Same Filenames seems to share mediaInfo!
+---> The BUGFIX for casparCG never reaches nb-frames lead to this problem.
+---> Fixed by disabling ths other BUGFIX
+
+Fixed - CD 29/07/13
+- BUG: OSC: Some files didn't receive updates but other did.
+---> Filenames are uppercase in mediaLib and Playlists (ACMP is always uppercase) but not nessasaryly in the osc mesg.
 
  =====================================================================================================================
 
@@ -89,4 +101,4 @@ This way, we make sure that we handle everything in the right thread.
 
  - Overwork scaling issues of sub PLItems
 
- - Handle Excaption at CloseWindow
+ - Handle Excaption at CloseWindow and uncloseable Window when never been connected

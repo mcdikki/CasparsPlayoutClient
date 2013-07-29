@@ -559,6 +559,7 @@ Public MustInherit Class CasparCGMedia
     Private path As String
     Private Infos As Dictionary(Of String, String)
     Private updated As Boolean = False
+    Private uuid As New Guid
 
     Public Enum MediaType
         STILL = 0
@@ -574,6 +575,7 @@ Public MustInherit Class CasparCGMedia
         Me.name = parseName(name)
         Me.path = parsePath(name)
         Infos = New Dictionary(Of String, String)
+        uuid = Guid.NewGuid
     End Sub
 
     Public Sub New(ByVal name As String, ByVal xml As String)
@@ -581,7 +583,12 @@ Public MustInherit Class CasparCGMedia
         Me.path = parsePath(name)
         Infos = New Dictionary(Of String, String)
         parseXML(xml)
+        uuid = Guid.NewGuid
     End Sub
+
+    Public Function getUuid() As String
+        Return uuid.ToString
+    End Function
 
     Public MustOverride Function clone() As CasparCGMedia
 

@@ -38,7 +38,7 @@ Partial Class LibraryViewItem
         'layoutHeaderTable
         '
         Me.layoutHeaderTable.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-                    Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.layoutHeaderTable.ColumnCount = 2
         Me.layoutHeaderTable.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
         Me.layoutHeaderTable.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 40.0!))
@@ -66,6 +66,7 @@ Partial Class LibraryViewItem
         Me.cmbAdd.TabIndex = 0
         Me.cmbAdd.Text = "Add"
         Me.cmbAdd.UseVisualStyleBackColor = True
+        Me.cmbAdd.Visible = False
         '
         'lblName
         '
@@ -99,8 +100,8 @@ Partial Class LibraryViewItem
         'lblExpand
         '
         Me.lblExpand.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-                    Or System.Windows.Forms.AnchorStyles.Left) _
-                    Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+            Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.lblExpand.AutoEllipsis = True
         Me.lblExpand.AutoSize = True
         Me.lblExpand.BackColor = System.Drawing.Color.Transparent
@@ -117,7 +118,7 @@ Partial Class LibraryViewItem
         'lblType
         '
         Me.lblType.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-                    Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.lblType.AutoEllipsis = True
         Me.lblType.AutoSize = True
         Me.lblType.BackColor = System.Drawing.Color.Transparent
@@ -132,8 +133,8 @@ Partial Class LibraryViewItem
         'lblDuration
         '
         Me.lblDuration.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-                    Or System.Windows.Forms.AnchorStyles.Left) _
-                    Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+            Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.lblDuration.AutoEllipsis = True
         Me.lblDuration.AutoSize = True
         Me.lblDuration.BackColor = System.Drawing.Color.Transparent
