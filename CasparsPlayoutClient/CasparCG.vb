@@ -141,16 +141,21 @@ Public Class CasparCGConnection
             Dim input As String = ""
             Dim size As Integer = 0
 
-            Do Until (input.Trim().Length > 3) AndAlso (((input.Trim().Substring(0, 3) = "201" OrElse input.Trim().Substring(0, 3) = "200") AndAlso input.EndsWith(vbLf & vbCrLf)) OrElse (input.Trim().Substring(0, 3) <> "201" AndAlso input.Trim().Substring(0, 3) <> "200" AndAlso input.EndsWith(vbCrLf)))
-                readByte = client.GetStream.ReadByte()
-                If readByte > 0 Then
-                    ' Ein Zeichen gelesen
-                    input = input & ChrW(readByte)
-                Else
-                    '#@#Threading.Thread.Sleep(1)
-                End If
-            Loop
+            ' BUGFIX: End of VERSION CMD not detectable. Giving a timeout.          
+            client.GetStream.ReadTimeout = 300                                                                                                                                     ''-- vbLF & -- Entfernt zum Testen                     
+            Try
+                Do Until (input.Trim().Length > 3) AndAlso (((input.Trim().Substring(0, 3) = "201" OrElse input.Trim().Substring(0, 3) = "200") AndAlso input.EndsWith(vbLf & vbCrLf)) OrElse (input.Trim().Substring(0, 3) <> "201" AndAlso input.Trim().Substring(0, 3) <> "200" AndAlso input.EndsWith(vbCrLf)))
+                    readByte = client.GetStream.ReadByte
+                    If readByte > 0 Then
+                        ' Ein Zeichen gelesen
+                        input = input & ChrW(readByte)
+                    Else
+                        '#@#Threading.Thread.Sleep(1)
+                    End If
+                Loop
+            Catch e As Exception
 
+            End Try
             timer.Stop()
             logger.debug("CasparCGConnection.sendCommand: Waited " & timer.ElapsedMilliseconds & "ms for an answer and received " & input.Length & " Bytes to read.")
             connectionLock.Release()
@@ -310,6 +315,9 @@ Public Class CasparCGCommandFactory
         Return escape("INFO TEMPLATE '" & template.getFullName & "'")
     End Function
 
+    Public Shared Function getVersion(Optional ByVal ofPart As String = "Server") As String
+        Return "VERSION " & ofPart
+    End Function
 
     '' CG CMD für Flashtemplates
     Public Shared Function getCGAdd(ByVal channel As Integer, ByVal layer As Integer, ByVal template As CasparCGTemplate, ByVal flashlayer As Integer, Optional ByVal playOnLoad As Boolean = False) As String

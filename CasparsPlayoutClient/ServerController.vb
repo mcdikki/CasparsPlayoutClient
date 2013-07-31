@@ -15,6 +15,7 @@ Public Class ServerController
     Private testChannel As Integer = 2
     Private channels As Integer
     Private channelFPS() As Integer
+    Private ccgVersion As String = "-1.-1.-1"
     Private opened As Boolean
     Private WithEvents ticker As FrameTicker
     Private updater As AbstractMediaUpdater
@@ -32,6 +33,7 @@ Public Class ServerController
     Public Sub close()
         logger.debug("ServerController.close: Close servercontroller...")
         opened = False
+        updater.stopUpdate()
         Try
             If Not IsNothing(tickThread) Then
                 tickThread.Interrupt()
@@ -75,6 +77,9 @@ Public Class ServerController
         tickConnection = New CasparCGConnection(serverAddress, serverPort)
         tickConnection.connect()
 
+        'Version bestimmen
+        ccgVersion = readServerVersion()
+
         ' Channels des Servers bestimmen
         channels = readServerChannels()
         If channels = testChannel - 1 Then
@@ -86,17 +91,18 @@ Public Class ServerController
         Next
 
         ' Tick Thread starten
-        ticker = New FrameTicker(tickConnection, Me, 200000, 4)
+        ticker = New FrameTicker(tickConnection, Me, 200000, 1)
         'tickThread = New Thread(AddressOf ticker.tick)
         'tickThread.Start()
 
         ' updater starten
-        updater = MediaUpdaterFactory.getMediaUpdater("", updateConnection, playlist, Me)
-        AddHandler ticker.frameTick, AddressOf updater.updateMedia
+        updater = MediaUpdaterFactory.getMediaUpdater(getVersion, updateConnection, playlist, Me)
+        updater.startUpdate()
+        'AddHandler ticker.frameTick, AddressOf updater.updateMedia
     End Sub
 
     Public Sub update()
-        updater.updateMedia()
+        'updater.updateMedia()
     End Sub
 
     Public Function getPlaylistRoot() As IPlaylistItem
@@ -125,6 +131,30 @@ Public Class ServerController
         Return ch
     End Function
 
+    Private Function readServerVersion() As String
+        If isConnected() Then
+            Dim response = testConnection.sendCommand(CasparCGCommandFactory.getVersion)
+            If response.isOK Then
+                Return response.getData
+            End If
+        End If
+        Return "0.0.0"
+    End Function
+
+    Public Function getVersion() As String
+        Return ccgVersion
+    End Function
+
+    Public Function getVersionPart(Version As String, part As Integer) As Integer
+        Dim v() = Version.Split(".")
+        If v.Length >= part Then
+            Dim r As Integer
+            If Integer.TryParse(v(part), r) Then
+                Return r
+            End If
+        End If
+        Return -1
+    End Function
 
     ''' <summary>
     ''' Returns the media duration in milliseconds if playing in native fps.

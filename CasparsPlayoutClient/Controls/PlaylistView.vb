@@ -7,6 +7,8 @@
     Private waiting As Boolean = False
     Private Delegate Sub updateDelegate()
     Private cMenu As ContextMenuStrip
+    Private noWarn As Integer = 5000
+    Private warn As Integer = 1000
 
     Private Event changedPlaying()
     Public Event dataChanged()
@@ -77,6 +79,14 @@
             Me.txtPosition.Text = ServerController.getTimeStringOfMS(.getPosition)
             Me.txtDuration.Text = ServerController.getTimeStringOfMS(.getDuration)
             Me.txtRemaining.Text = ServerController.getTimeStringOfMS(.getRemaining)
+            Select Case .getRemaining
+                Case Is < warn
+                    txtRemaining.BackColor = Color.Red
+                Case Is < noWarn
+                    txtRemaining.BackColor = Color.Yellow
+                Case Else
+                    txtRemaining.BackColor = Color.White
+            End Select
             Me.txtDelay.Text = .getDelay
             Me.ckbAuto.Checked = .isAutoStarting
             Me.ckbParallel.Checked = .isParallel
@@ -250,11 +260,8 @@
             '' Neue MediaItems einfügen
             ''
             Dim media As CasparCGMedia = e.Data.GetData("CasparsPlayoutClient.CasparCGMovie")
-            logger.log("Clone media " & media.getName & " {" & media.getUuid & "}")
-            media = media.clone
-            logger.log("to media " & media.getName & " {" & media.getUuid & "}")
             Dim child As IPlaylistItem
-            child = New PlaylistMovieItem(media.getFullName, playlist.getController, media)
+            child = New PlaylistMovieItem(media.getFullName, playlist.getController, media.clone)
             playlist.addItem(child)
             addChild(child)
         ElseIf e.Data.GetDataPresent("CasparsPlayoutClient.PlaylistView") Then

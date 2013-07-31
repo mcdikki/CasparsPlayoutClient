@@ -56,7 +56,7 @@
         items = New List(Of IPlaylistItem)
     End Sub
 
-    Public Sub abort() Implements IPlaylistItem.abort
+    Public Overridable Sub abort() Implements IPlaylistItem.abort
         If Not IsNothing(startThread) Then
             startThread.Abort()
             startThread = Nothing

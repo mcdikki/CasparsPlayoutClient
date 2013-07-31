@@ -65,7 +65,7 @@
         End If
     End Sub
 
-    Public Overloads Sub abort()
+    Public Overrides Sub abort()
         '' CMD an ServerController schicken
         getController.getCommandConnection.sendCommand(CasparCGCommandFactory.getStop(getChannel, getLayer))
         '' Der rest wird von der Elternklasse erledigt
