@@ -52,9 +52,11 @@ Example msg flow (PL = Playlist, SPL = SubPlaylist):
 This way, we make sure that we handle everything in the right thread.
 
 
+Done CD 30/07/13
 - Enable OSC support
 Done - CD 29/07/13
 --- Add Class to handle OSC msg and update state of playlists.
+Done - CD 30/07/13
 --- Choose between INFO/OSC updates depending on versionnumber from ccg server. INFO V <= 2.0.3, OSC V >= 2.0.4
 
 
@@ -76,7 +78,6 @@ Done - CD 29/07/13
 
 - Inkonsistens frame/ms bei viel funktionen und eigenschaften wie getDuratation()/Position etc. auflösen
 
-
 Done - CD 27/07/13
 - Handle problem duration in mediaLib != real duration when playing
 
@@ -95,8 +96,19 @@ Fixed - CD 29/07/13
  GUI:
  ====
 
+ - BUG: Loop at Root Playlist doesn't work as expected
+
+ Fixed - CD 30/7/13
+ - BUG: Stop did not stop media on server
+
+
+ - Add Connection State for ACMP/OSC
+
+ - Channel reset of Items at connect should only appear if channel is not valid
+
  - Make update Library async to handle long update times freezing GUI
 
+ Done - CD 29/07/13
  - Remove Add Button at Library, not usefull (and not implemented yet)
 
  - Overwork scaling issues of sub PLItems
