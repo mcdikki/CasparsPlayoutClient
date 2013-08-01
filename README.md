@@ -1,7 +1,7 @@
 CasparsPlayoutClient
 ====================
 
-CasparsPlayoutClient is a playoutclient for the [casparCG Server][https://github.com/CasparCG/Server] with focus on playout over CG.
+CasparsPlayoutClient is a playoutclient for the [CasparCG Server] [1] with focus on playout over CG.
 
 This project is in an early development state and thus has an empty master branch till the first release.
 See the testing branches for code.
@@ -22,5 +22,6 @@ CasparsPlayoutClient offers a hierarchical playlist system allowing
 * searching in medialibrary
 * drag and drop playlist editing
 * costum playlist and media naming
-* collaps/expand of subplaylist
+* collaps/expand of subplaylists
 
+[1]: https://github.com/CasparCG/Server "CasparCG Server"
