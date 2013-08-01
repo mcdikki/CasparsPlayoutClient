@@ -114,4 +114,6 @@ Fixed - CD 29/07/13
 
  - Overwork scaling issues of sub PLItems
 
+ Fixed - CD 01/08/13
  - Handle Excaption at CloseWindow and uncloseable Window when never been connected
+ ---> 2 Nullpointer exceptions in ServerController.close and MainWindow.dispose

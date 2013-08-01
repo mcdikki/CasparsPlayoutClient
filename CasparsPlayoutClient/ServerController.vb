@@ -33,7 +33,7 @@ Public Class ServerController
     Public Sub close()
         logger.debug("ServerController.close: Close servercontroller...")
         opened = False
-        updater.stopUpdate()
+        If Not IsNothing(updater) Then updater.stopUpdate()
         Try
             If Not IsNothing(tickThread) Then
                 tickThread.Interrupt()
