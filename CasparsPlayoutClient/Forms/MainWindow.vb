@@ -75,6 +75,7 @@
             sc.close()
             RemoveHandler sc.getTicker.frameTick, AddressOf onTick
             libraryView.cmbRefresh.PerformClick()
+            playlistView.onDataChanged()
         End If
     End Sub
 

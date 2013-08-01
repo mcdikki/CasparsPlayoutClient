@@ -165,7 +165,7 @@
     <Compile Include="Forms\Form2.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\MediaUpdater.vb" />
+    <Compile Include="MediaUpdater.vb" />
     <Compile Include="IPlaylistItem.vb" />
     <Compile Include="Library.vb" />
     <Compile Include="logger.vb" />

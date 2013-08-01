@@ -73,27 +73,39 @@
     Private Sub setData()
         '' Werte eintragen
         With playlist
-            If Not txtName.Focused Then Me.txtName.Text = .getName
-            Me.nudChannel.Value = Math.Max(.getChannel, 0)
-            Me.nudLayer.Value = Math.Max(.getLayer, -1)
-            Me.txtPosition.Text = ServerController.getTimeStringOfMS(.getPosition)
-            Me.txtDuration.Text = ServerController.getTimeStringOfMS(.getDuration)
-            Me.txtRemaining.Text = ServerController.getTimeStringOfMS(.getRemaining)
-            Select Case .getRemaining
-                Case Is < 1
-                    txtRemaining.BackColor = Color.White
-                Case Is < warn
-                    txtRemaining.BackColor = Color.Red
-                Case Is < noWarn
-                    txtRemaining.BackColor = Color.Yellow
-                Case Else
-                    txtRemaining.BackColor = Color.White
-            End Select
-            Me.txtDelay.Text = .getDelay
-            Me.ckbAuto.Checked = .isAutoStarting
-            Me.ckbParallel.Checked = .isParallel
-            Me.ckbLoop.Checked = .isLooping
-            Me.pbPlayed.Value = .getPlayed
+            If playlist.getController.isOpen Then
+                If Not txtName.Focused Then Me.txtName.Text = .getName
+                Me.nudChannel.Value = Math.Max(.getChannel, 0)
+                Me.nudLayer.Value = Math.Max(.getLayer, -1)
+                Me.txtPosition.Text = ServerController.getTimeStringOfMS(.getPosition)
+                Me.txtDuration.Text = ServerController.getTimeStringOfMS(.getDuration)
+                Me.txtRemaining.Text = ServerController.getTimeStringOfMS(.getRemaining)
+                Select Case .getRemaining
+                    Case Is < 1
+                        txtRemaining.BackColor = Color.White
+                    Case Is < warn
+                        txtRemaining.BackColor = Color.Red
+                    Case Is < noWarn
+                        txtRemaining.BackColor = Color.Yellow
+                    Case Else
+                        txtRemaining.BackColor = Color.White
+                End Select
+                Me.txtDelay.Text = .getDelay
+                Me.ckbAuto.Checked = .isAutoStarting
+                Me.ckbParallel.Checked = .isParallel
+                Me.ckbLoop.Checked = .isLooping
+                Me.pbPlayed.Value = .getPlayed
+            Else
+                Me.txtPosition.Text = ServerController.getTimeStringOfMS(0)
+                Me.txtDuration.Text = ServerController.getTimeStringOfMS(.getDuration)
+                Me.txtRemaining.Text = ServerController.getTimeStringOfMS(.getDuration)
+                txtRemaining.BackColor = Color.White
+                Me.txtDelay.Text = .getDelay
+                Me.ckbAuto.Checked = .isAutoStarting
+                Me.ckbParallel.Checked = .isParallel
+                Me.ckbLoop.Checked = .isLooping
+                Me.pbPlayed.Value = 0
+            End If
         End With
         RaiseEvent changedPlaying()
     End Sub

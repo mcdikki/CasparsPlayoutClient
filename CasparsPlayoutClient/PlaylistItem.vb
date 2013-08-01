@@ -235,7 +235,7 @@
     End Function
 
     Public Function isWaiting() As Boolean Implements IPlaylistItem.isWaiting
-        Return waiting
+        Return waiting AndAlso getController.isConnected
     End Function
 
     Public Overridable Function getDuration() As Long Implements IPlaylistItem.getDuration
@@ -282,7 +282,7 @@
     End Function
 
     Public Overridable Function getPlayed() As Byte Implements IPlaylistItem.getPlayed
-        If getDuration() > 0 Then
+        If getDuration() > 0 AndAlso getController.isConnected Then
             Return Math.Min(100, (100 / getDuration()) * getPosition())
         Else
             Return 0
@@ -290,11 +290,11 @@
     End Function
 
     Public Overridable Function isPlaying() As Boolean Implements IPlaylistItem.isPlaying
-        Return playing
+        Return playing AndAlso getController.isConnected
     End Function
 
     Public Function isPaused() As Boolean Implements IPlaylistItem.isPaused
-        Return paused
+        Return paused AndAlso getController.isConnected
     End Function
 
     Public Function isPlayable() As Boolean Implements IPlaylistItem.isPlayable

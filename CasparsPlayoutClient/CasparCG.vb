@@ -576,6 +576,7 @@ Public MustInherit Class CasparCGMedia
     Private Infos As Dictionary(Of String, String)
     Private updated As Boolean = False
     Private uuid As New Guid
+    Private thumbB64 As String = ""
 
     Public Enum MediaType
         STILL = 0
@@ -650,6 +651,14 @@ Public MustInherit Class CasparCGMedia
     Public Function getFullName() As String
         Return path & name
     End Function
+
+    Public Function getBase64Thumb() As String
+        Return thumbB64
+    End Function
+
+    Public Sub setBase64Thumb(ByRef base64Thumb As String)
+        thumbB64 = base64Thumb
+    End Sub
 
     Public Function getInfo(ByVal info As String) As String
         If Infos.ContainsKey(info) Then

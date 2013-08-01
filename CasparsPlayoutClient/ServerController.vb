@@ -33,6 +33,7 @@ Public Class ServerController
     Public Sub close()
         logger.debug("ServerController.close: Close servercontroller...")
         opened = False
+
         If Not IsNothing(updater) Then updater.stopUpdate()
         Try
             If Not IsNothing(tickThread) Then
@@ -45,10 +46,10 @@ Public Class ServerController
             End If
         Catch e As ThreadInterruptedException
         End Try
-        If Not IsNothing(updateConnection) Then updateConnection.close()
-        If Not IsNothing(tickConnection) Then tickConnection.close()
-        If Not IsNothing(testConnection) Then testConnection.close()
         If Not IsNothing(cmdConnection) Then cmdConnection.close()
+        If Not IsNothing(updateConnection) Then updateConnection.close()
+        If Not IsNothing(testConnection) Then testConnection.close()
+        If Not IsNothing(tickConnection) Then tickConnection.close()
         channels = 0
         ReDim channelFPS(0)
     End Sub
