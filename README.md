@@ -6,6 +6,11 @@ CasparsPlayoutClient is a playoutclient for the [CasparCG Server] [1] with focus
 This project is in an early development state and thus has an empty master branch till the first release.
 See the testing branches for code.
 
+Licence
+-------
+
+This software is licensed under the [Gnu GPL v3] [2].
+
 
 Features
 --------
@@ -30,16 +35,32 @@ Screenshots
 -----------
 
 The playlist
-![Screenshot](/screenshots/cpc_playlist.jpg "The playlist tree")
-![Screenshot](/screenshots/cpc_playlist_all_playing.jpg "A running playlist in expanded view")
-![Screenshot](/screenshots/cpc_playlist_all_playing.jpg "A running playlist in collapsed view")
-![Screenshot](/screenshots/cpc_playlist_waiting.jpg "A running playlist with manuel start waiting for start")
-![Screenshot](/screenshots/cpc_playlist_nearEndWarning.jpg "A running playlist with near end warning active")
+
+* The playlist tree:  
+  ![The playlist tree](/screenshots/cpc_playlist.jpg "The playlist tree")
+* A running playlist in expanded view:  
+  ![A running playlist in expanded view](/screenshots/cpc_playlist_all_playing.jpg "A running playlist in expanded view")
+* A running playlist in collapsed view:  
+  ![A running playlist in collapsed view](/screenshots/cpc_playlist_all_playing_collapsed.jpg "A running playlist in collapsed view")
+* A running playlist with manuel start waiting for start:  
+  ![A running playlist with manuel start waiting for start](/screenshots/cpc_playlist_waiting.jpg "A running playlist with manuel start waiting for start")
+* A running playlist with near end warning active:  
+  ![A running playlist with near end warning active](/screenshots/cpc_playlist_nearEndWarn.jpg "A running playlist with near end warning active")
 
 
 The medialibrary
-![Screenshot](/screenshots/cpc_medialib.jpg "The media library view")
-![Screenshot](/screenshots/cpc_medialib_filter.jpg "The media library with active filter")
 
+* The media library view:  
+  ![The media library view](/screenshots/cpc_medialib.jpg "The media library view")
+* The media library with active filter:  
+  ![The media library with active filter](/screenshots/cpc_medialib_filter.jpg "The media library with active filter")
+
+Development
+-----------
+
+CasparsPlayoutClient is still under development and not released yet.
+Please fell free to build it your self for testing.
+Any contributions are welcome.
 
 [1]: https://github.com/CasparCG/Server "CasparCG Server"
+[2]: http://www.gnu.org/licenses/gpl-3.0 "Gnu General Public License Version 3"
