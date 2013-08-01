@@ -73,9 +73,10 @@ Quick Start
 -----------
 
 The main window is splitted into 4 areas:  
+![Areas of MainWindow](/screenshots/cpc_MainWindow.jpg "CasparsPlayoutClient: 4 areas of MainWindow")  
 1. The playlist (left)  
 2. The media library (right)  
-3. The command bar (bottum)  
+3. The command bar (bottom)  
 4. The Info and CG controll (middle, not yet implemented)  
 
 * **Connect**  
