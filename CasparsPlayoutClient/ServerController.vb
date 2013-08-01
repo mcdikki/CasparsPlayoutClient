@@ -387,7 +387,7 @@ Public Class ServerController
 
     ''' <summary>
     ''' Returns a Dictionary of all media and templates on the server key by their names.
-    ''' If withMediaInfo is true, all mediaItems will have filled mediaInfo which is default by need more time.
+    ''' If withMediaInfo is true, all mediaItems will have filled mediaInfo which is default but need more time.
     ''' </summary>
     ''' <returns></returns>
     ''' <remarks></remarks>
