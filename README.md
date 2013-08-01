@@ -1,7 +1,6 @@
 CasparsPlayoutClient
 ====================
 
-<<<<<<< HEAD
 CasparsPlayoutClient is a playoutclient for the [CasparCG Server] [1] with focus on playout over CG.
 
 This project is in an early development state and thus has an empty master branch till the first release.
@@ -70,4 +69,3 @@ A playoutclient for the casparCG with focus on playout over CG.
 
 This project is in a early development state and thus has an empty master branch till the first release.
 See the testing branch for code.
->>>>>>> a0cb12f56874aea826016efefd498f1a8e4a1a81
