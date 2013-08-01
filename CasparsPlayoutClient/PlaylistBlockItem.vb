@@ -19,11 +19,11 @@ Public Class PlaylistBlockItem
     End Function
 
     Public Overrides Sub start(Optional ByVal noWait As Boolean = False)
-        For Each child In getChildItems(True)
-            If child.isPlayable Then
-                child.setPosition(0)
-            End If
-        Next
+        'For Each child In getChildItems(True)
+        '    If child.isPlayable Then
+        '        child.setPosition(0)
+        '    End If
+        'Next
         MyBase.start(noWait)
         While isPlaying() 'AndAlso Not isParallel()
             Thread.Sleep(1)

@@ -129,7 +129,7 @@ Public Class CasparCGConnection
                 client.GetStream.Read(buffer, 0, client.Available)
             End If
             ' Befehl senden
-            logger.debug("CasparCGConnection.sendCommand: Send command: " & cmd)
+            logger.log("CasparCGConnection.sendCommand: Send command: " & cmd)
             client.GetStream.Write(System.Text.UTF8Encoding.UTF8.GetBytes(cmd & vbCrLf), 0, cmd.Length + 2)
             Dim timer As New Stopwatch
             timer.Start()
@@ -242,10 +242,18 @@ Public Class CasparCGCommandFactory
         Return escape(cmd)
     End Function
 
-    Public Shared Function getPlay(ByVal channel As Integer, ByVal layer As Integer, ByVal media As CasparCGMedia, Optional ByVal looping As Boolean = False, Optional ByVal seek As Long = 0, Optional ByVal length As Long = 0, Optional ByVal transition As CasparCGTransition = Nothing, Optional ByVal filter As String = "") As String
+    Public Shared Function getPlay(ByVal channel As Integer, ByVal layer As Integer, ByVal media As CasparCGMedia, Optional ByVal looping As Boolean = False, Optional ByVal fill As Boolean = True, Optional ByVal seek As Long = 0, Optional ByVal length As Long = 0, Optional ByVal transition As CasparCGTransition = Nothing, Optional ByVal filter As String = "") As String
         If IsNothing(media) Then
             Return getPlay(channel, layer, , looping, seek, length, transition, filter)
         Else
+            If fill Then
+                If seek = 0 AndAlso media.containsInfo("frame-number") AndAlso media.containsInfo("nb-frames") AndAlso media.getInfo("frame-number") < media.getInfo("nb-frames") Then
+                    seek = Long.Parse(media.getInfo("frame-number"))
+                End If
+                If length = 0 AndAlso media.containsInfo("nb-frames") Then
+                    length = media.getInfo("nb-frames")
+                End If
+            End If
             Return getPlay(channel, layer, media.getFullName, looping, seek, length, transition, filter)
         End If
     End Function

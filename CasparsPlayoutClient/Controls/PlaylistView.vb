@@ -80,6 +80,8 @@
             Me.txtDuration.Text = ServerController.getTimeStringOfMS(.getDuration)
             Me.txtRemaining.Text = ServerController.getTimeStringOfMS(.getRemaining)
             Select Case .getRemaining
+                Case Is < 1
+                    txtRemaining.BackColor = Color.White
                 Case Is < warn
                     txtRemaining.BackColor = Color.Red
                 Case Is < noWarn
@@ -125,12 +127,16 @@
         layoutHeaderContentSplit.Panel2Collapsed = Not layoutHeaderContentSplit.Panel2Collapsed
     End Sub
 
-    Private Sub cmbToggleButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmbToggleButton.Click
-        If waiting Then
-            waiting = False
+    Private Sub cmbToggleButton_Click(ByVal sender As System.Object, ByVal e As EventArgs) Handles cmbToggleButton.Click
+        If ModifierKeys = Keys.Control Then
+            logger.debug("GUI PlaylistView: HardStop requested at " & Me.txtName.Text)
+            'waiting = False
+            playlist.abort()
+        ElseIf playlist.isWaiting Then
+            'waiting = False
             playlist.playNextItem()
         ElseIf playlist.isPlaying Then
-            playlist.abort()
+            playlist.stoppedPlaying()
         Else
             ' Damit nicht gewartet wird falls der button manuel betätigt wurde aber auto nicht gesetzt ist
             If playlist.getController.containsChannel(playlist.getChannel) OrElse Not playlist.isPlayable Then
@@ -154,7 +160,7 @@
             nudChannel.Enabled = False
             nudLayer.Enabled = False
             txtName.ReadOnly = True
-        ElseIf waiting Then
+        ElseIf playlist.isWaiting Then
             txtName.BackColor = Color.LightBlue
             layoutContentSplit.Panel1.BackColor = Color.LightBlue
             cmbToggleButton.ImageIndex = 2
@@ -238,9 +244,11 @@
     ''
 
     Public Sub addBlockItem()
-        Dim bi As New PlaylistBlockItem("BlockItem", playlist.getController)
-        playlist.addItem(bi)
-        addChild(bi)
+        If playlist.getItemType = PlaylistItem.PlaylistItemTypes.BLOCK Then
+            Dim bi As New PlaylistBlockItem("BlockItem", playlist.getController)
+            playlist.addItem(bi)
+            addChild(bi)
+        End If
     End Sub
 
     Public Sub removeItem()

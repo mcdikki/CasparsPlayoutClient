@@ -42,14 +42,14 @@
         getMedia.setUpdated(False)
 
         If getController.containsChannel(getChannel) AndAlso getLayer() > -1 Then
-            Dim result = getController.getCommandConnection.sendCommand(CasparCGCommandFactory.getPlay(getChannel, getLayer, getMedia, isLooping, , ))
+            Dim result = getController.getCommandConnection.sendCommand(CasparCGCommandFactory.getPlay(getChannel, getLayer, getMedia, isLooping, False))
             If result.isOK Then
                 While Not getController.readyForUpdate.WaitOne()
-                    logger.warn("PlaylistMovieItem.start: " & getName() & ": Could not get handel to update my status")
+                    logger.warn("PlaylistMovieItem.start: " & getName() & ": Could not get handle to update my status")
                 End While
                 playing = True
                 getController.readyForUpdate.Release()
-                getController.getCommandConnection.sendAsyncCommand(CasparCGCommandFactory.getLoadbg(getChannel, getLayer, "empty", True))
+                'getController.getCommandConnection.sendAsyncCommand(CasparCGCommandFactory.getLoadbg(getChannel, getLayer, "empty", True))
                 logger.log("PlaylistMovieItem.start: ...gestartet " & getChannel() & "-" & getLayer() & ": " & getMedia.toString)
             Else
                 logger.err("PlaylistMovieItem.start: Could not start " & media.getFullName & ". ServerMessage was: " & result.getServerMessage)
@@ -67,9 +67,15 @@
 
     Public Overrides Sub abort()
         '' CMD an ServerController schicken
-        getController.getCommandConnection.sendCommand(CasparCGCommandFactory.getStop(getChannel, getLayer))
+        stoppedPlaying()
+        setPosition(0)
         '' Der rest wird von der Elternklasse erledigt
         MyBase.abort()
+    End Sub
+
+    Public Overrides Sub stoppedPlaying()
+        getController.getCommandConnection.sendCommand(CasparCGCommandFactory.getStop(getChannel, getLayer))
+        MyBase.stoppedPlaying()
     End Sub
 
     Public Overrides Sub pause(ByVal frames As Long)
@@ -98,7 +104,9 @@
     End Function
 
     Public Overrides Sub setPosition(ByVal position As Long)
-        If Not isPlaying() AndAlso getMedia.containsInfo("frame-number") Then
+        If Not isPlaying() AndAlso getMedia.containsInfo("frame-number") AndAlso getMedia.containsInfo("nb-frames") AndAlso Integer.Parse(getMedia.getInfo("nb-frames")) <= position Then
+            getMedia.setInfo("frame-number", position)
+        ElseIf Not isPlaying() Then
             getMedia.setInfo("frame-number", "0")
         End If
     End Sub

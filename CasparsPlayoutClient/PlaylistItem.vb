@@ -65,10 +65,13 @@
             pauseThread.Abort()
             pauseThread = Nothing
         End If
+        waiting = False
+        playNext = False
+        playing = False
+        setPosition(0)
         For Each item In items
             item.abort()
         Next
-        playing = False
     End Sub
 
     Public Overridable Sub stoppedPlaying() Implements IPlaylistItem.stoppedPlaying
@@ -76,6 +79,14 @@
         If Not IsNothing(startThread) Then
             startThread.Abort()
         End If
+        If Not IsNothing(pauseThread) Then
+            pauseThread.Abort()
+            pauseThread = Nothing
+        End If
+        For Each item In items
+            item.stoppedPlaying()
+        Next
+        setPosition(0)
         logger.debug("PlaylistItem.stoppedPlaying: Stopped playing " & getName() & " (" & getChannel() & "-" & getLayer() & ")")
     End Sub
 
