@@ -6,7 +6,7 @@ CasparsPlayoutClient is a playoutclient for the [CasparCG Server] [1] with focus
 This project is in an early development state and thus has an empty master branch till the first release.
 See the testing branches for code.
 
-Licence
+License
 -------
 
 This software is licensed under the [Gnu GPL v3] [2].
@@ -63,4 +63,4 @@ Please fell free to build it your self for testing.
 Any contributions are welcome.
 
 [1]: https://github.com/CasparCG/Server "CasparCG Server"
-[2]: http://www.gnu.org/licenses/gpl-3.0 "Gnu General Public License Version 3"
+[2]: http://www.gnu.org/licenses/gpl-3.0-standalone.html "Gnu General Public License Version 3"
