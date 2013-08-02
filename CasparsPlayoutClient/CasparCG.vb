@@ -136,15 +136,16 @@ Public Class CasparCGConnection
             'logger.debug("Command sent")
 
             ' Auf antwort warten
-            Dim readComplete As Boolean = False
+            'Dim readComplete As Boolean = False
             Dim readByte As Byte
             Dim input As String = ""
             Dim size As Integer = 0
 
             ' BUGFIX: End of VERSION CMD not detectable. Giving a timeout.          
-            client.GetStream.ReadTimeout = 300                                                                                                                                     ''-- vbLF & -- Entfernt zum Testen                     
+            'client.GetStream.ReadTimeout = 3000                                                                                                                                     ''-- vbLF & -- Entfernt zum Testen                     
             Try
-                Do Until (input.Trim().Length > 3) AndAlso (((input.Trim().Substring(0, 3) = "201" OrElse input.Trim().Substring(0, 3) = "200") AndAlso input.EndsWith(vbLf & vbCrLf)) OrElse (input.Trim().Substring(0, 3) <> "201" AndAlso input.Trim().Substring(0, 3) <> "200" AndAlso input.EndsWith(vbCrLf)))
+                '                                                                                                                                                                                                                                                                                                         '' Version BUGFIX    201 THUMBNAIL RETRIEVE OK
+                Do Until (input.Trim().Length > 3) AndAlso (((input.Trim().Substring(0, 3) = "201" OrElse input.Trim().Substring(0, 3) = "200") AndAlso input.EndsWith(vbLf & vbCrLf)) OrElse (input.Trim().Substring(0, 3) <> "201" AndAlso input.Trim().Substring(0, 3) <> "200" AndAlso input.EndsWith(vbCrLf)) OrElse (input.Trim().Length > 16 AndAlso input.Trim().Substring(0, 14) = "201 VERSION OK" AndAlso input.EndsWith(vbCrLf)) OrElse (input.Trim().Length > 27 AndAlso input.Trim().Substring(0, 25) = "201 THUMBNAIL RETRIEVE OK" AndAlso input.EndsWith(vbCrLf)))
                     readByte = client.GetStream.ReadByte
                     If readByte > 0 Then
                         ' Ein Zeichen gelesen
@@ -154,11 +155,13 @@ Public Class CasparCGConnection
                     End If
                 Loop
             Catch e As Exception
-
+                'logger.log("CasparCGConnection.sendCommand: ReadTimeout while receiving response for '" & cmd & "'")
+                logger.log(e.Message)
             End Try
             timer.Stop()
             logger.debug("CasparCGConnection.sendCommand: Waited " & timer.ElapsedMilliseconds & "ms for an answer and received " & input.Length & " Bytes to read.")
             connectionLock.Release()
+            logger.log("CasparCGConnection.sendCommand: Received response for '" & cmd & "': " & input)
             Return New CasparCGResponse(input, cmd)
         Else
             logger.err("CasparCGConnection.sendCommand: Not connected to server. Can't send command.")
@@ -321,6 +324,26 @@ Public Class CasparCGCommandFactory
 
     Public Shared Function getInfo(ByRef template As CasparCGTemplate) As String 
         Return escape("INFO TEMPLATE '" & template.getFullName & "'")
+    End Function
+
+    Public Shared Function getThumbnail(ByVal media As String) As String
+        Return escape("THUMBNAIL RETRIEVE '" & media & "'")
+    End Function
+
+    Public Shared Function getThumbnail(ByVal media As CasparCGMedia) As String
+        Return escape("THUMBNAIL RETRIEVE '" & media.getFullName & "'")
+    End Function
+
+    Public Shared Function getThumbnailGenerate(ByVal media As String) As String
+        Return escape("THUMBNAIL GENERATE '" & media & "'")
+    End Function
+
+    Public Shared Function getThumbnailGenerate(ByVal media As CasparCGMedia) As String
+        Return escape("THUMBNAIL GENERATE '" & media.getFullName & "'")
+    End Function
+
+    Public Shared Function getThumbnailList() As String
+        Return "THUMBNAIL LIST"
     End Function
 
     Public Shared Function getVersion(Optional ByVal ofPart As String = "Server") As String
@@ -757,6 +780,7 @@ Public Class CasparCGMovie
         For Each info As String In getInfos.Keys
             media.addInfo(info, getInfo(info))
         Next
+        media.setBase64Thumb(getBase64Thumb())
         Return media
     End Function
 

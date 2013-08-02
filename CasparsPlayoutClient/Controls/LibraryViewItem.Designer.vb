@@ -24,15 +24,16 @@ Partial Class LibraryViewItem
     Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
         Me.layoutHeaderTable = New System.Windows.Forms.TableLayoutPanel()
-        Me.cmbAdd = New System.Windows.Forms.Button()
         Me.lblName = New System.Windows.Forms.Label()
         Me.layoutHeaderInfoPanel = New System.Windows.Forms.Panel()
         Me.lblExpand = New System.Windows.Forms.Label()
         Me.lblType = New System.Windows.Forms.Label()
         Me.lblDuration = New System.Windows.Forms.Label()
         Me.toolTip = New System.Windows.Forms.ToolTip(Me.components)
+        Me.picThumb = New System.Windows.Forms.PictureBox()
         Me.layoutHeaderTable.SuspendLayout()
         Me.layoutHeaderInfoPanel.SuspendLayout()
+        CType(Me.picThumb, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'layoutHeaderTable
@@ -41,10 +42,10 @@ Partial Class LibraryViewItem
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.layoutHeaderTable.ColumnCount = 2
         Me.layoutHeaderTable.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
-        Me.layoutHeaderTable.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 40.0!))
-        Me.layoutHeaderTable.Controls.Add(Me.cmbAdd, 1, 0)
+        Me.layoutHeaderTable.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50.0!))
         Me.layoutHeaderTable.Controls.Add(Me.lblName, 0, 0)
         Me.layoutHeaderTable.Controls.Add(Me.layoutHeaderInfoPanel, 0, 1)
+        Me.layoutHeaderTable.Controls.Add(Me.picThumb, 1, 0)
         Me.layoutHeaderTable.Location = New System.Drawing.Point(0, 0)
         Me.layoutHeaderTable.Margin = New System.Windows.Forms.Padding(0)
         Me.layoutHeaderTable.MinimumSize = New System.Drawing.Size(145, 30)
@@ -54,19 +55,6 @@ Partial Class LibraryViewItem
         Me.layoutHeaderTable.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
         Me.layoutHeaderTable.Size = New System.Drawing.Size(145, 30)
         Me.layoutHeaderTable.TabIndex = 1
-        '
-        'cmbAdd
-        '
-        Me.cmbAdd.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.cmbAdd.Location = New System.Drawing.Point(105, 0)
-        Me.cmbAdd.Margin = New System.Windows.Forms.Padding(0)
-        Me.cmbAdd.Name = "cmbAdd"
-        Me.layoutHeaderTable.SetRowSpan(Me.cmbAdd, 2)
-        Me.cmbAdd.Size = New System.Drawing.Size(40, 30)
-        Me.cmbAdd.TabIndex = 0
-        Me.cmbAdd.Text = "Add"
-        Me.cmbAdd.UseVisualStyleBackColor = True
-        Me.cmbAdd.Visible = False
         '
         'lblName
         '
@@ -78,7 +66,7 @@ Partial Class LibraryViewItem
         Me.lblName.Location = New System.Drawing.Point(0, 0)
         Me.lblName.Margin = New System.Windows.Forms.Padding(0)
         Me.lblName.Name = "lblName"
-        Me.lblName.Size = New System.Drawing.Size(105, 15)
+        Me.lblName.Size = New System.Drawing.Size(95, 15)
         Me.lblName.TabIndex = 1
         Me.lblName.Text = "Name"
         Me.lblName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
@@ -94,7 +82,7 @@ Partial Class LibraryViewItem
         Me.layoutHeaderInfoPanel.Location = New System.Drawing.Point(0, 15)
         Me.layoutHeaderInfoPanel.Margin = New System.Windows.Forms.Padding(0)
         Me.layoutHeaderInfoPanel.Name = "layoutHeaderInfoPanel"
-        Me.layoutHeaderInfoPanel.Size = New System.Drawing.Size(105, 15)
+        Me.layoutHeaderInfoPanel.Size = New System.Drawing.Size(95, 15)
         Me.layoutHeaderInfoPanel.TabIndex = 2
         '
         'lblExpand
@@ -123,7 +111,7 @@ Partial Class LibraryViewItem
         Me.lblType.AutoSize = True
         Me.lblType.BackColor = System.Drawing.Color.Transparent
         Me.lblType.Font = New System.Drawing.Font("Microsoft Sans Serif", 6.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblType.Location = New System.Drawing.Point(58, 5)
+        Me.lblType.Location = New System.Drawing.Point(48, 5)
         Me.lblType.Margin = New System.Windows.Forms.Padding(0)
         Me.lblType.Name = "lblType"
         Me.lblType.Size = New System.Drawing.Size(37, 9)
@@ -146,6 +134,18 @@ Partial Class LibraryViewItem
         Me.lblDuration.TabIndex = 0
         Me.lblDuration.Text = "00:00:00.00"
         '
+        'picThumb
+        '
+        Me.picThumb.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.picThumb.Location = New System.Drawing.Point(95, 0)
+        Me.picThumb.Margin = New System.Windows.Forms.Padding(0)
+        Me.picThumb.Name = "picThumb"
+        Me.layoutHeaderTable.SetRowSpan(Me.picThumb, 2)
+        Me.picThumb.Size = New System.Drawing.Size(50, 30)
+        Me.picThumb.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom
+        Me.picThumb.TabIndex = 3
+        Me.picThumb.TabStop = False
+        '
         'LibraryViewItem
         '
         Me.AllowDrop = True
@@ -160,16 +160,17 @@ Partial Class LibraryViewItem
         Me.layoutHeaderTable.PerformLayout()
         Me.layoutHeaderInfoPanel.ResumeLayout(False)
         Me.layoutHeaderInfoPanel.PerformLayout()
+        CType(Me.picThumb, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
 
     End Sub
     Friend WithEvents layoutHeaderTable As System.Windows.Forms.TableLayoutPanel
-    Friend WithEvents cmbAdd As System.Windows.Forms.Button
     Friend WithEvents lblName As System.Windows.Forms.Label
     Friend WithEvents layoutHeaderInfoPanel As System.Windows.Forms.Panel
     Friend WithEvents lblExpand As System.Windows.Forms.Label
     Friend WithEvents lblType As System.Windows.Forms.Label
     Friend WithEvents lblDuration As System.Windows.Forms.Label
     Friend WithEvents toolTip As System.Windows.Forms.ToolTip
+    Friend WithEvents picThumb As System.Windows.Forms.PictureBox
 
 End Class

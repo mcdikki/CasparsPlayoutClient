@@ -8,6 +8,7 @@
 
     Private Sub MainWindow_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
         logger.addLogAction(New consoleLogger(3))
+        logger.addLogAction(New fileLogger(3, "c:\daten\cpc.log", True, False))
         sc = New ServerController
         'sc.open("casparcg", 5250)
         mediaLib = New Library(sc)
@@ -61,7 +62,7 @@
                 cbbClearChannel.Text = i
                 cbbClearChannel.Items.Add(i)
             Next
-            mediaLib.refreshLibrary()
+            'mediaLib.refreshLibrary()
             AddHandler sc.getTicker.frameTick, AddressOf onTick
             sc.startTicker()
             libraryView.cmbRefresh.PerformClick()

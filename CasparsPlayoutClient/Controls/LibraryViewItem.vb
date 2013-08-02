@@ -13,7 +13,9 @@
             Name = MediaItem.getFullName
             toolTip.SetToolTip(Me, MediaItem.getFullName)
             toolTip.SetToolTip(Me.lblName, MediaItem.getFullName)
-            toolTip.SetToolTip(Me.cmbAdd, "Add " & MediaItem.getFullName & " to playlist")
+            If MediaItem.getBase64Thumb.Length > 0 Then
+                picThumb.Image = ServerController.getBase64ToImage(MediaItem.getBase64Thumb)
+            End If
             lblName.Text = MediaItem.getName
             lblType.Text = MediaItem.getMediaType.ToString
             If MediaItem.containsInfo("Duration") Then
@@ -36,11 +38,11 @@
     '' DragDrop verarbeiten
 
     Private MouseIsDown As Boolean = False
-    Private Sub handleMouseDown(ByVal sender As Object, ByVal e As MouseEventArgs) Handles MyBase.MouseDown, layoutHeaderInfoPanel.MouseDown, layoutHeaderTable.MouseDown, cmbAdd.MouseDown, lblDuration.MouseDown, lblExpand.MouseDown, lblName.MouseDown, lblType.MouseDown
+    Private Sub handleMouseDown(ByVal sender As Object, ByVal e As MouseEventArgs) Handles MyBase.MouseDown, layoutHeaderInfoPanel.MouseDown, layoutHeaderTable.MouseDown, lblDuration.MouseDown, lblExpand.MouseDown, lblName.MouseDown, lblType.MouseDown
         ' Set a flag to show that the mouse is down. 
         MouseIsDown = True
     End Sub
-    Private Sub handleMouseMove(ByVal sender As Object, ByVal e As MouseEventArgs) Handles MyBase.MouseMove, layoutHeaderInfoPanel.MouseMove, layoutHeaderTable.MouseMove, cmbAdd.MouseMove, lblDuration.MouseMove, lblExpand.MouseMove, lblName.MouseMove, lblType.MouseMove
+    Private Sub handleMouseMove(ByVal sender As Object, ByVal e As MouseEventArgs) Handles MyBase.MouseMove, layoutHeaderInfoPanel.MouseMove, layoutHeaderTable.MouseMove, lblDuration.MouseMove, lblExpand.MouseMove, lblName.MouseMove, lblType.MouseMove
         If MouseIsDown Then
             ' Initiate dragging. 
             DoDragDrop(MediaItem, DragDropEffects.Copy)

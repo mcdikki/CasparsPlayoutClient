@@ -38,7 +38,12 @@
         '' ChildLayout füllen
         Select Case playlist.getItemType
             Case PlaylistItem.PlaylistItemTypes.MOVIE, PlaylistItem.PlaylistItemTypes.AUDIO, PlaylistItem.PlaylistItemTypes.STILL
-
+                Dim thumb As New PictureBox()
+                thumb.Image = ServerController.getBase64ToImage(playlist.getMedia.getBase64Thumb)
+                thumb.Dock = DockStyle.Fill
+                thumb.SizeMode = PictureBoxSizeMode.AutoSize
+                thumb.Parent = Me.layoutChild
+                thumb.Show()
             Case PlaylistItem.PlaylistItemTypes.TEMPLATE
 
             Case PlaylistItem.PlaylistItemTypes.BLOCK

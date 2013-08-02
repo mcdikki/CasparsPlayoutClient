@@ -409,6 +409,11 @@ Public Class ServerController
                             Case "MOVIE"
                                 media.Add(name, New CasparCGMovie(name))
                                 media.Item(name).setInfo("Duration", getTimeStringOfMS(getOriginalMediaDuration(media.Item(name))))
+                                ' get Thumbnail
+                                response = testConnection.sendCommand(CasparCGCommandFactory.getThumbnail(name))
+                                If response.isOK Then
+                                    media.Item(name).setBase64Thumb(response.getData)
+                                End If
                             Case "AUDIO"
                                 media.Add(name, New CasparCGAudio(name))
                                 'media.Item(name).setInfo("Duration", getTimeStringOfMS(getOriginalMediaDuration(media.Item(name))))
@@ -434,6 +439,39 @@ Public Class ServerController
             End If
         End If
         Return media
+    End Function
+
+    Public Shared Function getBase64ToImage(ByVal base64string As String) As System.Drawing.Image
+        'Converts the base64 encoded msg to image data
+        'creates image
+        Return System.Drawing.Image.FromStream(New System.IO.MemoryStream(Convert.FromBase64String(repairBase64(base64string))))
+    End Function
+
+    Public Shared Function repairBase64(ByRef base64String As String) As String
+        'Fill or remove whitespace if length mod 4 != 0
+        Dim over As Integer = base64String.Length Mod 4
+        If over <> 0 Then
+            If over = 1 Then
+                If base64String.EndsWith("==") Then
+                    base64String = base64String.Substring(0, base64String.Length - over)
+                ElseIf base64String.EndsWith(" =") Then
+                    base64String = base64String.Substring(0, base64String.Length - over - 1) & "="
+                End If
+            ElseIf over = 2 Then
+                If base64String.EndsWith("===") Then
+                    base64String = base64String.Substring(0, base64String.Length - over)
+                ElseIf base64String.EndsWith(" ==") OrElse base64String.EndsWith("= =") OrElse base64String.EndsWith("  =") Then
+                    base64String = base64String.Substring(0, base64String.Length - over - 1) & "="
+                End If
+            ElseIf over = 3 Then
+                base64String = base64String & "="
+            End If
+        End If
+
+        'Replace whitespaces
+        base64String = base64String.Replace(" ", "+")
+
+        Return base64String
     End Function
 
     Public Function getTicker() As FrameTicker
