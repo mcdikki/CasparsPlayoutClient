@@ -7,6 +7,11 @@ Public Class Library
 
     Private media As Dictionary(Of String, CasparCGMedia)
     Private controller As ServerController
+    Private updateThread As Threading.Thread
+
+    Public Event updated(ByRef sender As Object, ByRef media As Dictionary(Of String, CasparCGMedia))
+    Public Event updatedAborted(ByRef sender As Object)
+
 
     Public Sub New(ByVal controller As ServerController)
         Me.controller = controller
@@ -40,6 +45,32 @@ Public Class Library
     ''' </summary>
     ''' <remarks></remarks>
     Public Sub refreshLibrary()
-        media = controller.getMediaList()
+        If controller.isConnected Then
+            updateThread = New Threading.Thread(AddressOf update)
+            updateThread.Start()
+            'media = controller.getMediaList()
+        Else
+            RaiseEvent updated(Me, New Dictionary(Of String, CasparCGMedia))
+        End If
+    End Sub
+
+    Public Function isUpdating() As Boolean
+        Return Not IsNothing(updateThread) AndAlso updateThread.IsAlive
+    End Function
+
+    Public Sub abortUpdate()
+        If isUpdating() Then
+            updateThread.Abort()
+            RaiseEvent updatedAborted(Me)
+        End If
+    End Sub
+
+    Private Sub update()
+        RaiseEvent updated(Me, controller.getMediaList)
+    End Sub
+
+    Public Sub updateLibrary(ByRef sender As Object, ByRef media As Dictionary(Of String, CasparCGMedia)) Handles Me.updated
+        Me.media = media
+        updateThread = Nothing
     End Sub
 End Class

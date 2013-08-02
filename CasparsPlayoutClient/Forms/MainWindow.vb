@@ -57,6 +57,7 @@
 
     Private Sub connect() Handles cmbConnect.Click
         If Not sc.isConnected Then
+            cmbConnect.Enabled = False
             sc.open(txtAddress.Text, Integer.Parse(txtPort.Text))
             For i = 1 To sc.getChannels
                 cbbClearChannel.Text = i
@@ -66,6 +67,7 @@
             AddHandler sc.getTicker.frameTick, AddressOf onTick
             sc.startTicker()
             libraryView.cmbRefresh.PerformClick()
+            cmbDisconnect.Enabled = True
         Else
             MsgBox("Allready connected")
         End If
@@ -73,10 +75,13 @@
 
     Private Sub disconnect() Handles cmbDisconnect.Click
         If sc.isConnected Then
+            cmbDisconnect.Enabled = False
             sc.close()
             RemoveHandler sc.getTicker.frameTick, AddressOf onTick
-            libraryView.cmbRefresh.PerformClick()
+            'libraryView.Library.updateLibrary(Me, New Dictionary(Of String, CasparCGMedia))
+            libraryView.Library.refreshLibrary()
             playlistView.onDataChanged()
+            cmbConnect.Enabled = True
         End If
     End Sub
 

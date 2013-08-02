@@ -25,7 +25,6 @@ Partial Class LibraryView
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(LibraryView))
         Me.layoutHeaderItemSplit = New System.Windows.Forms.SplitContainer()
         Me.layoutHeaderTable = New System.Windows.Forms.TableLayoutPanel()
-        Me.cmbRefresh = New System.Windows.Forms.Button()
         Me.layoutFilterPanel = New System.Windows.Forms.Panel()
         Me.txtFilter = New System.Windows.Forms.TextBox()
         Me.lblFilter = New System.Windows.Forms.Label()
@@ -34,7 +33,10 @@ Partial Class LibraryView
         Me.ckbAudio = New System.Windows.Forms.CheckBox()
         Me.ckbStill = New System.Windows.Forms.CheckBox()
         Me.ckbTemplate = New System.Windows.Forms.CheckBox()
+        Me.Panel1 = New System.Windows.Forms.Panel()
         Me.layoutItemsFlow = New System.Windows.Forms.FlowLayoutPanel()
+        Me.cmbRefresh = New System.Windows.Forms.Button()
+        Me.pbProgress = New System.Windows.Forms.PictureBox()
         CType(Me.layoutHeaderItemSplit, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.layoutHeaderItemSplit.Panel1.SuspendLayout()
         Me.layoutHeaderItemSplit.Panel2.SuspendLayout()
@@ -42,6 +44,8 @@ Partial Class LibraryView
         Me.layoutHeaderTable.SuspendLayout()
         Me.layoutFilterPanel.SuspendLayout()
         Me.layoutTypeFilterFlow.SuspendLayout()
+        Me.Panel1.SuspendLayout()
+        CType(Me.pbProgress, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'layoutHeaderItemSplit
@@ -75,29 +79,19 @@ Partial Class LibraryView
         Me.layoutHeaderTable.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25.0!))
         Me.layoutHeaderTable.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25.0!))
         Me.layoutHeaderTable.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25.0!))
-        Me.layoutHeaderTable.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 40.0!))
-        Me.layoutHeaderTable.Controls.Add(Me.cmbRefresh, 4, 0)
+        Me.layoutHeaderTable.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 41.0!))
         Me.layoutHeaderTable.Controls.Add(Me.layoutFilterPanel, 0, 0)
         Me.layoutHeaderTable.Controls.Add(Me.layoutTypeFilterFlow, 0, 1)
+        Me.layoutHeaderTable.Controls.Add(Me.Panel1, 4, 0)
         Me.layoutHeaderTable.Dock = System.Windows.Forms.DockStyle.Fill
         Me.layoutHeaderTable.Location = New System.Drawing.Point(0, 0)
         Me.layoutHeaderTable.Name = "layoutHeaderTable"
         Me.layoutHeaderTable.RowCount = 2
         Me.layoutHeaderTable.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25.0!))
         Me.layoutHeaderTable.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25.0!))
+        Me.layoutHeaderTable.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20.0!))
         Me.layoutHeaderTable.Size = New System.Drawing.Size(285, 50)
         Me.layoutHeaderTable.TabIndex = 0
-        '
-        'cmbRefresh
-        '
-        Me.cmbRefresh.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.cmbRefresh.Image = CType(resources.GetObject("cmbRefresh.Image"), System.Drawing.Image)
-        Me.cmbRefresh.Location = New System.Drawing.Point(247, 3)
-        Me.cmbRefresh.Name = "cmbRefresh"
-        Me.layoutHeaderTable.SetRowSpan(Me.cmbRefresh, 2)
-        Me.cmbRefresh.Size = New System.Drawing.Size(35, 44)
-        Me.cmbRefresh.TabIndex = 0
-        Me.cmbRefresh.UseVisualStyleBackColor = True
         '
         'layoutFilterPanel
         '
@@ -113,8 +107,8 @@ Partial Class LibraryView
         'txtFilter
         '
         Me.txtFilter.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-                    Or System.Windows.Forms.AnchorStyles.Left) _
-                    Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+            Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.txtFilter.Location = New System.Drawing.Point(32, 1)
         Me.txtFilter.Name = "txtFilter"
         Me.txtFilter.Size = New System.Drawing.Size(203, 20)
@@ -123,7 +117,7 @@ Partial Class LibraryView
         'lblFilter
         '
         Me.lblFilter.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-                    Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
+            Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
         Me.lblFilter.AutoSize = True
         Me.lblFilter.Location = New System.Drawing.Point(1, 4)
         Me.lblFilter.Name = "lblFilter"
@@ -190,6 +184,17 @@ Partial Class LibraryView
         Me.ckbTemplate.Text = "Template"
         Me.ckbTemplate.UseVisualStyleBackColor = True
         '
+        'Panel1
+        '
+        Me.Panel1.Controls.Add(Me.pbProgress)
+        Me.Panel1.Controls.Add(Me.cmbRefresh)
+        Me.Panel1.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.Panel1.Location = New System.Drawing.Point(247, 3)
+        Me.Panel1.Name = "Panel1"
+        Me.layoutHeaderTable.SetRowSpan(Me.Panel1, 2)
+        Me.Panel1.Size = New System.Drawing.Size(35, 44)
+        Me.Panel1.TabIndex = 7
+        '
         'layoutItemsFlow
         '
         Me.layoutItemsFlow.AutoScroll = True
@@ -203,6 +208,29 @@ Partial Class LibraryView
         Me.layoutItemsFlow.Size = New System.Drawing.Size(285, 89)
         Me.layoutItemsFlow.TabIndex = 0
         Me.layoutItemsFlow.WrapContents = False
+        '
+        'cmbRefresh
+        '
+        Me.cmbRefresh.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.cmbRefresh.Image = CType(resources.GetObject("cmbRefresh.Image"), System.Drawing.Image)
+        Me.cmbRefresh.Location = New System.Drawing.Point(0, 0)
+        Me.cmbRefresh.Name = "cmbRefresh"
+        Me.cmbRefresh.Size = New System.Drawing.Size(35, 44)
+        Me.cmbRefresh.TabIndex = 2
+        Me.cmbRefresh.UseVisualStyleBackColor = True
+        '
+        'pbProgress
+        '
+        Me.pbProgress.BackColor = System.Drawing.Color.Transparent
+        Me.pbProgress.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.pbProgress.Image = CType(resources.GetObject("pbProgress.Image"), System.Drawing.Image)
+        Me.pbProgress.Location = New System.Drawing.Point(0, 0)
+        Me.pbProgress.Name = "pbProgress"
+        Me.pbProgress.Size = New System.Drawing.Size(35, 44)
+        Me.pbProgress.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage
+        Me.pbProgress.TabIndex = 3
+        Me.pbProgress.TabStop = False
+        Me.pbProgress.Visible = False
         '
         'LibraryView
         '
@@ -222,12 +250,13 @@ Partial Class LibraryView
         Me.layoutFilterPanel.PerformLayout()
         Me.layoutTypeFilterFlow.ResumeLayout(False)
         Me.layoutTypeFilterFlow.PerformLayout()
+        Me.Panel1.ResumeLayout(False)
+        CType(Me.pbProgress, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
 
     End Sub
     Friend WithEvents layoutHeaderItemSplit As System.Windows.Forms.SplitContainer
     Friend WithEvents layoutHeaderTable As System.Windows.Forms.TableLayoutPanel
-    Friend WithEvents cmbRefresh As System.Windows.Forms.Button
     Friend WithEvents ckbMovie As System.Windows.Forms.CheckBox
     Friend WithEvents ckbAudio As System.Windows.Forms.CheckBox
     Friend WithEvents ckbStill As System.Windows.Forms.CheckBox
@@ -237,5 +266,8 @@ Partial Class LibraryView
     Friend WithEvents txtFilter As System.Windows.Forms.TextBox
     Friend WithEvents layoutTypeFilterFlow As System.Windows.Forms.FlowLayoutPanel
     Friend WithEvents layoutItemsFlow As System.Windows.Forms.FlowLayoutPanel
+    Friend WithEvents Panel1 As System.Windows.Forms.Panel
+    Friend WithEvents pbProgress As System.Windows.Forms.PictureBox
+    Friend WithEvents cmbRefresh As System.Windows.Forms.Button
 
 End Class

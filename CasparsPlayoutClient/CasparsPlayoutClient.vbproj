@@ -152,6 +152,12 @@
     <Compile Include="Controls\LibraryViewItem.vb">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="Forms\Dialog.Designer.vb">
+      <DependentUpon>Dialog.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Dialog.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Forms\Form1.vb">
       <SubType>Form</SubType>
     </Compile>
@@ -213,6 +219,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\LibraryViewItem.resx">
       <DependentUpon>LibraryViewItem.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Dialog.resx">
+      <DependentUpon>Dialog.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Form1.resx">
       <DependentUpon>Form1.vb</DependentUpon>

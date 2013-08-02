@@ -1,14 +1,20 @@
 ﻿Public Class LibraryView
 
-    Public Property Library As Library
+    Public WithEvents Library As Library
+    Private Delegate Sub updateDelagete()
 
     Public Sub New()
         InitializeComponent()
+        cmbRefresh.Image = Image.FromFile("img/refresh-icon.png")
+        pbProgress.Image = Image.FromFile("img/refresh-icon-ani.gif")
     End Sub
 
     Public Sub New(ByVal library As Library)
         Me.Library = library
         InitializeComponent()
+        cmbRefresh.Image = Image.FromFile("img/refresh-icon.png")
+        pbProgress.Image = Image.FromFile("img/refresh-icon-ani.gif")
+        'pbProgress.SizeMode = PictureBoxSizeMode.AutoSize
         refreshList()
     End Sub
 
@@ -64,12 +70,17 @@
         End If
     End Sub
 
-    Private Sub refreshList()
-        layoutItemsFlow.Controls.Clear()
-        If Not IsNothing(Library) Then
-            For Each item In Library.getItems
-                addMediaItem(item)
-            Next
+    Private Sub refreshList() Handles Library.updated
+        If InvokeRequired Then
+            Invoke(New updateDelagete(AddressOf refreshList))
+        Else
+            layoutItemsFlow.Controls.Clear()
+            If Not IsNothing(Library) Then
+                For Each item In Library.getItems
+                    addMediaItem(item)
+                Next
+            End If
+            applyFilter()
         End If
     End Sub
 
@@ -89,10 +100,10 @@
     '
     Private Sub cmbRefresh_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmbRefresh.Click
         If Not IsNothing(Library) Then
+            cmbRefresh.Visible = False
+            pbProgress.Visible = True
             Library.refreshLibrary()
         End If
-        refreshList()
-        applyFilter()
     End Sub
 
     Private Sub LibraryView_ClientSizeChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.ClientSizeChanged, layoutItemsFlow.ClientSizeChanged
@@ -100,6 +111,15 @@
             'item.Width = layoutItemsFlow.ClientRectangle.Width
             item.Width = item.Parent.ClientRectangle.Width - item.Parent.Margin.Horizontal
         Next
+    End Sub
+
+    Private Sub onUpdate() Handles Library.updatedAborted, Library.updated
+        If InvokeRequired Then
+            Invoke(New updateDelagete(AddressOf onUpdate))
+        Else
+            pbProgress.Visible = False
+            cmbRefresh.Visible = True
+        End If
     End Sub
 
 End Class

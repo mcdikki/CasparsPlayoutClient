@@ -39,7 +39,9 @@
         Select Case playlist.getItemType
             Case PlaylistItem.PlaylistItemTypes.MOVIE, PlaylistItem.PlaylistItemTypes.AUDIO, PlaylistItem.PlaylistItemTypes.STILL
                 Dim thumb As New PictureBox()
-                thumb.Image = ServerController.getBase64ToImage(playlist.getMedia.getBase64Thumb)
+                If playlist.getMedia.getBase64Thumb.Length > 0 Then
+                    thumb.Image = ServerController.getBase64ToImage(playlist.getMedia.getBase64Thumb)
+                End If
                 thumb.Dock = DockStyle.Fill
                 thumb.SizeMode = PictureBoxSizeMode.AutoSize
                 thumb.Parent = Me.layoutChild
