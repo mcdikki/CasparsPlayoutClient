@@ -51,8 +51,6 @@
             Dim d As New Dialog(metadata, "Metadata for " & MediaItem.getName)
             d.ShowDialog()
         End If
-
-        'MsgBox(metadata, vbOKOnly, "Metadata for " & MediaItem.getName)
     End Sub
 
 

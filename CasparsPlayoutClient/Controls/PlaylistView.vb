@@ -389,7 +389,7 @@
 
     Private Overloads Sub handleDragEnter(ByVal sender As Object, ByVal e As DragEventArgs) Handles Me.dragEnter
         ' Check the format of the data being dropped. 
-        If (e.Data.GetDataPresent("CasparsPlayoutClient.CasparCGMovie")) Then 'OrElse e.Data.GetDataPresent("CasparsPlayoutClient.CasparCGAudio") OrElse e.Data.GetDataPresent("CasparsPlayoutClient.CasparCGStill") OrElse e.Data.GetDataPresent("CasparsPlayoutClient.CasparCGTemplate")) Then
+        If playlist.getItemType = PlaylistItem.PlaylistItemTypes.BLOCK AndAlso (e.Data.GetDataPresent("CasparsPlayoutClient.CasparCGMovie")) Then 'OrElse e.Data.GetDataPresent("CasparsPlayoutClient.CasparCGAudio") OrElse e.Data.GetDataPresent("CasparsPlayoutClient.CasparCGStill") OrElse e.Data.GetDataPresent("CasparsPlayoutClient.CasparCGTemplate")) Then
             ' Display the copy cursor. 
             e.Effect = DragDropEffects.Copy
         ElseIf e.Data.GetDataPresent("CasparsPlayoutClient.PlaylistView") Then
