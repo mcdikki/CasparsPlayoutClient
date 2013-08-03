@@ -3,6 +3,7 @@
     Implements IPlaylistItem
 
     Private media As CasparCGMovie
+    Public Shadows Event waitForNext()
 
     ''' <summary>
     ''' Create a PlaylistMovieItem. If a duration is given and smaller than the original duration of the file, the file will only be played for that long.
@@ -33,13 +34,25 @@
     '' Methoden die überschrieben werden müssen weil sie andere oder mehr functionen haben
     ''-------------------------------------------------------------------------------------
     Public Overrides Sub start(Optional ByVal noWait As Boolean = False)
+        ' Wait if autostart not checked
+        If Not isAutoStarting() AndAlso Not playNext Then
+            RaiseEvent waitForNext()
+
+            waiting = True
+            While Not playNext
+                Threading.Thread.Sleep(1)
+            End While
+            playNext = False
+            waiting = False
+        End If
+
         '' CMD an ServerController schicken
         logger.log("PlaylistMovieItem.start: Starte " & getChannel() & "-" & getLayer() & ": " & getMedia.toString)
 
         ''
-        '' testing BUGFIX slow OSC mesg.
+        '' testing BUGFIX slow OSC mesg. --> only for old OscMediaUpdater req.
         ''
-        getMedia.setUpdated(False)
+        'getMedia.setUpdated(False)
 
         If getController.containsChannel(getChannel) AndAlso getLayer() > -1 Then
             Dim result = getController.getCommandConnection.sendCommand(CasparCGCommandFactory.getPlay(getChannel, getLayer, getMedia, isLooping, False))
@@ -56,9 +69,6 @@
             End If
 
             While isPlaying() AndAlso Not noWait
-                'getController.update()
-
-                '#@#Threading.Thread.Sleep(1)
             End While
         Else
             logger.err("PlaylistMovieItem.start: Error playing " & getName() & ". The channel " & getChannel() & " does not exist on the server. Aborting start.")

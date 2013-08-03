@@ -14,7 +14,6 @@
         InitializeComponent()
         cmbRefresh.Image = Image.FromFile("img/refresh-icon.png")
         pbProgress.Image = Image.FromFile("img/refresh-icon-ani.gif")
-        'pbProgress.SizeMode = PictureBoxSizeMode.AutoSize
         refreshList()
     End Sub
 
@@ -24,6 +23,7 @@
     Private Sub applyFilter() Handles ckbAudio.CheckedChanged, ckbMovie.CheckedChanged, ckbStill.CheckedChanged, ckbTemplate.CheckedChanged, txtFilter.TextChanged
         Dim filteredList As New List(Of CasparCGMedia)
 
+        ' Filter by type
         If ckbAudio.Checked Then
             filteredList.AddRange(Library.getItemsOfType(CasparCGMedia.MediaType.AUDIO))
         End If
@@ -37,6 +37,7 @@
             filteredList.AddRange(Library.getItemsOfType(CasparCGMedia.MediaType.TEMPLATE))
         End If
 
+        ' Filter by name
         If txtFilter.Text.Length > 0 Then
             For Each item In filteredList
 
@@ -108,7 +109,6 @@
 
     Private Sub LibraryView_ClientSizeChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.ClientSizeChanged, layoutItemsFlow.ClientSizeChanged
         For Each item As Control In layoutItemsFlow.Controls
-            'item.Width = layoutItemsFlow.ClientRectangle.Width
             item.Width = item.Parent.ClientRectangle.Width - item.Parent.Margin.Horizontal
         Next
     End Sub

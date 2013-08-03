@@ -93,7 +93,7 @@ Partial Class PlaylistView
         'layoutButton
         '
         Me.layoutButton.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-                    Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.layoutButton.AutoSize = True
         Me.layoutButton.Controls.Add(Me.ckbParallel)
         Me.layoutButton.Controls.Add(Me.ckbAuto)
@@ -111,8 +111,8 @@ Partial Class PlaylistView
         'ckbParallel
         '
         Me.ckbParallel.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-                    Or System.Windows.Forms.AnchorStyles.Left) _
-                    Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+            Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.ckbParallel.AutoSize = True
         Me.ckbParallel.CheckAlign = System.Drawing.ContentAlignment.BottomCenter
         Me.ckbParallel.Location = New System.Drawing.Point(0, 0)
@@ -127,8 +127,8 @@ Partial Class PlaylistView
         'ckbAuto
         '
         Me.ckbAuto.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-                    Or System.Windows.Forms.AnchorStyles.Left) _
-                    Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+            Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.ckbAuto.AutoSize = True
         Me.ckbAuto.CheckAlign = System.Drawing.ContentAlignment.BottomCenter
         Me.ckbAuto.Location = New System.Drawing.Point(0, 27)
@@ -143,8 +143,8 @@ Partial Class PlaylistView
         'ckbLoop
         '
         Me.ckbLoop.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-                    Or System.Windows.Forms.AnchorStyles.Left) _
-                    Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+            Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.ckbLoop.AutoSize = True
         Me.ckbLoop.CheckAlign = System.Drawing.ContentAlignment.BottomCenter
         Me.ckbLoop.Location = New System.Drawing.Point(0, 54)
@@ -173,7 +173,7 @@ Partial Class PlaylistView
         'layoutHeaderTable
         '
         Me.layoutHeaderTable.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-                    Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.layoutHeaderTable.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
         Me.layoutHeaderTable.ColumnCount = 2
         Me.layoutHeaderTable.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 24.0!))
@@ -225,8 +225,8 @@ Partial Class PlaylistView
         'pbPlayed
         '
         Me.pbPlayed.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-                    Or System.Windows.Forms.AnchorStyles.Left) _
-                    Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+            Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.pbPlayed.Location = New System.Drawing.Point(24, 25)
         Me.pbPlayed.Margin = New System.Windows.Forms.Padding(0)
         Me.pbPlayed.Name = "pbPlayed"
@@ -237,8 +237,8 @@ Partial Class PlaylistView
         'layoutInfos
         '
         Me.layoutInfos.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-                    Or System.Windows.Forms.AnchorStyles.Left) _
-                    Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+            Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.layoutInfos.Controls.Add(Me.grbChannelLayer)
         Me.layoutInfos.Controls.Add(Me.grbDelay)
         Me.layoutInfos.Controls.Add(Me.grbDuration)
@@ -254,8 +254,8 @@ Partial Class PlaylistView
         'grbChannelLayer
         '
         Me.grbChannelLayer.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-                    Or System.Windows.Forms.AnchorStyles.Left) _
-                    Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+            Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.grbChannelLayer.AutoSize = True
         Me.grbChannelLayer.Font = New System.Drawing.Font("Microsoft Sans Serif", 6.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.grbChannelLayer.Location = New System.Drawing.Point(0, 0)
@@ -295,8 +295,8 @@ Partial Class PlaylistView
         'grbDuration
         '
         Me.grbDuration.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-                    Or System.Windows.Forms.AnchorStyles.Left) _
-                    Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+            Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.grbDuration.Controls.Add(Me.txtDuration)
         Me.grbDuration.Font = New System.Drawing.Font("Microsoft Sans Serif", 6.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.grbDuration.Location = New System.Drawing.Point(58, 0)
@@ -322,8 +322,8 @@ Partial Class PlaylistView
         'grpPosition
         '
         Me.grpPosition.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-                    Or System.Windows.Forms.AnchorStyles.Left) _
-                    Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+            Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.grpPosition.Controls.Add(Me.txtPosition)
         Me.grpPosition.Font = New System.Drawing.Font("Microsoft Sans Serif", 6.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.grpPosition.Location = New System.Drawing.Point(116, 0)
@@ -349,8 +349,8 @@ Partial Class PlaylistView
         'grpRemaining
         '
         Me.grpRemaining.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-                    Or System.Windows.Forms.AnchorStyles.Left) _
-                    Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+            Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.grpRemaining.Controls.Add(Me.txtRemaining)
         Me.grpRemaining.Font = New System.Drawing.Font("Microsoft Sans Serif", 6.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.grpRemaining.Location = New System.Drawing.Point(174, 0)
@@ -416,8 +416,8 @@ Partial Class PlaylistView
         'txtName
         '
         Me.txtName.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-                    Or System.Windows.Forms.AnchorStyles.Left) _
-                    Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+            Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.txtName.ImeMode = System.Windows.Forms.ImeMode.NoControl
         Me.txtName.Location = New System.Drawing.Point(2, 3)
         Me.txtName.Margin = New System.Windows.Forms.Padding(0)

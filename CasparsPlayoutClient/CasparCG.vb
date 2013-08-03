@@ -7,7 +7,7 @@ Public Class CasparCGConnection
     Private serveraddress As String = "localhost"
     Private serverport As Integer = 5250 ' std. acmp2 port
     Private client As TcpClient
-    Private reconnectTries = 10
+    Private reconnectTries = 3
     Private connectionAttemp = 0
     Private reconnectTimeout = 1000 ' 1sec
     Private buffersize As Integer = 1024 * 256
@@ -46,7 +46,6 @@ Public Class CasparCGConnection
                     Dim sw As New Stopwatch
                     sw.Start()
                     While sw.ElapsedMilliseconds < reconnectTimeout
-                        '#@#Threading.Thread.Sleep(reconnectTimeout)
                     End While
                     Return connect()
                 Else
@@ -451,7 +450,6 @@ Public Class CasparCGResponse
     End Enum
 
     Public Sub New(ByVal serverMessage As String, ByVal cmd As String)
-        'logger.log(cmd)
         Me.cmd = cmd
         Me.serverMessage = serverMessage
         Me.returncode = parseReturnCode(serverMessage)
@@ -800,6 +798,7 @@ Public Class CasparCGStill
         For Each info As String In getInfos.Keys
             media.addInfo(info, getInfo(info))
         Next
+        media.setBase64Thumb(getBase64Thumb())
         Return media
     End Function
 

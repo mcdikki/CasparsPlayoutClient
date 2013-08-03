@@ -72,12 +72,18 @@ Done - CD 30/07/13
 
 - Add new ACMP commands
 --- Layer/Channel routing
+Done - CD 02/08/13
+--- Thumbnail CMDs
+
+Done - CD 02/08/13
+- Add Thumbnailfunctions
 
 
 - Add config class and functions
 
 
 - Inkonsistens frame/ms bei viel funktionen und eigenschaften wie getDuratation()/Position etc. auflösen
+
 
 Done - CD 27/07/13
 - Handle problem duration in mediaLib != real duration when playing
@@ -97,7 +103,13 @@ Fixed - CD 29/07/13
  GUI:
  ====
 
+ Seems to be Fixed - CD 02/08/13
  - BUG: Loop at Root Playlist doesn't work as expected
+ 
+ 
+ Fixed -  CD 03/08/13
+ - BUG: Loop and auto has no effect on MediaItems
+ 
 
  Fixed - CD 30/7/13
  - BUG: Stop did not stop media on server
@@ -107,7 +119,9 @@ Fixed - CD 29/07/13
 
  - Channel reset of Items at connect should only appear if channel is not valid
 
+ Done - CD 02/08/13
  - Make update Library async to handle long update times freezing GUI
+ - Added progress animation
 
  Done - CD 29/07/13
  - Remove Add Button at Library, not usefull (and not implemented yet)

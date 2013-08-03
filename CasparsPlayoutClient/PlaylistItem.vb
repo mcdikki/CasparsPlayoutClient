@@ -22,8 +22,8 @@
     Private paused As Boolean
     Private startThread As Threading.Thread
     Private pauseThread As Threading.Thread
-    Private playNext As Boolean = False
-    Private waiting As Boolean = False
+    Friend playNext As Boolean = False
+    Friend waiting As Boolean = False
 
     Public Event waitForNext() Implements IPlaylistItem.waitForNext
 

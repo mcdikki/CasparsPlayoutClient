@@ -38,6 +38,11 @@
         '' ChildLayout füllen
         Select Case playlist.getItemType
             Case PlaylistItem.PlaylistItemTypes.MOVIE, PlaylistItem.PlaylistItemTypes.AUDIO, PlaylistItem.PlaylistItemTypes.STILL
+                ' set default behaviour
+                ckbAuto.Checked = True
+                ckbParallel.Enabled = False
+
+                ' load thumbnail
                 Dim thumb As New PictureBox()
                 If playlist.getMedia.getBase64Thumb.Length > 0 Then
                     thumb.Image = ServerController.getBase64ToImage(playlist.getMedia.getBase64Thumb)
@@ -56,7 +61,6 @@
         End Select
         layoutHeaderContentSplit_DoubleClick(Nothing, Nothing)
         If startCompact Then layoutHeaderContentSplit_DoubleClick(Nothing, Nothing)
-
 
         '' ContexMenü hinzufügen
         cMenu = New ContextMenuStrip

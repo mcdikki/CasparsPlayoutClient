@@ -117,7 +117,7 @@ Public Class OscMediaUpdater
                         item.getMedia.setInfo("frame-number", Integer.Parse(msg.Data.Item(0)))
                     End If
                     item.getMedia.setInfo("nb-frames", Integer.Parse(msg.Data.Item(1)))
-                    If Integer.Parse(item.getMedia.getInfo("frame-number")) = Integer.Parse(msg.Data.Item(1)) Then
+                    If Integer.Parse(item.getMedia.getInfo("frame-number")) = Integer.Parse(msg.Data.Item(1)) AndAlso Not item.isLooping Then
                         item.stoppedPlaying()
                     End If
                     logger.debug("OscMediaUpdater: Frame Update msg received " & msg.Address & ": " & item.getMedia.getInfo("frame-number") & "/" & item.getMedia.getInfo("nb-frames"))
