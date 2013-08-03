@@ -23,6 +23,18 @@
             Else
                 lblDuration.Visible = False
             End If
+
+            'set type icon
+            Select Case MediaItem.getMediaType
+                Case CasparCGMedia.MediaType.MOVIE
+                    lblType.Image = Image.FromFile("img/media-button-movie.gif")
+                Case CasparCGMedia.MediaType.STILL
+                    lblType.Image = Image.FromFile("img/media-button-still.gif")
+                Case CasparCGMedia.MediaType.AUDIO
+                    lblType.Image = Image.FromFile("img/media-button-audio.gif")
+                Case CasparCGMedia.MediaType.TEMPLATE
+                    lblType.Image = Image.FromFile("img/media-button-template.gif")
+            End Select
         End If
     End Sub
 
@@ -32,8 +44,13 @@
             metadata = metadata & info & ": " & MediaItem.getInfo(info) & vbNewLine
         Next
 
-        Dim d As New Dialog(metadata, "Metadata for " & MediaItem.getName, ServerController.getBase64ToImage(MediaItem.getBase64Thumb))
-        d.ShowDialog()
+        If MediaItem.getBase64Thumb.Length > 0 Then
+            Dim d As New Dialog(metadata, "Metadata for " & MediaItem.getName, ServerController.getBase64ToImage(MediaItem.getBase64Thumb))
+            d.ShowDialog()
+        Else
+            Dim d As New Dialog(metadata, "Metadata for " & MediaItem.getName)
+            d.ShowDialog()
+        End If
 
         'MsgBox(metadata, vbOKOnly, "Metadata for " & MediaItem.getName)
     End Sub

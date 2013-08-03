@@ -29,8 +29,8 @@ Partial Class LibraryViewItem
         Me.lblExpand = New System.Windows.Forms.Label()
         Me.lblType = New System.Windows.Forms.Label()
         Me.lblDuration = New System.Windows.Forms.Label()
-        Me.toolTip = New System.Windows.Forms.ToolTip(Me.components)
         Me.picThumb = New System.Windows.Forms.PictureBox()
+        Me.toolTip = New System.Windows.Forms.ToolTip(Me.components)
         Me.layoutHeaderTable.SuspendLayout()
         Me.layoutHeaderInfoPanel.SuspendLayout()
         CType(Me.picThumb, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -53,7 +53,7 @@ Partial Class LibraryViewItem
         Me.layoutHeaderTable.RowCount = 2
         Me.layoutHeaderTable.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
         Me.layoutHeaderTable.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
-        Me.layoutHeaderTable.Size = New System.Drawing.Size(145, 30)
+        Me.layoutHeaderTable.Size = New System.Drawing.Size(172, 30)
         Me.layoutHeaderTable.TabIndex = 1
         '
         'lblName
@@ -63,10 +63,11 @@ Partial Class LibraryViewItem
         Me.lblName.BackColor = System.Drawing.Color.Transparent
         Me.lblName.Dock = System.Windows.Forms.DockStyle.Fill
         Me.lblName.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.lblName.ImageAlign = System.Drawing.ContentAlignment.MiddleRight
         Me.lblName.Location = New System.Drawing.Point(0, 0)
         Me.lblName.Margin = New System.Windows.Forms.Padding(0)
         Me.lblName.Name = "lblName"
-        Me.lblName.Size = New System.Drawing.Size(95, 15)
+        Me.lblName.Size = New System.Drawing.Size(122, 15)
         Me.lblName.TabIndex = 1
         Me.lblName.Text = "Name"
         Me.lblName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
@@ -82,7 +83,7 @@ Partial Class LibraryViewItem
         Me.layoutHeaderInfoPanel.Location = New System.Drawing.Point(0, 15)
         Me.layoutHeaderInfoPanel.Margin = New System.Windows.Forms.Padding(0)
         Me.layoutHeaderInfoPanel.Name = "layoutHeaderInfoPanel"
-        Me.layoutHeaderInfoPanel.Size = New System.Drawing.Size(95, 15)
+        Me.layoutHeaderInfoPanel.Size = New System.Drawing.Size(122, 15)
         Me.layoutHeaderInfoPanel.TabIndex = 2
         '
         'lblExpand
@@ -108,15 +109,17 @@ Partial Class LibraryViewItem
         Me.lblType.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.lblType.AutoEllipsis = True
-        Me.lblType.AutoSize = True
         Me.lblType.BackColor = System.Drawing.Color.Transparent
+        Me.lblType.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.lblType.Font = New System.Drawing.Font("Microsoft Sans Serif", 6.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblType.Location = New System.Drawing.Point(48, 5)
+        Me.lblType.ImageAlign = System.Drawing.ContentAlignment.MiddleRight
+        Me.lblType.Location = New System.Drawing.Point(56, 2)
         Me.lblType.Margin = New System.Windows.Forms.Padding(0)
         Me.lblType.Name = "lblType"
-        Me.lblType.Size = New System.Drawing.Size(37, 9)
+        Me.lblType.Size = New System.Drawing.Size(65, 12)
         Me.lblType.TabIndex = 1
         Me.lblType.Text = "Template"
+        Me.lblType.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
         'lblDuration
         '
@@ -127,7 +130,7 @@ Partial Class LibraryViewItem
         Me.lblDuration.AutoSize = True
         Me.lblDuration.BackColor = System.Drawing.Color.Transparent
         Me.lblDuration.Font = New System.Drawing.Font("Microsoft Sans Serif", 6.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblDuration.Location = New System.Drawing.Point(12, 5)
+        Me.lblDuration.Location = New System.Drawing.Point(12, 4)
         Me.lblDuration.Margin = New System.Windows.Forms.Padding(0)
         Me.lblDuration.Name = "lblDuration"
         Me.lblDuration.Size = New System.Drawing.Size(43, 9)
@@ -137,7 +140,7 @@ Partial Class LibraryViewItem
         'picThumb
         '
         Me.picThumb.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.picThumb.Location = New System.Drawing.Point(95, 0)
+        Me.picThumb.Location = New System.Drawing.Point(122, 0)
         Me.picThumb.Margin = New System.Windows.Forms.Padding(0)
         Me.picThumb.Name = "picThumb"
         Me.layoutHeaderTable.SetRowSpan(Me.picThumb, 2)
@@ -153,9 +156,9 @@ Partial Class LibraryViewItem
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi
         Me.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
         Me.Controls.Add(Me.layoutHeaderTable)
-        Me.MinimumSize = New System.Drawing.Size(145, 32)
+        Me.MinimumSize = New System.Drawing.Size(170, 32)
         Me.Name = "LibraryViewItem"
-        Me.Size = New System.Drawing.Size(143, 30)
+        Me.Size = New System.Drawing.Size(170, 30)
         Me.layoutHeaderTable.ResumeLayout(False)
         Me.layoutHeaderTable.PerformLayout()
         Me.layoutHeaderInfoPanel.ResumeLayout(False)

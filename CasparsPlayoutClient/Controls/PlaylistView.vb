@@ -26,6 +26,17 @@
         imgList.Images.Add(Image.FromFile("img/Stop-Red-Button-icon.png"))
         imgList.Images.Add(Image.FromFile("img/Play-Blue-Button-icon.png"))
         cmbToggleButton.ImageList = imgList
+
+        imgList = New ImageList
+        imgList.ImageSize = New Size(13, 12)
+        imgList.Images.Add(Image.FromFile("img/media-button-block.gif"))
+        imgList.Images.Add(Image.FromFile("img/media-button-movie.gif"))
+        imgList.Images.Add(Image.FromFile("img/media-button-still.gif"))
+        imgList.Images.Add(Image.FromFile("img/media-button-audio.gif"))
+        imgList.Images.Add(Image.FromFile("img/media-button-template.gif"))
+        imgList.Images.Add(Image.FromFile("img/media-button-cmd.gif"))
+        lblExpand.ImageList = imgList
+
         init() 
         AddHandler playlist.waitForNext, AddressOf waitForNext
     End Sub
@@ -37,8 +48,9 @@
 
         '' ChildLayout füllen
         Select Case playlist.getItemType
-            Case PlaylistItem.PlaylistItemTypes.MOVIE, PlaylistItem.PlaylistItemTypes.AUDIO, PlaylistItem.PlaylistItemTypes.STILL
-                ' set default behaviour
+            Case PlaylistItem.PlaylistItemTypes.MOVIE
+                ' set default behaviour and view
+                lblExpand.ImageIndex = 1
                 ckbAuto.Checked = True
                 ckbParallel.Enabled = False
 
@@ -51,9 +63,36 @@
                 thumb.SizeMode = PictureBoxSizeMode.AutoSize
                 thumb.Parent = Me.layoutChild
                 thumb.Show()
-            Case PlaylistItem.PlaylistItemTypes.TEMPLATE
+            Case PlaylistItem.PlaylistItemTypes.AUDIO
+                ' set default behaviour and view
+                lblExpand.ImageIndex = 3
+                ckbAuto.Checked = True
+                ckbParallel.Enabled = False
+            Case PlaylistItem.PlaylistItemTypes.STILL
+                ' set default behaviour and view
+                lblExpand.ImageIndex = 2
+                ckbAuto.Checked = True
+                ckbParallel.Enabled = False
+                ckbLoop.Enabled = False
 
+                ' load thumbnail
+                Dim thumb As New PictureBox()
+                If playlist.getMedia.getBase64Thumb.Length > 0 Then
+                    thumb.Image = ServerController.getBase64ToImage(playlist.getMedia.getBase64Thumb)
+                End If
+                thumb.Dock = DockStyle.Fill
+                thumb.SizeMode = PictureBoxSizeMode.AutoSize
+                thumb.Parent = Me.layoutChild
+                thumb.Show()
+            Case PlaylistItem.PlaylistItemTypes.TEMPLATE
+                ' set default behaviour and view
+                lblExpand.ImageIndex = 4
+            Case PlaylistItem.PlaylistItemTypes.COMMAND
+                ' set default behaviour and view
+                lblExpand.ImageIndex = 5
             Case PlaylistItem.PlaylistItemTypes.BLOCK
+                ' set default behaviour and view
+                lblExpand.ImageIndex = 0
                 '' BlockItem, schauen ob childs geladen werden können
                 For Each item In playlist.getChildItems(False)
                     addChild(item)
@@ -295,6 +334,36 @@
             child = New PlaylistMovieItem(media.getFullName, playlist.getController, media.clone)
             playlist.addItem(child)
             addChild(child)
+        ElseIf e.Data.GetDataPresent("CasparsPlayoutClient.CasparCGTemplate") Then
+            ''
+            '' Neue MediaItems einfügen
+            ''
+            Dim media As CasparCGMedia = e.Data.GetData("CasparsPlayoutClient.CasparCGTemplate")
+            Dim child As IPlaylistItem
+            'child = New PlaylistTemplateItem(media.getFullName, playlist.getController, media.clone)
+            child = New PlaylistBlockItem("not implemented yet", playlist.getController)
+            playlist.addItem(child)
+            addChild(child)
+        ElseIf e.Data.GetDataPresent("CasparsPlayoutClient.CasparCGStill") Then
+            ''
+            '' Neue MediaItems einfügen
+            ''
+            Dim media As CasparCGMedia = e.Data.GetData("CasparsPlayoutClient.CasparCGStill")
+            Dim child As IPlaylistItem
+            'child = New PlaylistStillItem(media.getFullName, playlist.getController, media.clone)
+            child = New PlaylistBlockItem("not implemented yet", playlist.getController)
+            playlist.addItem(child)
+            addChild(child)
+        ElseIf e.Data.GetDataPresent("CasparsPlayoutClient.CasparCGAudio") Then
+            ''
+            '' Neue MediaItems einfügen
+            ''
+            Dim media As CasparCGMedia = e.Data.GetData("CasparsPlayoutClient.CasparCGAudio")
+            Dim child As IPlaylistItem
+            'child = New PlaylistAudioItem(media.getFullName, playlist.getController, media.clone)
+            child = New PlaylistBlockItem("not implemented yet", playlist.getController)
+            playlist.addItem(child)
+            addChild(child)
         ElseIf e.Data.GetDataPresent("CasparsPlayoutClient.PlaylistView") Then
             ''
             '' PlaylistItems verschieben
@@ -320,7 +389,7 @@
 
     Private Overloads Sub handleDragEnter(ByVal sender As Object, ByVal e As DragEventArgs) Handles Me.dragEnter
         ' Check the format of the data being dropped. 
-        If (e.Data.GetDataPresent("CasparsPlayoutClient.CasparCGMovie")) Then
+        If (e.Data.GetDataPresent("CasparsPlayoutClient.CasparCGMovie")) Then 'OrElse e.Data.GetDataPresent("CasparsPlayoutClient.CasparCGAudio") OrElse e.Data.GetDataPresent("CasparsPlayoutClient.CasparCGStill") OrElse e.Data.GetDataPresent("CasparsPlayoutClient.CasparCGTemplate")) Then
             ' Display the copy cursor. 
             e.Effect = DragDropEffects.Copy
         ElseIf e.Data.GetDataPresent("CasparsPlayoutClient.PlaylistView") Then

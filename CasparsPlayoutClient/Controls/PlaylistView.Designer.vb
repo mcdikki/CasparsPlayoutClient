@@ -196,17 +196,18 @@ Partial Class PlaylistView
         '
         'lblExpand
         '
-        Me.lblExpand.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.lblExpand.AutoEllipsis = True
-        Me.lblExpand.AutoSize = True
+        Me.lblExpand.Dock = System.Windows.Forms.DockStyle.Fill
         Me.lblExpand.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.lblExpand.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblExpand.Location = New System.Drawing.Point(6, 45)
+        Me.lblExpand.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.lblExpand.ImageAlign = System.Drawing.ContentAlignment.TopCenter
+        Me.lblExpand.Location = New System.Drawing.Point(0, 35)
         Me.lblExpand.Margin = New System.Windows.Forms.Padding(0)
         Me.lblExpand.Name = "lblExpand"
-        Me.lblExpand.Size = New System.Drawing.Size(18, 20)
+        Me.lblExpand.Size = New System.Drawing.Size(24, 30)
         Me.lblExpand.TabIndex = 17
         Me.lblExpand.Text = "+"
+        Me.lblExpand.TextAlign = System.Drawing.ContentAlignment.BottomRight
         '
         'cmbToggleButton
         '
