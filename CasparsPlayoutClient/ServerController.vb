@@ -122,7 +122,7 @@ Public Class ServerController
         Dim ch As Integer = 0
         If isConnected() Then
             Dim response = testConnection.sendCommand(CasparCGCommandFactory.getInfo())
-            If response.isOK Then
+            If Not IsNothing(response) AndAlso response.isOK Then
                 Dim lineArray() = response.getData.Split(vbLf)
                 If Not IsNothing(lineArray) Then
                     ch = lineArray.Length
@@ -135,7 +135,7 @@ Public Class ServerController
     Private Function readServerVersion() As String
         If isConnected() Then
             Dim response = testConnection.sendCommand(CasparCGCommandFactory.getVersion)
-            If response.isOK Then
+            If Not IsNothing(response) AndAlso response.isOK Then
                 Return response.getData
             End If
         End If
@@ -355,7 +355,7 @@ Public Class ServerController
         If isConnected() Then
             If media.getMediaType = CasparCGMedia.MediaType.TEMPLATE Then
                 Dim response = testConnection.sendCommand(CasparCGCommandFactory.getInfo(media))
-                If response.isOK Then
+                If Not IsNothing(response) AndAlso response.isOK Then
                     Return response.getXMLData
                 Else
                     logger.err("ServerController.getMediaInfo: Error loading xml data received from server for " & media.toString)
@@ -364,7 +364,7 @@ Public Class ServerController
             Else
                 Dim layer = getFreeLayer(testChannel)
                 Dim response = testConnection.sendCommand(CasparCGCommandFactory.getLoadbg(testChannel, layer, media.getFullName))
-                If response.isOK Then
+                If Not IsNothing(response) AndAlso response.isOK Then
                     Dim infoDoc As New MSXML2.DOMDocument
                     response = testConnection.sendCommand(CasparCGCommandFactory.getInfo(testChannel, layer, True))
                     testConnection.sendCommand(CasparCGCommandFactory.getClear(testChannel, layer))
@@ -397,7 +397,7 @@ Public Class ServerController
         '' Catch the media list and create the media objects
         If isConnected() Then
             Dim response = testConnection.sendCommand(CasparCGCommandFactory.getCls)
-            If response.isOK Then
+            If Not IsNothing(response) AndAlso response.isOK Then
                 For Each line As String In response.getData.Split(vbCrLf)
                     line = line.Trim()
                     If line <> "" AndAlso line.Split(" ").Length > 2 Then
@@ -411,7 +411,7 @@ Public Class ServerController
                                 media.Item(name).setInfo("Duration", getTimeStringOfMS(getOriginalMediaDuration(media.Item(name))))
                                 ' get Thumbnail
                                 response = testConnection.sendCommand(CasparCGCommandFactory.getThumbnail(name))
-                                If response.isOK Then
+                                If Not IsNothing(response) AndAlso response.isOK Then
                                     media.Item(name).setBase64Thumb(response.getData)
                                 End If
                             Case "AUDIO"
@@ -427,7 +427,7 @@ Public Class ServerController
 
             '' Catch the template list and create the template objects
             response = testConnection.sendCommand(CasparCGCommandFactory.getTls)
-            If response.isOK Then
+            If Not IsNothing(response) AndAlso response.isOK Then
                 For Each line As String In response.getData.Split(vbCrLf)
                     line = line.Trim.Replace(vbCr, "").Replace(vbLf, "")
                     If line <> "" AndAlso line.Split(" ").Length > 2 Then
@@ -443,33 +443,34 @@ Public Class ServerController
 
     Public Shared Function getBase64ToImage(ByVal base64string As String) As System.Drawing.Image
         'Converts the base64 encoded msg to image data
-        'creates image
         Return System.Drawing.Image.FromStream(New System.IO.MemoryStream(Convert.FromBase64String(repairBase64(base64string))))
     End Function
 
     Public Shared Function repairBase64(ByRef base64String As String) As String
-        'Fill or remove whitespace if length mod 4 != 0
-        Dim over As Integer = base64String.Length Mod 4
-        If over <> 0 Then
-            If over = 1 Then
-                If base64String.EndsWith("==") Then
-                    base64String = base64String.Substring(0, base64String.Length - over)
-                ElseIf base64String.EndsWith(" =") Then
-                    base64String = base64String.Substring(0, base64String.Length - over - 1) & "="
-                End If
-            ElseIf over = 2 Then
-                If base64String.EndsWith("===") Then
-                    base64String = base64String.Substring(0, base64String.Length - over)
-                ElseIf base64String.EndsWith(" ==") OrElse base64String.EndsWith("= =") OrElse base64String.EndsWith("  =") Then
-                    base64String = base64String.Substring(0, base64String.Length - over - 1) & "="
-                End If
-            ElseIf over = 3 Then
+        'Replace whitespaces
+        base64String = base64String.Replace(" ", "")
+        base64String = base64String.Replace(vbTab, "")
+        base64String = base64String.Replace(vbCrLf, "")
+        base64String = base64String.Replace(vbCr, "")
+        base64String = base64String.Replace(vbLf, "")
+
+        'Fill or remove fillspaces if length mod 4 != 0
+        If base64String.Length Mod 4 <> 0 Then
+            If base64String.Contains("==") Then
+                base64String = base64String.Remove(base64String.IndexOf("=="), 1)
+            ElseIf base64String.Length Mod 4 = 3 Then
                 base64String = base64String & "="
+            ElseIf base64String.Length Mod 4 = 2 Then
+                base64String = base64String.Substring(0, base64String.Length - 1) & "AA="
+            ElseIf base64String.Length Mod 4 = 1 Then
+                ' This is only the last way to solve the problem. 
+                ' We will lose some pixel of the image like that
+                base64String = base64String.Substring(0, base64String.Length - 6) & "="
+            Else
+                logger.warn("ServerController.repairBase64: Unable to repair the base64 string.")
+                Return ""
             End If
         End If
-
-        'Replace whitespaces
-        base64String = base64String.Replace(" ", "+")
 
         Return base64String
     End Function

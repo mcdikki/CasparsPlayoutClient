@@ -11,7 +11,8 @@ Public Class CasparCGConnection
     Private connectionAttemp = 0
     Private reconnectTimeout = 1000 ' 1sec
     Private buffersize As Integer = 1024 * 256
-    Private tryConnect As Boolean = True
+    Private tryConnect As Boolean = False
+    Private timeout As Integer = 300 ' ms to wait for data before cancel receive
 
     Public Sub New(ByVal serverAddress As String, ByVal serverPort As Integer)
         connectionLock = New Semaphore(1, 1)
@@ -120,48 +121,40 @@ Public Class CasparCGConnection
     Public Function sendCommand(ByVal cmd As String) As CasparCGResponse
         If connected(tryConnect) Then
             connectionLock.WaitOne()
-            Dim isOk As Boolean = False
             Dim buffer() As Byte
 
+            ' flush old buffers in case we had some asyncSends
             If client.Available > 0 Then
                 ReDim buffer(client.Available)
-                ' den alten Buffer erstmal auslesen, ihn brauchen wir nicht
                 client.GetStream.Read(buffer, 0, client.Available)
             End If
-            ' Befehl senden
-            logger.log("CasparCGConnection.sendCommand: Send command: " & cmd)
+
+            ' send cmd
+            logger.debug("CasparCGConnection.sendCommand: Send command: " & cmd)
             client.GetStream.Write(System.Text.UTF8Encoding.UTF8.GetBytes(cmd & vbCrLf), 0, cmd.Length + 2)
             Dim timer As New Stopwatch
             timer.Start()
-            'logger.debug("Command sent")
 
-            ' Auf antwort warten
-            'Dim readComplete As Boolean = False
-            Dim readByte As Byte
+            ' Waiting for the response:
             Dim input As String = ""
             Dim size As Integer = 0
-
-            ' BUGFIX: End of VERSION CMD not detectable. Giving a timeout.          
-            'client.GetStream.ReadTimeout = 3000                                                                                                                                     ''-- vbLF & -- Entfernt zum Testen                     
             Try
                 '                                                                                                                                                                                                                                                                                                         '' Version BUGFIX    201 THUMBNAIL RETRIEVE OK
-                Do Until (input.Trim().Length > 3) AndAlso (((input.Trim().Substring(0, 3) = "201" OrElse input.Trim().Substring(0, 3) = "200") AndAlso input.EndsWith(vbLf & vbCrLf)) OrElse (input.Trim().Substring(0, 3) <> "201" AndAlso input.Trim().Substring(0, 3) <> "200" AndAlso input.EndsWith(vbCrLf)) OrElse (input.Trim().Length > 16 AndAlso input.Trim().Substring(0, 14) = "201 VERSION OK" AndAlso input.EndsWith(vbCrLf)) OrElse (input.Trim().Length > 27 AndAlso input.Trim().Substring(0, 25) = "201 THUMBNAIL RETRIEVE OK" AndAlso input.EndsWith(vbCrLf)))
-                    readByte = client.GetStream.ReadByte
-                    If readByte > 0 Then
-                        ' Ein Zeichen gelesen
-                        input = input & ChrW(readByte)
-                    Else
-                        '#@#Threading.Thread.Sleep(1)
+                Do Until (input.Trim().Length > 3) AndAlso (((input.Trim().Substring(0, 3) = "201" OrElse input.Trim().Substring(0, 3) = "200") AndAlso (input.EndsWith(vbLf & vbCrLf) OrElse input.EndsWith(vbCrLf & " " & vbCrLf))) OrElse (input.Trim().Substring(0, 3) <> "201" AndAlso input.Trim().Substring(0, 3) <> "200" AndAlso input.EndsWith(vbCrLf)) OrElse (input.Trim().Length > 16 AndAlso input.Trim().Substring(0, 14) = "201 VERSION OK" AndAlso input.EndsWith(vbCrLf)) OrElse (input.Trim().Length > 27 AndAlso input.Trim().Substring(0, 25) = "201 THUMBNAIL RETRIEVE OK" AndAlso input.EndsWith(vbCrLf)))
+                    If client.Available > 0 Then
+                        size = client.Available
+                        ReDim buffer(size)
+                        client.GetStream.Read(buffer, 0, size)
+                        input = input & System.Text.UTF8Encoding.UTF8.GetString(buffer, 0, size)
                     End If
                 Loop
             Catch e As Exception
-                'logger.log("CasparCGConnection.sendCommand: ReadTimeout while receiving response for '" & cmd & "'")
-                logger.log(e.Message)
+                logger.err("CasparCGConnection.sendCommand: Error: " & e.Message)
             End Try
             timer.Stop()
             logger.debug("CasparCGConnection.sendCommand: Waited " & timer.ElapsedMilliseconds & "ms for an answer and received " & input.Length & " Bytes to read.")
             connectionLock.Release()
-            logger.log("CasparCGConnection.sendCommand: Received response for '" & cmd & "': " & input)
+            logger.debug("CasparCGConnection.sendCommand: Received response for '" & cmd & "': " & input)
             Return New CasparCGResponse(input, cmd)
         Else
             logger.err("CasparCGConnection.sendCommand: Not connected to server. Can't send command.")

@@ -48,7 +48,6 @@ Public Class Library
         If controller.isConnected Then
             updateThread = New Threading.Thread(AddressOf update)
             updateThread.Start()
-            'media = controller.getMediaList()
         Else
             RaiseEvent updated(Me, New Dictionary(Of String, CasparCGMedia))
         End If

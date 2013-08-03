@@ -8,9 +8,8 @@
 
     Private Sub MainWindow_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
         logger.addLogAction(New consoleLogger(3))
-        logger.addLogAction(New fileLogger(3, "c:\daten\cpc.log", True, False))
+        'logger.addLogAction(New fileLogger(3, "c:\daten\cpc2.log", True, False))
         sc = New ServerController
-        'sc.open("casparcg", 5250)
         mediaLib = New Library(sc)
         AddPlaylist()
         AddLibrary()
@@ -26,14 +25,6 @@
     End Sub
 
     Private Sub AddPlaylist()
-
-        'Dim pp As New PlaylistBlockItem("Paralelle Playlist", sc)
-        'Dim ps As New PlaylistBlockItem("Seq. Playlist", sc)
-
-        'pp.setParallel(True)
-        'sc.getPlaylistRoot.addItem(ps)
-        'sc.getPlaylistRoot.addItem(pp)
-
         playlistView = New PlaylistView(sc.getPlaylistRoot)
         playlistview.Dock = DockStyle.Fill
         playlistView.Parent = layoutPlaylistSplit.Panel1
@@ -63,7 +54,6 @@
                 cbbClearChannel.Text = i
                 cbbClearChannel.Items.Add(i)
             Next
-            'mediaLib.refreshLibrary()
             AddHandler sc.getTicker.frameTick, AddressOf onTick
             sc.startTicker()
             libraryView.cmbRefresh.PerformClick()
@@ -75,10 +65,10 @@
 
     Private Sub disconnect() Handles cmbDisconnect.Click
         If sc.isConnected Then
+            libraryView.Library.abortUpdate()
             cmbDisconnect.Enabled = False
             sc.close()
             RemoveHandler sc.getTicker.frameTick, AddressOf onTick
-            'libraryView.Library.updateLibrary(Me, New Dictionary(Of String, CasparCGMedia))
             libraryView.Library.refreshLibrary()
             playlistView.onDataChanged()
             cmbConnect.Enabled = True
@@ -144,7 +134,4 @@
         Next
     End Sub
 
-    Private Sub txtAddress_TextChanged(sender As Object, e As EventArgs) Handles txtAddress.TextChanged
-
-    End Sub
 End Class
