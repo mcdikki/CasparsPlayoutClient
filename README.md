@@ -11,19 +11,19 @@ Table of contents
 
 * [License](#license)
 * [Features](#features)
-* [Screenshots](#fcreenshots)
-* [Quick Start](#quickstart)
+* [Screenshots](#screenshots)
+* [Quick Start](#quick-start)
 * [Development](#development)
 
 
-<a id="license"/>
+
 License
 -------
 
 This software is licensed under the [Gnu GPL v3] [2].
 
 
-<a id="features"/>
+
 Features
 --------
 
@@ -43,7 +43,7 @@ CasparsPlayoutClient offers a hierarchical playlist system allowing
 * custom playlist and media naming
 * collapse/expand of subplaylists
 
-<a id="screenshots"/>
+
 Screenshots
 -----------
 
@@ -68,7 +68,7 @@ The medialibrary
 * The media library with active filter:  
   ![The media library with active filter](/screenshots/cpc_medialib_filter.jpg "The media library with active filter")
 
-<a id="quickstart"/>
+
 Quick Start
 -----------
 
@@ -122,7 +122,7 @@ The main window is splitted into 4 areas:
 	* EVER:
 		pressing the play / stop button while holding **CTRL** will abort the playlist no matter in what state it is
 
-<a id="development"/>
+
 Development
 -----------
 
