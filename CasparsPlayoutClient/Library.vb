@@ -1,4 +1,7 @@
-﻿''' <summary>
+﻿Imports CasparCGVBNETConnector
+Imports logger
+
+''' <summary>
 ''' Represents the media library of the casparCG Server.
 ''' Allows to get items of given type, all items or filterd matches.
 ''' </summary>

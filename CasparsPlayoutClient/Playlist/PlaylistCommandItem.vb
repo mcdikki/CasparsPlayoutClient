@@ -1,4 +1,7 @@
-﻿Public Class PlaylistCommandItem
+﻿Imports CasparCGVBNETConnector
+Imports logger
+
+Public Class PlaylistCommandItem
     Inherits PlaylistItem
     Implements IPlaylistItem
 

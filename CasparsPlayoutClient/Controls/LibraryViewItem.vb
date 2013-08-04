@@ -1,4 +1,7 @@
-﻿Public Class LibraryViewItem
+﻿Imports CasparCGVBNETConnector
+Imports logger
+
+Public Class LibraryViewItem
 
     Public Property MediaItem As CasparCGMedia
 

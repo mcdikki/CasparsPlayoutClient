@@ -1,4 +1,6 @@
-﻿Public Interface IPlaylistItem
+﻿Imports CasparCGVBNETConnector
+
+Public Interface IPlaylistItem
 
     Function getName() As String ' Name des Items
     Function getDelay() As Long ' Verzögerung bis zum start dieses Items in Frames

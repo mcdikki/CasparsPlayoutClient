@@ -1,4 +1,7 @@
-﻿Public Class LibraryView
+﻿Imports CasparCGVBNETConnector
+Imports logger
+
+Public Class LibraryView
 
     Public WithEvents Library As Library
     Private Delegate Sub updateDelagete()
@@ -92,7 +95,7 @@
     ''' <remarks></remarks>
     Private Sub addMediaItem(ByRef mediaItem As CasparCGMedia)
         Dim libItem As New LibraryViewItem(mediaItem)
-        layoutItemsFlow.Controls.Add(libItem) 
+        layoutItemsFlow.Controls.Add(libItem)
         libItem.Width = libItem.Parent.ClientRectangle.Width - libItem.Parent.Margin.Horizontal
     End Sub
 

@@ -1,4 +1,7 @@
-﻿Public Class PlaylistView
+﻿Imports CasparCGVBNETConnector
+Imports logger
+
+Public Class PlaylistView
 
     Private isInit As Boolean = False
     Private playlist As IPlaylistItem
@@ -37,7 +40,7 @@
         imgList.Images.Add(Image.FromFile("img/media-button-cmd.gif"))
         lblExpand.ImageList = imgList
 
-        init() 
+        init()
         AddHandler playlist.waitForNext, AddressOf waitForNext
     End Sub
 
@@ -325,50 +328,50 @@
     '' DragDrop verarbeiten
     '
     Private Overloads Sub handleDragDrop(ByVal sender As Object, ByVal e As DragEventArgs) Handles Me.DragDrop
-        If e.Data.GetDataPresent("CasparsPlayoutClient.CasparCGMovie") Then
+        If e.Data.GetDataPresent("CasparCGVBNETConnector.CasparCGMovie") Then
             ''
             '' Neue MediaItems einfügen
             ''
-            Dim media As CasparCGMedia = e.Data.GetData("CasparsPlayoutClient.CasparCGMovie")
+            Dim media As CasparCGMedia = e.Data.GetData("CasparCGVBNETConnector.CasparCGMovie")
             Dim child As IPlaylistItem
             child = New PlaylistMovieItem(media.getFullName, playlist.getController, media.clone)
             playlist.addItem(child)
             addChild(child)
-        ElseIf e.Data.GetDataPresent("CasparsPlayoutClient.CasparCGTemplate") Then
+        ElseIf e.Data.GetDataPresent("CasparCGVBNETConnector.CasparCGTemplate") Then
             ''
             '' Neue MediaItems einfügen
             ''
-            Dim media As CasparCGMedia = e.Data.GetData("CasparsPlayoutClient.CasparCGTemplate")
+            Dim media As CasparCGMedia = e.Data.GetData("CasparCGVBNETConnector.CasparCGTemplate")
             Dim child As IPlaylistItem
             'child = New PlaylistTemplateItem(media.getFullName, playlist.getController, media.clone)
             child = New PlaylistBlockItem("not implemented yet", playlist.getController)
             playlist.addItem(child)
             addChild(child)
-        ElseIf e.Data.GetDataPresent("CasparsPlayoutClient.CasparCGStill") Then
+        ElseIf e.Data.GetDataPresent("CasparCGVBNETConnector.CasparCGStill") Then
             ''
             '' Neue MediaItems einfügen
             ''
-            Dim media As CasparCGMedia = e.Data.GetData("CasparsPlayoutClient.CasparCGStill")
+            Dim media As CasparCGMedia = e.Data.GetData("CasparCGVBNETConnector.CasparCGStill")
             Dim child As IPlaylistItem
             'child = New PlaylistStillItem(media.getFullName, playlist.getController, media.clone)
             child = New PlaylistBlockItem("not implemented yet", playlist.getController)
             playlist.addItem(child)
             addChild(child)
-        ElseIf e.Data.GetDataPresent("CasparsPlayoutClient.CasparCGAudio") Then
+        ElseIf e.Data.GetDataPresent("CasparCGVBNETConnector.CasparCGAudio") Then
             ''
             '' Neue MediaItems einfügen
             ''
-            Dim media As CasparCGMedia = e.Data.GetData("CasparsPlayoutClient.CasparCGAudio")
+            Dim media As CasparCGMedia = e.Data.GetData("CasparCGVBNETConnector.CasparCGAudio")
             Dim child As IPlaylistItem
             'child = New PlaylistAudioItem(media.getFullName, playlist.getController, media.clone)
             child = New PlaylistBlockItem("not implemented yet", playlist.getController)
             playlist.addItem(child)
             addChild(child)
-        ElseIf e.Data.GetDataPresent("CasparsPlayoutClient.PlaylistView") Then
+        ElseIf e.Data.GetDataPresent("CasparPlayoutClient.PlaylistView") Then
             ''
             '' PlaylistItems verschieben
             ''
-            Dim item As PlaylistView = e.Data.GetData("CasparsPlayoutClient.PlaylistView")
+            Dim item As PlaylistView = e.Data.GetData("CasparPlayoutClient.PlaylistView")
             If Not IsNothing(item.playlist.getParent) Then
                 ' Playlist von seiner alten liste lösen
                 item.playlist.getParent.removeChild(item.playlist)
@@ -387,12 +390,12 @@
         End If
     End Sub
 
-    Private Overloads Sub handleDragEnter(ByVal sender As Object, ByVal e As DragEventArgs) Handles Me.dragEnter
+    Private Overloads Sub handleDragEnter(ByVal sender As Object, ByVal e As DragEventArgs) Handles Me.DragEnter
         ' Check the format of the data being dropped. 
-        If playlist.getItemType = PlaylistItem.PlaylistItemTypes.BLOCK AndAlso (e.Data.GetDataPresent("CasparsPlayoutClient.CasparCGMovie")) Then 'OrElse e.Data.GetDataPresent("CasparsPlayoutClient.CasparCGAudio") OrElse e.Data.GetDataPresent("CasparsPlayoutClient.CasparCGStill") OrElse e.Data.GetDataPresent("CasparsPlayoutClient.CasparCGTemplate")) Then
+        If playlist.getItemType = PlaylistItem.PlaylistItemTypes.BLOCK AndAlso (e.Data.GetDataPresent("CasparCGVBNETConnector.CasparCGMovie")) Then 'OrElse e.Data.GetDataPresent("CasparCGVBNETConnector.CasparCGAudio") OrElse e.Data.GetDataPresent("CasparCGVBNETConnector.CasparCGStill") OrElse e.Data.GetDataPresent("CasparCGVBNETConnector.CasparCGTemplate")) Then
             ' Display the copy cursor. 
             e.Effect = DragDropEffects.Copy
-        ElseIf e.Data.GetDataPresent("CasparsPlayoutClient.PlaylistView") Then
+        ElseIf e.Data.GetDataPresent("CasparPlayoutClient.PlaylistView") Then
             e.Effect = DragDropEffects.Move
         Else
             ' Display the no-drop cursor. 

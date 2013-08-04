@@ -1,4 +1,7 @@
-﻿Public Class MainWindow
+﻿Imports CasparCGVBNETConnector
+Imports logger
+
+Public Class MainWindow
 
     Private sc As ServerControler
     Private mediaLib As Library
@@ -26,7 +29,7 @@
 
     Private Sub AddPlaylist()
         playlistView = New PlaylistView(sc.getPlaylistRoot)
-        playlistview.Dock = DockStyle.Fill
+        playlistView.Dock = DockStyle.Fill
         playlistView.Parent = layoutPlaylistSplit.Panel1
     End Sub
 

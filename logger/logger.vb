@@ -20,6 +20,7 @@ Public Module logger
     Public Sub config(ByVal xml As String)
 
         ' XML Verarbeiten
+
         Dim configDoc As New MSXML2.DOMDocument
         configDoc.loadXML(xml)
         If configDoc.hasChildNodes Then

@@ -1,4 +1,7 @@
-﻿Public Class MediaMonitor
+﻿Imports CasparCGVBNETConnector
+Imports logger
+
+Public Class MediaMonitor
 
     Private sc As ServerControler
     Delegate Sub updateDelegate()

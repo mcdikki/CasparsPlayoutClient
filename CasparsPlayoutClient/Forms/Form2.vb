@@ -1,4 +1,6 @@
-﻿'Imports System.Threading
+﻿Imports CasparCGVBNETConnector
+Imports logger
+'Imports System.Threading
 
 Public Class Form2
 

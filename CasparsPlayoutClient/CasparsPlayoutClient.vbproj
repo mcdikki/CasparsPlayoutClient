@@ -136,7 +136,6 @@
     <Import Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CasparCG.vb" />
     <Compile Include="Controls\LibraryView.Designer.vb">
       <DependentUpon>LibraryView.vb</DependentUpon>
     </Compile>
@@ -175,7 +174,6 @@
     <Compile Include="MediaUpdater.vb" />
     <Compile Include="Interfaces\IPlaylistItem.vb" />
     <Compile Include="Library.vb" />
-    <Compile Include="Utils\logger.vb" />
     <Compile Include="Forms\MainWindow.Designer.vb">
       <DependentUpon>MainWindow.vb</DependentUpon>
     </Compile>
@@ -299,6 +297,19 @@
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Utils\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CasparCGVBNETConnector\CasparCGVBNETConnector.vbproj">
+      <Project>{3c286b02-d34b-4b9a-b2f6-0814ffc1661f}</Project>
+      <Name>CasparCGVBNETConnector</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\logger\logger.vbproj">
+      <Project>{8c948821-e19e-4df6-b58c-88a835f2b363}</Project>
+      <Name>logger</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
