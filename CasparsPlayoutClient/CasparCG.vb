@@ -7,7 +7,7 @@ Public Class CasparCGConnection
     Private serveraddress As String = "localhost"
     Private serverport As Integer = 5250 ' std. acmp2 port
     Private client As TcpClient
-    Private reconnectTries = 3
+    Private reconnectTries = 1
     Private connectionAttemp = 0
     Private reconnectTimeout = 1000 ' 1sec
     Private buffersize As Integer = 1024 * 256

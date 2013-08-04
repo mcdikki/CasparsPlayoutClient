@@ -141,9 +141,8 @@ GUI:
  --- Template
  --- Command
  
+ - BUG: Window uncloseable after disconnect when InfoMediaUpdater was loaded (ccg version <= 2.0.3)
  
- - BUG: GUI uncloseable if connection can't be established
-
  
 Done - CD 02/08/13
  - Make update Library async to handle long update times freezing GUI
@@ -155,7 +154,9 @@ Done - CD 29/07/13
 Seems to be Fixed - CD 02/08/13
  - BUG: Loop at Root Playlist doesn't work as expected
 
-
+Fixed - CD 04/08/13
+- BUG: GUI uncloseable if connection can't be established
+ 
 Fixed -  CD 03/08/13
  - BUG: Loop and auto has no effect on MediaItems
  

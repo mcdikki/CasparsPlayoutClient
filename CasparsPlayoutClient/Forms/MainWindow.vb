@@ -48,16 +48,21 @@
 
     Private Sub connect() Handles cmbConnect.Click
         If Not sc.isConnected Then
-            cmbConnect.Enabled = False
-            sc.open(txtAddress.Text, Integer.Parse(txtPort.Text))
-            For i = 1 To sc.getChannels
-                cbbClearChannel.Text = i
-                cbbClearChannel.Items.Add(i)
-            Next
-            AddHandler sc.getTicker.frameTick, AddressOf onTick
-            sc.startTicker()
-            libraryView.cmbRefresh.PerformClick()
-            cmbDisconnect.Enabled = True
+            If sc.open(txtAddress.Text, Integer.Parse(txtPort.Text)) Then
+                cmbConnect.Enabled = False
+                For i = 1 To sc.getChannels
+                    cbbClearChannel.Text = i
+                    cbbClearChannel.Items.Add(i)
+                Next
+                AddHandler sc.getTicker.frameTick, AddressOf onTick
+                sc.startTicker()
+                libraryView.cmbRefresh.PerformClick()
+                cmbDisconnect.Enabled = True
+            Else
+                cmbConnect.Enabled = True
+                cmbDisconnect.Enabled = False
+                MsgBox("Error: Could not connect to " & txtAddress.Text & ":" & txtPort.Text, vbCritical + vbOKOnly, "Error - not connected")
+            End If
         Else
             MsgBox("Allready connected")
         End If

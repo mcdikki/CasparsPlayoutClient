@@ -13,6 +13,7 @@ Public Class ServerControler
     Private serverAddress As String = "localhost"
     Private serverPort As Integer = 5250
     Private testChannel As Integer = 2
+    Private framesPerTick As Integer = 1
     Private channels As Integer
     Private channelFPS() As Integer
     Private opened As Boolean
@@ -25,9 +26,9 @@ Public Class ServerControler
         playlist.setParallel(True)
     End Sub
 
-    Public Sub open()
-        open(serverAddress, serverPort)
-    End Sub
+    Public Function open() As Boolean
+        Return open(serverAddress, serverPort)
+    End Function
 
     Public Sub close()
         logger.debug("ServerController.close: Close servercontroller...")
@@ -64,37 +65,38 @@ Public Class ServerControler
             cmdConnection.connected AndAlso testConnection.connected
     End Function
 
-    Public Sub open(ByVal serverAddress As String, ByVal severPort As Integer)
-        opened = True
+    Public Function open(ByVal serverAddress As String, ByVal severPort As Integer) As Boolean
         Me.serverAddress = serverAddress
         Me.serverPort = serverPort
         cmdConnection = New CasparCGConnection(serverAddress, serverPort)
-        cmdConnection.connect()
         updateConnection = New CasparCGConnection(serverAddress, serverPort)
-        updateConnection.connect()
         testConnection = New CasparCGConnection(serverAddress, serverPort)
-        testConnection.connect()
         tickConnection = New CasparCGConnection(serverAddress, serverPort)
-        tickConnection.connect()
 
 
-        ' Channels des Servers bestimmen
-        channels = readServerChannels()
-        If channels = testChannel - 1 Then
-            channels = channels - 1
+        If tickConnection.connect() AndAlso testConnection.connect() AndAlso updateConnection.connect() AndAlso cmdConnection.connect() Then
+            opened = True
+            ' Channels des Servers bestimmen
+            channels = readServerChannels()
+            If channels = testChannel - 1 Then
+                channels = channels - 1
+            End If
+            ReDim channelFPS(channels - 1)
+            For c As Integer = 0 To channels - 1
+                channelFPS(c) = getChannelFPS(c + 1)
+            Next
+
+            ' Tick Thread starten
+            ticker = New FrameTicker(tickConnection, Me, 200000, framesPerTick)
+
+            ' updater starten
+            updater = MediaUpdaterFactory.getMediaUpdater(updateConnection, playlist, Me)
+            updater.startUpdate()
+        Else
+            opened = False
         End If
-        ReDim channelFPS(channels - 1)
-        For c As Integer = 0 To channels - 1
-            channelFPS(c) = getChannelFPS(c + 1)
-        Next
-
-        ' Tick Thread starten
-        ticker = New FrameTicker(tickConnection, Me, 200000, 1)
-
-        ' updater starten
-        updater = MediaUpdaterFactory.getMediaUpdater(updateConnection, playlist, Me)
-        updater.startUpdate()
-    End Sub
+        Return opened
+    End Function
 
     Public Function getPlaylistRoot() As IPlaylistItem
         Return playlist
