@@ -49,11 +49,6 @@
         '' CMD an ServerController schicken
         logger.log("PlaylistMovieItem.start: Starte " & getChannel() & "-" & getLayer() & ": " & getMedia.toString)
 
-        ''
-        '' testing BUGFIX slow OSC mesg. --> only for old OscMediaUpdater req.
-        ''
-        'getMedia.setUpdated(False)
-
         If getController.containsChannel(getChannel) AndAlso getLayer() > -1 Then
             Dim result = getController.getCommandConnection.sendCommand(CasparCGCommandFactory.getPlay(getChannel, getLayer, getMedia, isLooping, False))
             If result.isOK Then
@@ -62,7 +57,8 @@
                 End While
                 playing = True
                 getController.readyForUpdate.Release()
-                'getController.getCommandConnection.sendAsyncCommand(CasparCGCommandFactory.getLoadbg(getChannel, getLayer, "empty", True))
+                ' InfoMediaUpdater needs an empty to detect end of file due to BUG: frame-number never reaches nb-frames
+                If Not getController.getCommandConnection.isOSCSupported() Then getController.getCommandConnection.sendAsyncCommand(CasparCGCommandFactory.getLoadbg(getChannel, getLayer, "empty", True))
                 logger.log("PlaylistMovieItem.start: ...gestartet " & getChannel() & "-" & getLayer() & ": " & getMedia.toString)
             Else
                 logger.err("PlaylistMovieItem.start: Could not start " & media.getFullName & ". ServerMessage was: " & result.getServerMessage)

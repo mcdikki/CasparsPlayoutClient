@@ -13,6 +13,7 @@ Public Class CasparCGConnection
     Private buffersize As Integer = 1024 * 256
     Private tryConnect As Boolean = False
     Private timeout As Integer = 300 ' ms to wait for data before cancel receive
+    Private ccgVersion As String = "0.0.0"
 
     Public Sub New(ByVal serverAddress As String, ByVal serverPort As Integer)
         connectionLock = New Semaphore(1, 1)
@@ -35,7 +36,7 @@ Public Class CasparCGConnection
                 If client.Connected Then
                     connectionAttemp = 0
                     logger.log("CasparCGConnection.connect: Connected to " & serveraddress & ":" & serverport.ToString)
-                    Return True
+                    ccgVersion = readServerVersion()
                 End If
             Catch e As Exception
                 logger.warn(e.Message)
@@ -94,6 +95,54 @@ Public Class CasparCGConnection
             client.Client.Close()
         End If
     End Sub
+
+    Public Function isOSCSupported() As Boolean
+        If getVersionPart(getVersion, 0) = 2 Then
+            If getVersionPart(getVersion, 1) = 0 Then
+                If getVersionPart(getVersion, 2) <= 3 Then
+                    Return False
+                Else
+                    Return True
+                End If
+            Else
+                Return True
+            End If
+        ElseIf getVersionPart(getVersion, 0) < 2 Then
+            Return False
+        Else
+            Return True
+        End If
+    End Function
+
+    Public Function isThumbnailSupported() As Boolean
+        Return isOSCSupported()
+    End Function
+
+    Private Function readServerVersion() As String
+        If connected() Then
+            Dim response = sendCommand(CasparCGCommandFactory.getVersion)
+            If Not IsNothing(response) AndAlso response.isOK Then
+                Return response.getData
+            End If
+        End If
+        Return "0.0.0"
+    End Function
+
+    Public Function getVersion() As String
+        Return ccgVersion
+    End Function
+
+    Public Shared Function getVersionPart(Version As String, part As Integer) As Integer
+        Dim v() = Version.Split(".")
+        If v.Length >= part Then
+            Dim r As Integer
+            If Integer.TryParse(v(part), r) Then
+                Return r
+            End If
+        End If
+        Return -1
+    End Function
+
 
     ''' <summary>
     ''' Sends a command to the casparCG server and returns imediatly after sending no matter if the command was accepted or not.

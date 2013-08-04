@@ -52,12 +52,13 @@ Example msg flow (PL = Playlist, SPL = SubPlaylist):
 This way, we make sure that we handle everything in the right thread.
 
 
-Done CD 30/07/13
-- Enable OSC support
-Done - CD 29/07/13
---- Add Class to handle OSC msg and update state of playlists.
-Done - CD 30/07/13
---- Choose between INFO/OSC updates depending on versionnumber from ccg server. INFO V <= 2.0.3, OSC V >= 2.0.4
+- GOD CLASS ServerController: Need to splitt and overwork where functionality belongs
+---> Moved Version Controll to CasparCGServerConnection - CD 04/08/13
+
+
+- Change Commands from Functions to own classes
+--- Give each command a hint since what version it is supported
+--- Give each command a desc etc.
 
 
 - Implement missing Playlist Types
@@ -75,8 +76,8 @@ Done - CD 30/07/13
 Done - CD 02/08/13
 --- Thumbnail CMDs
 
-Done - CD 02/08/13
-- Add Thumbnailfunctions
+
+- Add getter/setter for CasparCGConnection values like timeout etc.
 
 
 - Add config class and functions
@@ -84,10 +85,22 @@ Done - CD 02/08/13
 
 - Inkonsistens frame/ms bei viel funktionen und eigenschaften wie getDuratation()/Position etc. auflösen
 
+Done CD 30/07/13
+- Enable OSC support
+Done - CD 29/07/13
+--- Add Class to handle OSC msg and update state of playlists.
+Done - CD 30/07/13
+--- Choose between INFO/OSC updates depending on versionnumber from ccg server. INFO V <= 2.0.3, OSC V >= 2.0.4
+
+Done - CD 02/08/13
+- Add Thumbnailfunctions
 
 Done - CD 27/07/13
 - Handle problem duration in mediaLib != real duration when playing
 
+Fixed - CD 04/08/13
+- BUG: InfoMediaUpdaters "End media detection" broken with Osc changes on PlaylistMovieItem.
+---> Needs empty after play in bg for correct detection. Added condtional load of empty depending on OscVersion or InfoVersion of Server.
 
 Fixed - CD 29/07/13
 - BUG: Same Filenames seems to share mediaInfo!
@@ -98,36 +111,55 @@ Fixed - CD 29/07/13
 - BUG: OSC: Some files didn't receive updates but other did.
 ---> Filenames are uppercase in mediaLib and Playlists (ACMP is always uppercase) but not nessasaryly in the osc mesg.
 
- =====================================================================================================================
+=====================================================================================================================
 
- GUI:
- ====
-
- Seems to be Fixed - CD 02/08/13
- - BUG: Loop at Root Playlist doesn't work as expected
- 
- 
- Fixed -  CD 03/08/13
- - BUG: Loop and auto has no effect on MediaItems
- 
-
- Fixed - CD 30/7/13
- - BUG: Stop did not stop media on server
-
+GUI:
+====
 
  - Add Connection State for ACMP/OSC
 
  - Channel reset of Items at connect should only appear if channel is not valid
 
- Done - CD 02/08/13
- - Make update Library async to handle long update times freezing GUI
- - Added progress animation
-
- Done - CD 29/07/13
- - Remove Add Button at Library, not usefull (and not implemented yet)
-
  - Overwork scaling issues of sub PLItems
+ 
+ - Overwork CommandBar
+ 
+ - Implement Info and CG Controll
+ 
+ - Add Menu
+ 
+ - Add Settings
+ 
+ - Add minimalistic kind of TreeView for PlaylistView
 
- Fixed - CD 01/08/13
+ - Improofe ExpandButton of MediaLibrary (to hard to get clicked)
+ 
+ - Implement sensible controlls to expanded PlaylistView for PlaylistTypes:
+ --- Movie
+ --- Audio
+ --- Still
+ --- Template
+ --- Command
+ 
+
+ 
+Done - CD 02/08/13
+ - Make update Library async to handle long update times freezing GUI
+ - Add progress animation
+
+Done - CD 29/07/13
+ - Remove Add Button at Library, not usefull (and not implemented yet) 
+
+Seems to be Fixed - CD 02/08/13
+ - BUG: Loop at Root Playlist doesn't work as expected
+
+
+Fixed -  CD 03/08/13
+ - BUG: Loop and auto has no effect on MediaItems
+ 
+Fixed - CD 30/7/13
+ - BUG: Stop did not stop media on server
+ 
+Fixed - CD 01/08/13
  - Handle Excaption at CloseWindow and uncloseable Window when never been connected
  ---> 2 Nullpointer exceptions in ServerController.close and MainWindow.dispose

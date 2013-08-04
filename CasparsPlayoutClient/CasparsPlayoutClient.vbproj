@@ -152,6 +152,10 @@
     <Compile Include="Controls\LibraryViewItem.vb">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="Playlist\PlaylistAudioItem.vb" />
+    <Compile Include="Playlist\PlaylistCommandItem.vb" />
+    <Compile Include="Playlist\PlaylistStillItem.vb" />
+    <Compile Include="Playlist\PlaylistTemplateItem.vb" />
     <Compile Include="Forms\Dialog.Designer.vb">
       <DependentUpon>Dialog.vb</DependentUpon>
     </Compile>
@@ -172,9 +176,9 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="MediaUpdater.vb" />
-    <Compile Include="IPlaylistItem.vb" />
+    <Compile Include="Interfaces\IPlaylistItem.vb" />
     <Compile Include="Library.vb" />
-    <Compile Include="logger.vb" />
+    <Compile Include="Utils\logger.vb" />
     <Compile Include="Forms\MainWindow.Designer.vb">
       <DependentUpon>MainWindow.vb</DependentUpon>
     </Compile>
@@ -202,9 +206,9 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="PlaylistBlockItem.vb" />
-    <Compile Include="PlaylistItem.vb" />
-    <Compile Include="PlaylistMovieItem.vb" />
+    <Compile Include="Playlist\PlaylistBlockItem.vb" />
+    <Compile Include="Playlist\PlaylistItem.vb" />
+    <Compile Include="Playlist\PlaylistMovieItem.vb" />
     <Compile Include="ServerController.vb" />
     <Compile Include="Controls\PlaylistView.Designer.vb">
       <DependentUpon>PlaylistView.vb</DependentUpon>

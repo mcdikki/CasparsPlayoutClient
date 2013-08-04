@@ -13,26 +13,11 @@ Imports System.Net
 ''' </summary>
 ''' <remarks></remarks>
 Public Module MediaUpdaterFactory
-    Function getMediaUpdater(ByVal ccgVersion As String, ByRef updateConnection As CasparCGConnection, ByRef playlist As IPlaylistItem, ByRef controller As ServerController) As AbstractMediaUpdater
-        '
-        ' ToDo
-        '
-        If controller.getVersionPart(ccgVersion, 0) = 2 Then
-            If controller.getVersionPart(ccgVersion, 1) = 0 Then
-                If controller.getVersionPart(ccgVersion, 2) <= 3 Then
-                    Return New InfoMediaUpdater(updateConnection, playlist, controller)
-                Else
-                    Return New OscMediaUpdater(updateConnection, playlist, controller)
-                End If
-            Else
-                Return New OscMediaUpdater(updateConnection, playlist, controller)
-            End If
-        ElseIf controller.getVersionPart(ccgVersion, 0) < 2 Then
-            Return New InfoMediaUpdater(updateConnection, playlist, controller)
-        ElseIf controller.getVersionPart(ccgVersion, 0) > 2 Then
+    Function getMediaUpdater(ByRef updateConnection As CasparCGConnection, ByRef playlist As IPlaylistItem, ByRef controller As ServerController) As AbstractMediaUpdater
+        If updateConnection.isOSCSupported Then
             Return New OscMediaUpdater(updateConnection, playlist, controller)
         Else
-            Return Nothing
+            Return New InfoMediaUpdater(updateConnection, playlist, controller)
         End If
     End Function
 End Module
