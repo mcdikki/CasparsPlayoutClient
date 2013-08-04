@@ -8,7 +8,6 @@ Public Class ServerControler
     Private tickConnection As CasparCGConnection
     Private updateConnection As CasparCGConnection
     Private testConnection As CasparCGConnection
-    Private updateThread As Thread
     Private tickThread As Thread
     Private serverAddress As String = "localhost"
     Private serverPort As Integer = 5250
@@ -39,13 +38,13 @@ Public Class ServerControler
             If Not IsNothing(tickThread) Then
                 tickThread.Interrupt()
                 tickThread.Abort()
-            End If
-            If Not IsNothing(updateThread) Then
-                updateThread.Interrupt()
-                updateThread.Abort()
+                tickThread = Nothing
             End If
         Catch e As ThreadInterruptedException
         End Try
+
+        updater.stopUpdate()
+
         If Not IsNothing(cmdConnection) Then cmdConnection.close()
         If Not IsNothing(updateConnection) Then updateConnection.close()
         If Not IsNothing(testConnection) Then testConnection.close()

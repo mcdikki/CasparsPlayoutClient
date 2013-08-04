@@ -111,9 +111,6 @@
     <Reference Include="Bespoke.Common.Osc">
       <HintPath>..\libs\OscFramework_2.0\Executables\Framework\Any CPU\Bespoke.Common.Osc.dll</HintPath>
     </Reference>
-    <Reference Include="ExpandableGridView">
-      <HintPath>..\libs\ExpandableGridView.dll</HintPath>
-    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />

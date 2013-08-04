@@ -68,12 +68,12 @@ Public Class OscMediaUpdater
     End Sub
 
     Public Overrides Sub startUpdate()
-        logger.debug("Osc2MediaUpdater: Started OSC Server")
+        logger.debug("OscMediaUpdater: Started OSC Server")
         oscServer.Start()
     End Sub
 
     Public Overrides Sub stopUpdate()
-        logger.debug("Osc2MediaUpdater: Stopped OSC Server")
+        logger.debug("OscMediaUpdater: Stopped OSC Server")
         oscServer.Stop()
     End Sub
 
@@ -126,6 +126,7 @@ Public Class InfoMediaUpdater
     Private activeItems() As Dictionary(Of Integer, Dictionary(Of String, IPlaylistItem))
     Private layer As Integer
     Private mediaName As String
+    Private updateHandler As New FrameTicker.frameTickEventHandler(AddressOf updateMedia)
 
     Public Sub New(ByRef updateConnection As CasparCGConnection, ByRef playlist As IPlaylistItem, ByRef controller As ServerControler)
         MyBase.New(updateConnection, playlist, controller)
@@ -137,19 +138,18 @@ Public Class InfoMediaUpdater
     End Sub
 
     Public Overrides Sub startUpdate()
-        AddHandler controller.getTicker.frameTick, AddressOf updateMedia
+        AddHandler controller.getTicker.frameTick, updateHandler
     End Sub
 
     Public Overrides Sub stopUpdate()
-        RemoveHandler controller.getTicker.frameTick, AddressOf updateMedia
-        controller.readyForUpdate.Release()
+        RemoveHandler controller.getTicker.frameTick, updateHandler
     End Sub
 
     ''' <summary>
     ''' Updates all playing media items in the playlist
     ''' </summary>
     ''' <remarks></remarks>
-    Public Sub updateMedia()
+    Public Sub updateMedia(ByVal sender As Object, e As frameTickEventArgs)
         ''
         '' reads in alle channels as xml
         '' and checks the state of each layer
