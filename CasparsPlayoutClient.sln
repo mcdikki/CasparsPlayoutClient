@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Express 2012 for Windows Desktop
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "CasparsPlayoutClient", "CasparsPlayoutClient\CasparsPlayoutClient.vbproj", "{282C2D6B-C267-4E14-82AB-401B4ABF942A}"
 EndProject
-Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "CasparCGVBNETConnector", "CasparCGVBNETConnector\CasparCGVBNETConnector.vbproj", "{3C286B02-D34B-4B9A-B2F6-0814FFC1661F}"
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "logger", "..\..\..\..\Programmieren\NET Logger\logger\logger.vbproj", "{8C948821-E19E-4DF6-B58C-88A835F2B363}"
 EndProject
-Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "logger", "logger\logger.vbproj", "{8C948821-E19E-4DF6-B58C-88A835F2B363}"
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "CasparCGNETConnector", "..\CasparCGNETConnector\CasparCGNETConnector\CasparCGNETConnector.vbproj", "{3C286B02-D34B-4B9A-B2F6-0814FFC1661F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,18 +23,18 @@ Global
 		{282C2D6B-C267-4E14-82AB-401B4ABF942A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{282C2D6B-C267-4E14-82AB-401B4ABF942A}.Release|x86.ActiveCfg = Release|x86
 		{282C2D6B-C267-4E14-82AB-401B4ABF942A}.Release|x86.Build.0 = Release|x86
-		{3C286B02-D34B-4B9A-B2F6-0814FFC1661F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3C286B02-D34B-4B9A-B2F6-0814FFC1661F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3C286B02-D34B-4B9A-B2F6-0814FFC1661F}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{3C286B02-D34B-4B9A-B2F6-0814FFC1661F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3C286B02-D34B-4B9A-B2F6-0814FFC1661F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3C286B02-D34B-4B9A-B2F6-0814FFC1661F}.Release|x86.ActiveCfg = Release|Any CPU
 		{8C948821-E19E-4DF6-B58C-88A835F2B363}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8C948821-E19E-4DF6-B58C-88A835F2B363}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8C948821-E19E-4DF6-B58C-88A835F2B363}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{8C948821-E19E-4DF6-B58C-88A835F2B363}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8C948821-E19E-4DF6-B58C-88A835F2B363}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8C948821-E19E-4DF6-B58C-88A835F2B363}.Release|x86.ActiveCfg = Release|Any CPU
+		{3C286B02-D34B-4B9A-B2F6-0814FFC1661F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C286B02-D34B-4B9A-B2F6-0814FFC1661F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3C286B02-D34B-4B9A-B2F6-0814FFC1661F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3C286B02-D34B-4B9A-B2F6-0814FFC1661F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C286B02-D34B-4B9A-B2F6-0814FFC1661F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3C286B02-D34B-4B9A-B2F6-0814FFC1661F}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

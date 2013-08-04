@@ -7,6 +7,7 @@ Partial Class MainWindow
     Protected Overrides Sub Dispose(ByVal disposing As Boolean)
         If Not IsNothing(sc.getTicker) Then RemoveHandler sc.getTicker.frameTick, AddressOf onTick
         sc.close()
+        logger.close()
         Try
             If disposing AndAlso components IsNot Nothing Then
                 components.Dispose()

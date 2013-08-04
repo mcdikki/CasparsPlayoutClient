@@ -45,7 +45,7 @@ Public Class ServerControler
         Catch e As ThreadInterruptedException
         End Try
 
-        updater.stopUpdate()
+        If Not IsNothing(updater) Then updater.stopUpdate()
 
         If Not IsNothing(cmdConnection) Then cmdConnection.close()
         If Not IsNothing(updateConnection) Then updateConnection.close()

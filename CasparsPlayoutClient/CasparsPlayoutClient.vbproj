@@ -302,13 +302,13 @@
     <Folder Include="Utils\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CasparCGVBNETConnector\CasparCGVBNETConnector.vbproj">
-      <Project>{3c286b02-d34b-4b9a-b2f6-0814ffc1661f}</Project>
-      <Name>CasparCGVBNETConnector</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\logger\logger.vbproj">
+    <ProjectReference Include="..\..\..\..\..\Programmieren\NET Logger\logger\logger.vbproj">
       <Project>{8c948821-e19e-4df6-b58c-88a835f2b363}</Project>
       <Name>logger</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\CasparCGNETConnector\CasparCGNETConnector\CasparCGNETConnector.vbproj">
+      <Project>{3c286b02-d34b-4b9a-b2f6-0814ffc1661f}</Project>
+      <Name>CasparCGNETConnector</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />

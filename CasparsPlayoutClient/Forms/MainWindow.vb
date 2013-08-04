@@ -16,7 +16,7 @@ Public Class MainWindow
         mediaLib = New Library(sc)
         AddPlaylist()
         AddLibrary()
-        setMonitor()
+        'setMonitor()
     End Sub
 
     Private Sub AddLibrary()
