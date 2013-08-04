@@ -13,7 +13,7 @@ Imports System.Net
 ''' </summary>
 ''' <remarks></remarks>
 Public Module MediaUpdaterFactory
-    Function getMediaUpdater(ByRef updateConnection As CasparCGConnection, ByRef playlist As IPlaylistItem, ByRef controller As ServerController) As AbstractMediaUpdater
+    Function getMediaUpdater(ByRef updateConnection As CasparCGConnection, ByRef playlist As IPlaylistItem, ByRef controller As ServerControler) As AbstractMediaUpdater
         If updateConnection.isOSCSupported Then
             Return New OscMediaUpdater(updateConnection, playlist, controller)
         Else
@@ -30,13 +30,13 @@ End Module
 ''' <remarks></remarks>
 Public MustInherit Class AbstractMediaUpdater
 
-    Friend controller As ServerController
+    Friend controller As ServerControler
     Friend WithEvents ticker As FrameTicker
     Friend updateConnection As CasparCGConnection
     Friend channels As Integer
     Friend playlist As IPlaylistItem
 
-    Public Sub New(ByRef updateConnection As CasparCGConnection, ByRef playlist As IPlaylistItem, ByRef controller As ServerController)
+    Public Sub New(ByRef updateConnection As CasparCGConnection, ByRef playlist As IPlaylistItem, ByRef controller As ServerControler)
         Me.controller = controller
         Me.updateConnection = updateConnection
         Me.channels = controller.getChannels
@@ -57,7 +57,7 @@ Public Class OscMediaUpdater
     Private oscPort As Integer = 5103
     Private WithEvents oscServer As OscServer
 
-    Public Sub New(ByRef updateConnection As CasparCGConnection, ByRef playlist As IPlaylistItem, ByRef controller As ServerController)
+    Public Sub New(ByRef updateConnection As CasparCGConnection, ByRef playlist As IPlaylistItem, ByRef controller As ServerControler)
         MyBase.New(updateConnection, playlist, controller)
 
         ' OSC Server erstellen
@@ -127,7 +127,7 @@ Public Class InfoMediaUpdater
     Private layer As Integer
     Private mediaName As String
 
-    Public Sub New(ByRef updateConnection As CasparCGConnection, ByRef playlist As IPlaylistItem, ByRef controller As ServerController)
+    Public Sub New(ByRef updateConnection As CasparCGConnection, ByRef playlist As IPlaylistItem, ByRef controller As ServerControler)
         MyBase.New(updateConnection, playlist, controller)
 
         ReDim activeItems(channels)

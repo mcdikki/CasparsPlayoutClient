@@ -1,7 +1,7 @@
 ﻿Imports System.Threading
 
 
-Public Class ServerController
+Public Class ServerControler
 
     Public readyForUpdate As New Semaphore(1, 1)
     Private cmdConnection As CasparCGConnection
@@ -90,17 +90,10 @@ Public Class ServerController
 
         ' Tick Thread starten
         ticker = New FrameTicker(tickConnection, Me, 200000, 1)
-        'tickThread = New Thread(AddressOf ticker.tick)
-        'tickThread.Start()
 
         ' updater starten
         updater = MediaUpdaterFactory.getMediaUpdater(updateConnection, playlist, Me)
         updater.startUpdate()
-        'AddHandler ticker.frameTick, AddressOf updater.updateMedia
-    End Sub
-
-    Public Sub update()
-        'updater.updateMedia()
     End Sub
 
     Public Function getPlaylistRoot() As IPlaylistItem
@@ -427,14 +420,14 @@ Public Class ServerController
         base64String = base64String.Replace(vbLf, "")
 
         'Fill or remove fillspaces if length mod 4 != 0
-        If base64String.Length Mod 4 <> 0 Then
+        If base64String.Length Mod 4 <> 0 AndAlso base64String.Length > 3 Then
             If base64String.Contains("==") Then
                 base64String = base64String.Remove(base64String.IndexOf("=="), 1)
             ElseIf base64String.Length Mod 4 = 3 Then
                 base64String = base64String & "="
             ElseIf base64String.Length Mod 4 = 2 Then
                 base64String = base64String.Substring(0, base64String.Length - 1) & "AA="
-            ElseIf base64String.Length Mod 4 = 1 Then
+            ElseIf base64String.Length Mod 4 = 1 AndAlso base64String.Length > 6 Then
                 ' This is only the last way to solve the problem. 
                 ' We will lose some pixel of the image like that
                 base64String = base64String.Substring(0, base64String.Length - 6) & "="
@@ -500,7 +493,7 @@ End Class
 ''' </summary>
 ''' <remarks></remarks>
 Public Class FrameTicker
-    Private sc As ServerController
+    Private sc As ServerControler
     Private con As CasparCGConnection
     Public interpolationTime As Integer
     Private frameInterval As Integer
@@ -520,7 +513,7 @@ Public Class FrameTicker
     ''' <param name="interpolationTime">the number of milliseconds between each servercall. In that time, the frame tick will be interpolated by a local timer which may differ from the servers real values.</param>
     ''' <param name="frameInterval">the desired interval in which frameTickEvents should be rissen. This is just a desired value and will only give a upper bound but not a lower bound. Default is 1 tick per frame</param> 
     ''' <remarks></remarks>
-    Public Sub New(ByRef con As CasparCGConnection, ByVal controller As ServerController, Optional ByVal interpolationTime As Integer = 5000, Optional ByVal frameInterval As Integer = 1)
+    Public Sub New(ByRef con As CasparCGConnection, ByVal controller As ServerControler, Optional ByVal interpolationTime As Integer = 5000, Optional ByVal frameInterval As Integer = 1)
         sc = controller
         Me.con = con
         Me.interpolationTime = interpolationTime

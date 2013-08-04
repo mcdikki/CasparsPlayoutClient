@@ -6,14 +6,14 @@
 Public Class Library
 
     Private media As Dictionary(Of String, CasparCGMedia)
-    Private controller As ServerController
+    Private controller As ServerControler
     Private updateThread As Threading.Thread
 
     Public Event updated(ByRef sender As Object, ByRef media As Dictionary(Of String, CasparCGMedia))
     Public Event updatedAborted(ByRef sender As Object)
 
 
-    Public Sub New(ByVal controller As ServerController)
+    Public Sub New(ByVal controller As ServerControler)
         Me.controller = controller
         media = New Dictionary(Of String, CasparCGMedia)
     End Sub

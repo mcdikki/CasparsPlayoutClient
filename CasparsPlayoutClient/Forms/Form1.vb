@@ -2,7 +2,7 @@
 
 Public Class Form1
 
-    Private sc As ServerController
+    Private sc As ServerControler
     Private worker As Thread
     Private nf As Integer = 0
 

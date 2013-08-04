@@ -57,7 +57,7 @@
                 ' load thumbnail
                 Dim thumb As New PictureBox()
                 If playlist.getMedia.getBase64Thumb.Length > 0 Then
-                    thumb.Image = ServerController.getBase64ToImage(playlist.getMedia.getBase64Thumb)
+                    thumb.Image = ServerControler.getBase64ToImage(playlist.getMedia.getBase64Thumb)
                 End If
                 thumb.Dock = DockStyle.Fill
                 thumb.SizeMode = PictureBoxSizeMode.AutoSize
@@ -78,7 +78,7 @@
                 ' load thumbnail
                 Dim thumb As New PictureBox()
                 If playlist.getMedia.getBase64Thumb.Length > 0 Then
-                    thumb.Image = ServerController.getBase64ToImage(playlist.getMedia.getBase64Thumb)
+                    thumb.Image = ServerControler.getBase64ToImage(playlist.getMedia.getBase64Thumb)
                 End If
                 thumb.Dock = DockStyle.Fill
                 thumb.SizeMode = PictureBoxSizeMode.AutoSize
@@ -127,9 +127,9 @@
                 If Not txtName.Focused Then Me.txtName.Text = .getName
                 Me.nudChannel.Value = Math.Max(.getChannel, 0)
                 Me.nudLayer.Value = Math.Max(.getLayer, -1)
-                Me.txtPosition.Text = ServerController.getTimeStringOfMS(.getPosition)
-                Me.txtDuration.Text = ServerController.getTimeStringOfMS(.getDuration)
-                Me.txtRemaining.Text = ServerController.getTimeStringOfMS(.getRemaining)
+                Me.txtPosition.Text = ServerControler.getTimeStringOfMS(.getPosition)
+                Me.txtDuration.Text = ServerControler.getTimeStringOfMS(.getDuration)
+                Me.txtRemaining.Text = ServerControler.getTimeStringOfMS(.getRemaining)
                 Select Case .getRemaining
                     Case Is < 1
                         txtRemaining.BackColor = Color.White
@@ -146,9 +146,9 @@
                 Me.ckbLoop.Checked = .isLooping
                 Me.pbPlayed.Value = .getPlayed
             Else
-                Me.txtPosition.Text = ServerController.getTimeStringOfMS(0)
-                Me.txtDuration.Text = ServerController.getTimeStringOfMS(.getDuration)
-                Me.txtRemaining.Text = ServerController.getTimeStringOfMS(.getDuration)
+                Me.txtPosition.Text = ServerControler.getTimeStringOfMS(0)
+                Me.txtDuration.Text = ServerControler.getTimeStringOfMS(.getDuration)
+                Me.txtRemaining.Text = ServerControler.getTimeStringOfMS(.getDuration)
                 txtRemaining.BackColor = Color.White
                 Me.txtDelay.Text = .getDelay
                 Me.ckbAuto.Checked = .isAutoStarting

@@ -1,6 +1,6 @@
 ﻿Public Class MainWindow
 
-    Private sc As ServerController
+    Private sc As ServerControler
     Private mediaLib As Library
     Dim WithEvents playlistView As PlaylistView
     Dim WithEvents libraryView As LibraryView
@@ -9,7 +9,7 @@
     Private Sub MainWindow_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
         logger.addLogAction(New consoleLogger(3))
         'logger.addLogAction(New fileLogger(3, "c:\daten\cpc2.log", True, False))
-        sc = New ServerController
+        sc = New ServerControler
         mediaLib = New Library(sc)
         AddPlaylist()
         AddLibrary()
@@ -32,7 +32,7 @@
 
 
     Private Sub setMonitor()
-        lsvPlayingMedia.View = View.List   
+        lsvPlayingMedia.View = View.List
         With lsvPlayingMedia.Columns
             .Add("Name")
             .Add("Channel")
@@ -124,8 +124,8 @@
                     With line.SubItems
                         .Add(item.getChannel)
                         .Add(item.getLayer)
-                        .Add(ServerController.getTimeStringOfMS(item.getDuration))
-                        .Add(ServerController.getTimeStringOfMS(item.getRemaining))
+                        .Add(ServerControler.getTimeStringOfMS(item.getDuration))
+                        .Add(ServerControler.getTimeStringOfMS(item.getRemaining))
                         .Add(item.getPlayed)
                     End With
                     lsvPlayingMedia.Items.Add(line)

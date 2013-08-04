@@ -141,6 +141,8 @@ GUI:
  --- Template
  --- Command
  
+ 
+ - BUG: GUI uncloseable if connection can't be established
 
  
 Done - CD 02/08/13

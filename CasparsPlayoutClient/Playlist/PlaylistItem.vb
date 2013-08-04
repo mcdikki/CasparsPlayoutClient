@@ -13,7 +13,7 @@
 
     ' Die (Kinder)Items dieses Items
     Private items As List(Of IPlaylistItem)
-    Private WithEvents controller As ServerController
+    Private WithEvents controller As ServerControler
     Private Duration As Long ' Gesamtlaufzeit in Frames
     Private Position As Long ' aktuelle Frame
     Private Remaining As Long ' noch zu spielende Frames
@@ -44,7 +44,7 @@
     ''' <param name="controller"></param>
     ''' <param name="duration"></param>
     ''' <remarks></remarks>
-    Protected Sub New(ByVal name As String, ByVal itemType As PlaylistItemTypes, ByRef controller As ServerController, Optional ByVal channel As Integer = -1, Optional ByVal layer As Integer = -1, Optional ByVal duration As Long = -1)
+    Protected Sub New(ByVal name As String, ByVal itemType As PlaylistItemTypes, ByRef controller As ServerControler, Optional ByVal channel As Integer = -1, Optional ByVal layer As Integer = -1, Optional ByVal duration As Long = -1)
         Me.name = name
         Me.ItemType = itemType
         Me.controller = controller
@@ -106,7 +106,7 @@
         '' wecker der nach dieser Zeit die Pause aufhebt.
         If frames >= 0 Then
             pauseThread = New Threading.Thread(AddressOf Me.unPause)
-            pauseThread.Start(ServerController.getTimeInMS(frames, getFPS))
+            pauseThread.Start(ServerControler.getTimeInMS(frames, getFPS))
         End If
         paused = True
     End Sub
@@ -306,7 +306,7 @@
         End Select
     End Function
 
-    Public Function getController() As ServerController Implements IPlaylistItem.getController
+    Public Function getController() As ServerControler Implements IPlaylistItem.getController
         Return controller
     End Function
 

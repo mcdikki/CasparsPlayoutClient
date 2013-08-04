@@ -209,7 +209,7 @@
     <Compile Include="Playlist\PlaylistBlockItem.vb" />
     <Compile Include="Playlist\PlaylistItem.vb" />
     <Compile Include="Playlist\PlaylistMovieItem.vb" />
-    <Compile Include="ServerController.vb" />
+    <Compile Include="ServerControler.vb" />
     <Compile Include="Controls\PlaylistView.Designer.vb">
       <DependentUpon>PlaylistView.vb</DependentUpon>
     </Compile>

@@ -14,7 +14,7 @@
             toolTip.SetToolTip(Me, MediaItem.getFullName)
             toolTip.SetToolTip(Me.lblName, MediaItem.getFullName)
             If MediaItem.getBase64Thumb.Length > 0 Then
-                picThumb.Image = ServerController.getBase64ToImage(MediaItem.getBase64Thumb)
+                picThumb.Image = ServerControler.getBase64ToImage(MediaItem.getBase64Thumb)
             End If
             lblName.Text = MediaItem.getName
             lblType.Text = MediaItem.getMediaType.ToString
@@ -45,7 +45,7 @@
         Next
 
         If MediaItem.getBase64Thumb.Length > 0 Then
-            Dim d As New Dialog(metadata, "Metadata for " & MediaItem.getName, ServerController.getBase64ToImage(MediaItem.getBase64Thumb))
+            Dim d As New Dialog(metadata, "Metadata for " & MediaItem.getName, ServerControler.getBase64ToImage(MediaItem.getBase64Thumb))
             d.ShowDialog()
         Else
             Dim d As New Dialog(metadata, "Metadata for " & MediaItem.getName)

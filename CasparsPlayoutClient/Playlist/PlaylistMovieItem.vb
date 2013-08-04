@@ -13,7 +13,7 @@
     ''' <param name="movie"></param>
     ''' <param name="duration"></param>
     ''' <remarks></remarks>
-    Public Sub New(ByVal name As String, ByRef controller As ServerController, ByVal movie As CasparCGMovie, Optional ByVal channel As Integer = -1, Optional ByVal layer As Integer = -1, Optional ByVal duration As Long = -1)
+    Public Sub New(ByVal name As String, ByRef controller As ServerControler, ByVal movie As CasparCGMovie, Optional ByVal channel As Integer = -1, Optional ByVal layer As Integer = -1, Optional ByVal duration As Long = -1)
         MyBase.New(name, PlaylistItemTypes.MOVIE, controller, channel, layer, duration)
         If Not IsNothing(movie) Then
             If movie.getInfos.Count = 0 Then
@@ -103,7 +103,7 @@
 
     Public Overrides Function getPosition() As Long
         If getMedia.containsInfo("frame-number") AndAlso (isPlaying() OrElse hasPlayingParent()) Then
-            Return ServerController.getTimeInMS(Long.Parse(getMedia.getInfo("frame-number")), getFPS())
+            Return ServerControler.getTimeInMS(Long.Parse(getMedia.getInfo("frame-number")), getFPS())
         Else
             Return 0
         End If

@@ -2,11 +2,11 @@
 
 Public Class Form2
 
-    Private sc As ServerController
+    Private sc As ServerControler
     Private maxOffset(20) As Integer
     Delegate Sub SetTextCallback(ByVal state As Dictionary(Of Integer, Long))
 
-    Public Sub New(ByRef controller As ServerController)
+    Public Sub New(ByRef controller As ServerControler)
         MyBase.New()
         InitializeComponent()
         Me.sc = controller

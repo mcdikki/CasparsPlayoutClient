@@ -1,10 +1,10 @@
 ﻿Public Class MediaMonitor
 
-    Private sc As ServerController
+    Private sc As ServerControler
     Delegate Sub updateDelegate()
     Delegate Sub clockDelegate(ByVal state As Dictionary(Of Integer, Long))
 
-    Public Sub New(ByRef controller As ServerController)
+    Public Sub New(ByRef controller As ServerControler)
         MyBase.New()
         InitializeComponent()
         Me.sc = controller
@@ -70,8 +70,8 @@
                     With lsvItem.SubItems
                         .Add(item.getChannel)
                         .Add(item.getLayer)
-                        .Add(ServerController.getTimeStringOfMS(item.getDuration))
-                        .Add(ServerController.getTimeStringOfMS(item.getRemaining))
+                        .Add(ServerControler.getTimeStringOfMS(item.getDuration))
+                        .Add(ServerControler.getTimeStringOfMS(item.getRemaining))
                         .Add(item.getPlayed)
                     End With
                 End If
