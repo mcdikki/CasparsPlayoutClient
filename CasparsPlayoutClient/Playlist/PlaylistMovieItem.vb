@@ -53,6 +53,8 @@ Public Class PlaylistMovieItem
         logger.log("PlaylistMovieItem.start: Starte " & getChannel() & "-" & getLayer() & ": " & getMedia.toString)
 
         If getController.containsChannel(getChannel) AndAlso getLayer() > -1 Then
+            'Dim cmd = New Play(getChannel, getLayer, getMedia, isLooping, False)
+            'Dim result = cmd.execute(getController.getCommandConnection)
             Dim result = getController.getCommandConnection.sendCommand(CasparCGCommandFactory.getPlay(getChannel, getLayer, getMedia, isLooping, False))
             If result.isOK Then
                 While Not getController.readyForUpdate.WaitOne()
