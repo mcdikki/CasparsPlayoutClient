@@ -100,20 +100,28 @@ Public Class MainWindow
     End Sub
 
     Private Sub clearAll() Handles cmdClearAll.Click
+        Dim cmd As New ClearCommand()
+        Dim p = CTypeDynamic(cmd.getParameter("channel"), cmd.getParameter("channel").getGenericParameterType)
         For i = 1 To sc.getChannels
-            sc.getCommandConnection.sendCommand(CasparCGCommandFactory.getClear(i))
+            p.setValue(i)
+            cmd.execute(sc.getCommandConnection)
+            'sc.getCommandConnection.sendCommand(CasparCGCommandFactory.getClear(i))
         Next
     End Sub
 
     Private Sub clearChannel() Handles cmbClearChannel.Click
         If cbbClearChannel.Text.Length > 0 AndAlso IsNumeric(cbbClearChannel.Text) AndAlso sc.containsChannel(Integer.Parse(cbbClearChannel.Text)) Then
-            sc.getCommandConnection.sendCommand(CasparCGCommandFactory.getClear(Integer.Parse(cbbClearChannel.Text)))
+            Dim cmd As New ClearCommand(Integer.Parse(cbbClearChannel.Text))
+            cmd.execute(sc.getCommandConnection)
+            'sc.getCommandConnection.sendCommand(CasparCGCommandFactory.getClear(Integer.Parse(cbbClearChannel.Text)))
         End If
     End Sub
 
     Private Sub clearLayer() Handles cmbClearLayer.Click
         If cbbClearChannel.Text.Length > 0 AndAlso IsNumeric(cbbClearChannel.Text) AndAlso sc.containsChannel(Integer.Parse(cbbClearChannel.Text)) Then
-            sc.getCommandConnection.sendCommand(CasparCGCommandFactory.getClear(Integer.Parse(cbbClearChannel.Text), nudLayerClear.Value))
+            Dim cmd As New ClearCommand(Integer.Parse(cbbClearChannel.Text), nudLayerClear.Value)
+            cmd.execute(sc.getCommandConnection)
+            'sc.getCommandConnection.sendCommand(CasparCGCommandFactory.getClear(Integer.Parse(cbbClearChannel.Text), nudLayerClear.Value))
         End If
     End Sub
 
