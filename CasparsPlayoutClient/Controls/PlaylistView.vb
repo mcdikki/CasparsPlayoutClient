@@ -9,7 +9,7 @@
 '' for a copy of the license.
 ''
 '' You are free to copy, use and modify this software.
-'' Please let know of any changes and improofments you made to it.
+'' Please let me know of any changes and improvements you made to it.
 ''
 '' Thank you!
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
