@@ -1,4 +1,4 @@
-﻿Imports CasparCGVBNETConnector
+﻿Imports CasparCGNETConnector
 
 Public Interface IPlaylistItem
 

@@ -52,12 +52,14 @@ Example msg flow (PL = Playlist, SPL = SubPlaylist):
 This way, we make sure that we handle everything in the right thread.
 
 
-- GOD CLASS ServerController: Need to splitt and overwork where functionality belongs
+- GOD CLASS ServerController: Need to splitt and overwork where the functionality belongs
 ---> Moved Version Controll to CasparCGServerConnection - CD 04/08/13
+---> Moved Channel query to connection - CD 06/08/13
+--- move getMediaInfo to connection
 
 
 - Change Commands from Functions to own classes
---- Give each command a hint since what version it is supported
+--- Give each command a hint since and up to which version it is supported
 --- Give each command a desc etc.
 
 
@@ -77,13 +79,14 @@ Done - CD 02/08/13
 --- Thumbnail CMDs
 
 
-- Add getter/setter for CasparCGConnection values like timeout etc.
-
-
 - Add config class and functions
 
 
 - Inkonsistens frame/ms bei viel funktionen und eigenschaften wie getDuratation()/Position etc. auflösen
+
+
+Done - CD 06/08/13
+- Add getter/setter for CasparCGConnection values like timeout etc.
 
 Done CD 30/07/13
 - Enable OSC support

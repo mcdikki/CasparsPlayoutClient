@@ -1,4 +1,4 @@
-﻿Imports CasparCGVBNETConnector
+﻿Imports CasparCGNETConnector
 Imports logger
 Imports Bespoke.Common
 Imports Bespoke.Common.Osc

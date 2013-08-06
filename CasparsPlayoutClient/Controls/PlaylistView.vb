@@ -1,4 +1,4 @@
-﻿Imports CasparCGVBNETConnector
+﻿Imports CasparCGNETConnector
 Imports logger
 
 Public Class PlaylistView
@@ -328,40 +328,40 @@ Public Class PlaylistView
     '' DragDrop verarbeiten
     '
     Private Overloads Sub handleDragDrop(ByVal sender As Object, ByVal e As DragEventArgs) Handles Me.DragDrop
-        If e.Data.GetDataPresent("CasparCGVBNETConnector.CasparCGMovie") Then
+        If e.Data.GetDataPresent("CasparCGNETConnector.CasparCGMovie") Then
             ''
             '' Neue MediaItems einfügen
             ''
-            Dim media As CasparCGMedia = e.Data.GetData("CasparCGVBNETConnector.CasparCGMovie")
+            Dim media As CasparCGMedia = e.Data.GetData("CasparCGNETConnector.CasparCGMovie")
             Dim child As IPlaylistItem
             child = New PlaylistMovieItem(media.getFullName, playlist.getController, media.clone)
             playlist.addItem(child)
             addChild(child)
-        ElseIf e.Data.GetDataPresent("CasparCGVBNETConnector.CasparCGTemplate") Then
+        ElseIf e.Data.GetDataPresent("CasparCGNETConnector.CasparCGTemplate") Then
             ''
             '' Neue MediaItems einfügen
             ''
-            Dim media As CasparCGMedia = e.Data.GetData("CasparCGVBNETConnector.CasparCGTemplate")
+            Dim media As CasparCGMedia = e.Data.GetData("CasparCGNETConnector.CasparCGTemplate")
             Dim child As IPlaylistItem
             'child = New PlaylistTemplateItem(media.getFullName, playlist.getController, media.clone)
             child = New PlaylistBlockItem("not implemented yet", playlist.getController)
             playlist.addItem(child)
             addChild(child)
-        ElseIf e.Data.GetDataPresent("CasparCGVBNETConnector.CasparCGStill") Then
+        ElseIf e.Data.GetDataPresent("CasparCGNETConnector.CasparCGStill") Then
             ''
             '' Neue MediaItems einfügen
             ''
-            Dim media As CasparCGMedia = e.Data.GetData("CasparCGVBNETConnector.CasparCGStill")
+            Dim media As CasparCGMedia = e.Data.GetData("CasparCGNETConnector.CasparCGStill")
             Dim child As IPlaylistItem
             'child = New PlaylistStillItem(media.getFullName, playlist.getController, media.clone)
             child = New PlaylistBlockItem("not implemented yet", playlist.getController)
             playlist.addItem(child)
             addChild(child)
-        ElseIf e.Data.GetDataPresent("CasparCGVBNETConnector.CasparCGAudio") Then
+        ElseIf e.Data.GetDataPresent("CasparCGNETConnector.CasparCGAudio") Then
             ''
             '' Neue MediaItems einfügen
             ''
-            Dim media As CasparCGMedia = e.Data.GetData("CasparCGVBNETConnector.CasparCGAudio")
+            Dim media As CasparCGMedia = e.Data.GetData("CasparCGNETConnector.CasparCGAudio")
             Dim child As IPlaylistItem
             'child = New PlaylistAudioItem(media.getFullName, playlist.getController, media.clone)
             child = New PlaylistBlockItem("not implemented yet", playlist.getController)
@@ -392,7 +392,7 @@ Public Class PlaylistView
 
     Private Overloads Sub handleDragEnter(ByVal sender As Object, ByVal e As DragEventArgs) Handles Me.DragEnter
         ' Check the format of the data being dropped. 
-        If playlist.getItemType = PlaylistItem.PlaylistItemTypes.BLOCK AndAlso (e.Data.GetDataPresent("CasparCGVBNETConnector.CasparCGMovie")) Then 'OrElse e.Data.GetDataPresent("CasparCGVBNETConnector.CasparCGAudio") OrElse e.Data.GetDataPresent("CasparCGVBNETConnector.CasparCGStill") OrElse e.Data.GetDataPresent("CasparCGVBNETConnector.CasparCGTemplate")) Then
+        If playlist.getItemType = PlaylistItem.PlaylistItemTypes.BLOCK AndAlso (e.Data.GetDataPresent("CasparCGNETConnector.CasparCGMovie")) Then 'OrElse e.Data.GetDataPresent("CasparCGNETConnector.CasparCGAudio") OrElse e.Data.GetDataPresent("CasparCGNETConnector.CasparCGStill") OrElse e.Data.GetDataPresent("CasparCGNETConnector.CasparCGTemplate")) Then
             ' Display the copy cursor. 
             e.Effect = DragDropEffects.Copy
         ElseIf e.Data.GetDataPresent("CasparPlayoutClient.PlaylistView") Then

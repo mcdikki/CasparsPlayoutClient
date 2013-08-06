@@ -1,5 +1,5 @@
 ﻿Imports System.Threading
-Imports CasparCGVBNETConnector
+Imports CasparCGNETConnector
 Imports logger
 
 
@@ -62,8 +62,8 @@ Public Class ServerControler
     Public Function isConnected() As Boolean
         Return Not IsNothing(updateConnection) AndAlso Not IsNothing(tickConnection) AndAlso Not _
             IsNothing(cmdConnection) AndAlso Not IsNothing(testConnection) AndAlso _
-            updateConnection.connected AndAlso tickConnection.connected AndAlso _
-            cmdConnection.connected AndAlso testConnection.connected
+            updateConnection.isConnected AndAlso tickConnection.isConnected AndAlso _
+            cmdConnection.isConnected AndAlso testConnection.isConnected
     End Function
 
     Public Function open(ByVal serverAddress As String, ByVal severPort As Integer) As Boolean
@@ -78,7 +78,7 @@ Public Class ServerControler
         If tickConnection.connect() AndAlso testConnection.connect() AndAlso updateConnection.connect() AndAlso cmdConnection.connect() Then
             opened = True
             ' Channels des Servers bestimmen
-            channels = readServerChannels()
+            channels = testConnection.getServerChannels
             If channels = testChannel - 1 Then
                 channels = channels - 1
             End If
@@ -109,20 +109,6 @@ Public Class ServerControler
 
     Public Function getChannels() As Integer
         Return channels
-    End Function
-
-    Private Function readServerChannels() As Integer
-        Dim ch As Integer = 0
-        If isConnected() Then
-            Dim response = testConnection.sendCommand(CasparCGCommandFactory.getInfo())
-            If Not IsNothing(response) AndAlso response.isOK Then
-                Dim lineArray() = response.getData.Split(vbLf)
-                If Not IsNothing(lineArray) Then
-                    ch = lineArray.Length
-                End If
-            End If
-        End If
-        Return ch
     End Function
 
     ''' <summary>

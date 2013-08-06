@@ -1,4 +1,4 @@
-﻿Imports CasparCGVBNETConnector
+﻿Imports CasparCGNETConnector
 Imports logger
 
 Public Class LibraryView
