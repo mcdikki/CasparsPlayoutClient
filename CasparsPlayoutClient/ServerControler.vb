@@ -225,9 +225,9 @@ Public Class ServerControler
     ''' <remarks></remarks>
     Public Function isLayerFree(ByVal layer As Integer, ByVal channel As Integer, Optional ByVal onlyForeground As Boolean = False, Optional ByVal onlyBackground As Boolean = False) As Boolean
         If isConnected() Then
-            Dim answer = testConnection.sendCommand(CasparCGCommandFactory.getInfo(channel, layer, onlyBackground, onlyForeground))
+            Dim info As New InfoCommand(channel, layer, onlyBackground, onlyForeground)
             Dim doc As New MSXML2.DOMDocument()
-            If answer.isOK AndAlso doc.loadXML(answer.getXMLData) Then
+            If info.execute(testConnection).isOK AndAlso doc.loadXML(info.getResponse.getXMLData) Then
                 For Each type As MSXML2.IXMLDOMNode In doc.getElementsByTagName("type")
                     If Not type.nodeTypedValue.Equals("empty-producer") Then
                         Return False
@@ -237,7 +237,7 @@ Public Class ServerControler
             Else
                 If Not IsNothing(doc.parseError) Then
                     logger.warn("ServerController.isLayerFree: Error checking layer." & vbNewLine & doc.parseError.reason & vbNewLine & doc.parseError.line & ":" & doc.parseError.linepos & vbNewLine & doc.parseError.srcText)
-                    logger.warn("Server command and response was: " & answer.getCommand & vbNewLine & answer.getServerMessage)
+                    logger.warn("Server command and response was: " & info.getResponse.getCommand & vbNewLine & info.getResponse.getServerMessage)
                 Else
                     logger.warn("ServerController.isLayerFree: Could not check layer. Server response was incorrect.")
                 End If
@@ -292,9 +292,9 @@ Public Class ServerControler
     Private Function getChannelFPS(ByVal channel As Integer) As Integer
         If isConnected() Then
             If containsChannel(channel) Then
-                Dim result = testConnection.sendCommand(CasparCGCommandFactory.getInfo(channel))
+                Dim info = New InfoCommand(channel)
                 Dim infoDoc As New MSXML2.DOMDocument
-                If infoDoc.loadXML(result.getXMLData()) Then
+                If infoDoc.loadXML(info.execute(testConnection).getXMLData()) Then
                     If infoDoc.hasChildNodes Then
                         If Not IsNothing(infoDoc.selectSingleNode("channel")) AndAlso Not IsNothing(infoDoc.selectSingleNode("channel").selectSingleNode("video-mode")) Then
                             Select Case infoDoc.selectSingleNode("channel").selectSingleNode("video-mode").nodeTypedValue
@@ -312,7 +312,7 @@ Public Class ServerControler
                         End If
                     End If
                 Else
-                    logger.err("ServerController.getChannelFPS: Could not get channel fps. Error in server response: " & infoDoc.parseError.reason & " @" & vbNewLine & result.getServerMessage)
+                    logger.err("ServerController.getChannelFPS: Could not get channel fps. Error in server response: " & infoDoc.parseError.reason & " @" & vbNewLine & info.getResponse.getServerMessage)
                 End If
             Else
                 logger.err("ServerController.getChannelFPS: Could not get channel fps for channel " & channel & ". Channel does not exist.")
@@ -324,21 +324,21 @@ Public Class ServerControler
     Public Function getMediaInfo(ByRef media As CasparCGMedia) As String
         If isConnected() Then
             If media.getMediaType = CasparCGMedia.MediaType.TEMPLATE Then
-                Dim response = testConnection.sendCommand(CasparCGCommandFactory.getInfo(media))
-                If Not IsNothing(response) AndAlso response.isOK Then
-                    Return response.getXMLData
+                Dim info As New InfoTemplateCommand(media)
+                If info.execute(testConnection).isOK Then
+                    Return info.getResponse.getXMLData
                 Else
                     logger.err("ServerController.getMediaInfo: Error loading xml data received from server for " & media.toString)
-                    logger.err("ServerController.getMediaInfo: ServerMessage dump: " & response.getServerMessage)
+                    logger.err("ServerController.getMediaInfo: ServerMessage dump: " & info.getResponse.getServerMessage)
                 End If
             Else
                 Dim layer = getFreeLayer(testChannel)
-                Dim response = testConnection.sendCommand(CasparCGCommandFactory.getLoadbg(testChannel, layer, media.getFullName))
-                If Not IsNothing(response) AndAlso response.isOK Then
+                Dim cmd As ICommand = New LoadbgCommand(testChannel, layer, media.getFullName)
+                If cmd.execute(testConnection).isOK Then
                     Dim infoDoc As New MSXML2.DOMDocument
-                    response = testConnection.sendCommand(CasparCGCommandFactory.getInfo(testChannel, layer, True))
-                    testConnection.sendCommand(CasparCGCommandFactory.getClear(testChannel, layer))
-                    If infoDoc.loadXML(response.getXMLData()) AndAlso Not IsNothing(infoDoc.selectSingleNode("producer").selectSingleNode("destination")) Then
+                    cmd = New InfoCommand(testChannel, layer, True)
+
+                    If infoDoc.loadXML(cmd.execute(testConnection).getXMLData()) AndAlso Not IsNothing(infoDoc.selectSingleNode("producer").selectSingleNode("destination")) Then
                         If infoDoc.selectSingleNode("producer").selectSingleNode("destination").selectSingleNode("producer").selectSingleNode("type").nodeTypedValue.Equals("separated-producer") Then
                             Return infoDoc.selectSingleNode("producer").selectSingleNode("destination").selectSingleNode("producer").selectSingleNode("fill").selectSingleNode("producer").xml
                         Else
@@ -346,10 +346,12 @@ Public Class ServerControler
                         End If
                     Else
                         logger.err("ServerController.getMediaInfo: Error loading xml data received from server for " & media.toString & ". Error: " & infoDoc.parseError.reason)
-                        logger.err("ServerController.getMediaInfo: ServerMessages dump: " & response.getServerMessage)
+                        logger.err("ServerController.getMediaInfo: ServerMessages dump: " & cmd.getResponse.getServerMessage)
                     End If
+                    cmd = New ClearCommand(testChannel, layer)
+                    cmd.execute(testConnection)
                 Else
-                    logger.err("ServerController.getMediaInfo: Error getting media information. Server messages was: " & response.getServerMessage)
+                    logger.err("ServerController.getMediaInfo: Error getting media information. Server messages was: " & cmd.getResponse.getServerMessage)
                 End If
             End If
         End If
@@ -364,11 +366,12 @@ Public Class ServerControler
     ''' <remarks></remarks>
     Public Function getMediaList() As Dictionary(Of String, CasparCGMedia)
         Dim media As New Dictionary(Of String, CasparCGMedia)
+        Dim cmd As ICommand
         '' Catch the media list and create the media objects
         If isConnected() Then
-            Dim response = testConnection.sendCommand(CasparCGCommandFactory.getCls)
-            If Not IsNothing(response) AndAlso response.isOK Then
-                For Each line As String In response.getData.Split(vbCrLf)
+            cmd = New ClsCommand()
+            If cmd.execute(testConnection).isOK Then
+                For Each line As String In cmd.getResponse.getData.Split(vbCrLf)
                     line = line.Trim()
                     If line <> "" AndAlso line.Split(" ").Length > 2 Then
                         Dim name = line.Substring(1, line.LastIndexOf("""") - 1).ToUpper
@@ -380,9 +383,9 @@ Public Class ServerControler
                                 media.Add(name, New CasparCGMovie(name))
                                 media.Item(name).setInfo("Duration", getTimeStringOfMS(getOriginalMediaDuration(media.Item(name))))
                                 ' get Thumbnail
-                                response = testConnection.sendCommand(CasparCGCommandFactory.getThumbnail(name))
-                                If Not IsNothing(response) AndAlso response.isOK Then
-                                    media.Item(name).setBase64Thumb(response.getData)
+                                cmd = New ThumbnailRetrieveCommand(name)
+                                If cmd.execute(testConnection).isOK Then
+                                    media.Item(name).setBase64Thumb(cmd.getResponse.getData)
                                 End If
                             Case "AUDIO"
                                 media.Add(name, New CasparCGAudio(name))
@@ -396,9 +399,9 @@ Public Class ServerControler
             End If
 
             '' Catch the template list and create the template objects
-            response = testConnection.sendCommand(CasparCGCommandFactory.getTls)
-            If Not IsNothing(response) AndAlso response.isOK Then
-                For Each line As String In response.getData.Split(vbCrLf)
+            cmd = New TlsCommand()
+            If cmd.execute(testConnection).isOK Then
+                For Each line As String In cmd.getResponse.getData.Split(vbCrLf)
                     line = line.Trim.Replace(vbCr, "").Replace(vbLf, "")
                     If line <> "" AndAlso line.Split(" ").Length > 2 Then
                         Dim name = line.Substring(1, line.LastIndexOf("""") - 1).ToUpper
@@ -519,6 +522,8 @@ Public Class FrameTicker
         Dim infoDoc As New MSXML2.DOMDocument
         Dim frame As Long = 0
         Dim ch = 0
+        Dim info As New InfoCommand(1, Integer.MaxValue)
+
         Try
             timer.Start()
             offsetTimer.Start()
@@ -527,8 +532,9 @@ Public Class FrameTicker
                 For channel As Integer = 1 To channels
                     ch = channel - 1
                     'werte einlesen
+                    DirectCast(info.getParameter("channel"), CommandParameter(Of Integer)).setValue(channel)
                     offsetTimer.Restart()
-                    infoDoc.loadXML(con.sendCommand(CasparCGCommandFactory.getInfo(channel, Integer.MaxValue)).getXMLData)
+                    infoDoc.loadXML(info.execute(con).getXMLData)
                     frame = infoDoc.firstChild.selectSingleNode("frame-number").nodeTypedValue + (offsetTimer.ElapsedMilliseconds / 2 / channelFameTime(ch))
                     offsetTimer.Stop()
 

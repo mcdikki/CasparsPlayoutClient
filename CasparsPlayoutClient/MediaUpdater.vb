@@ -179,6 +179,8 @@ Public Class InfoMediaUpdater
         ' Damit nicht zu viele updates gleichzeitig laufen, 
         ' muss jedes update exlusiv updaten. Kann es das in einer milliseconde
         ' nicht erreichen, verwirft es das update für diesen Tick
+
+        Dim info As New InfoCommand()
         If controller.readyForUpdate.WaitOne(1) AndAlso controller.isOpen Then
             '' Listen und variablen vorbereiten
             xml = ""
@@ -193,8 +195,8 @@ Public Class InfoMediaUpdater
             Next
 
             For c = 0 To channels - 1
-                Dim response = updateConnection.sendCommand(CasparCGCommandFactory.getInfo(c + 1))
-                If infoDoc.loadXML(response.getXMLData) Then
+                DirectCast(info.getParameter("channel"), CommandParameter(Of Integer)).setValue(c + 1)
+                If infoDoc.loadXML(info.execute(updateConnection).getXMLData) Then
 
                     '' Über alle layer iter.
                     For Each layerNode As MSXML2.IXMLDOMElement In infoDoc.getElementsByTagName("layer")

@@ -69,20 +69,23 @@ Public Class PlaylistMovieItem
         logger.log("PlaylistMovieItem.start: Starte " & getChannel() & "-" & getLayer() & ": " & getMedia.toString)
 
         If getController.containsChannel(getChannel) AndAlso getLayer() > -1 Then
-            'Dim cmd = New Play(getChannel, getLayer, getMedia, isLooping, False)
-            'Dim result = cmd.execute(getController.getCommandConnection)
-            Dim result = getController.getCommandConnection.sendCommand(CasparCGCommandFactory.getPlay(getChannel, getLayer, getMedia, isLooping, False))
-            If result.isOK Then
+            Dim cmd As ICommand = New PlayCommand(getChannel, getLayer, getMedia, isLooping, False)
+
+            'Dim result = getController.getCommandConnection.sendCommand(CasparCGCommandFactory.getPlay(getChannel, getLayer, getMedia, isLooping, False))
+            If cmd.execute(getController.getCommandConnection).isOK Then
                 While Not getController.readyForUpdate.WaitOne()
                     logger.warn("PlaylistMovieItem.start: " & getName() & ": Could not get handle to update my status")
                 End While
                 playing = True
                 getController.readyForUpdate.Release()
                 ' InfoMediaUpdater needs an empty to detect end of file due to BUG: frame-number never reaches nb-frames
-                If Not getController.getCommandConnection.isOSCSupported() Then getController.getCommandConnection.sendAsyncCommand(CasparCGCommandFactory.getLoadbg(getChannel, getLayer, "empty", True))
+                If Not getController.getCommandConnection.isOSCSupported() Then
+                    cmd = New LoadbgCommand(getChannel, getLayer, "empty", True)
+                    cmd.execute(getController.getCommandConnection)
+                End If
                 logger.log("PlaylistMovieItem.start: ...gestartet " & getChannel() & "-" & getLayer() & ": " & getMedia.toString)
             Else
-                logger.err("PlaylistMovieItem.start: Could not start " & media.getFullName & ". ServerMessage was: " & result.getServerMessage)
+                logger.err("PlaylistMovieItem.start: Could not start " & media.getFullName & ". ServerMessage was: " & cmd.getResponse.getServerMessage)
             End If
 
             While isPlaying() AndAlso Not noWait
@@ -101,20 +104,23 @@ Public Class PlaylistMovieItem
     End Sub
 
     Public Overrides Sub stoppedPlaying()
-        getController.getCommandConnection.sendCommand(CasparCGCommandFactory.getStop(getChannel, getLayer))
+        Dim cmd As New StopCommand(getChannel, getLayer)
+        cmd.execute(getController.getCommandConnection)
         MyBase.stoppedPlaying()
     End Sub
 
     Public Overrides Sub pause(ByVal frames As Long)
         '' cmd an ServerController schicken
-        getController.getCommandConnection.sendCommand(CasparCGCommandFactory.getPause(getChannel, getLayer))
+        Dim cmd As New PauseCommand(getChannel, getLayer)
+        cmd.execute(getController.getCommandConnection)
         '' pause wird über die Elternklasse realisiert
         MyBase.pause(frames)
     End Sub
 
     Public Overrides Sub unPause()
         '' cms an ServerController schicken
-        getController.getCommandConnection.sendCommand(CasparCGCommandFactory.getPlay(getChannel, getLayer))
+        Dim cmd As New PlayCommand(getChannel(), getLayer())
+        cmd.execute(getController.getCommandConnection)
         MyBase.unPause()
     End Sub
 
