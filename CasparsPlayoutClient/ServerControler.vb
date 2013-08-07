@@ -413,36 +413,7 @@ Public Class ServerControler
 
     Public Shared Function getBase64ToImage(ByVal base64string As String) As System.Drawing.Image
         'Converts the base64 encoded msg to image data
-        Return System.Drawing.Image.FromStream(New System.IO.MemoryStream(Convert.FromBase64String(repairBase64(base64string))))
-    End Function
-
-    Public Shared Function repairBase64(ByRef base64String As String) As String
-        'Replace whitespaces
-        base64String = base64String.Replace(" ", "")
-        base64String = base64String.Replace(vbTab, "")
-        base64String = base64String.Replace(vbCrLf, "")
-        base64String = base64String.Replace(vbCr, "")
-        base64String = base64String.Replace(vbLf, "")
-
-        'Fill or remove fillspaces if length mod 4 != 0
-        If base64String.Length Mod 4 <> 0 AndAlso base64String.Length > 3 Then
-            If base64String.Contains("==") Then
-                base64String = base64String.Remove(base64String.IndexOf("=="), 1)
-            ElseIf base64String.Length Mod 4 = 3 Then
-                base64String = base64String & "="
-            ElseIf base64String.Length Mod 4 = 2 Then
-                base64String = base64String.Substring(0, base64String.Length - 1) & "AA="
-            ElseIf base64String.Length Mod 4 = 1 AndAlso base64String.Length > 6 Then
-                ' This is only the last way to solve the problem. 
-                ' We will lose some pixel of the image like that
-                base64String = base64String.Substring(0, base64String.Length - 6) & "="
-            Else
-                logger.warn("ServerController.repairBase64: Unable to repair the base64 string.")
-                Return ""
-            End If
-        End If
-
-        Return base64String
+        Return System.Drawing.Image.FromStream(New System.IO.MemoryStream(Convert.FromBase64String(base64string)))
     End Function
 
     Public Function getTicker() As FrameTicker
