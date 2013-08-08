@@ -123,6 +123,14 @@ Public Class ServerControler
         Return cmdConnection
     End Function
 
+    Public Function getTestConnection() As CasparCGConnection
+        Return testConnection
+    End Function
+
+    Public Function getTestChannel() As Integer
+        Return testChannel
+    End Function
+
     Public Function getChannels() As Integer
         Return channels
     End Function
@@ -143,7 +151,7 @@ Public Class ServerControler
                     If media.getInfos.Count = 0 Then
                         '' no media info is loaded
                         '' load it now
-                        media.parseXML(getMediaInfo(media))
+                        media.fillMediaInfo(testConnection, testChannel)
                     End If
                     If media.containsInfo("file-nb-frames") AndAlso media.containsInfo("fps") AndAlso media.containsInfo("progressive") Then
                         Dim fps As Integer = Single.Parse(media.getInfo("fps")) * 100
@@ -181,7 +189,8 @@ Public Class ServerControler
                     If media.getInfos.Count = 0 Then
                         '' no media info is loaded
                         '' load it now
-                        media.parseXML(getMediaInfo(media))
+                        'media.parseXML(getMediaInfo(media))
+                        media.fillMediaInfo(testConnection, testChannel)
                     End If
                     If media.containsInfo("nb-frames") Then
                         Return getTimeInMS(media.getInfo("nb-frames"), getFPS(channel))
@@ -200,50 +209,6 @@ Public Class ServerControler
     ''' <remarks></remarks>
     Public Function containsChannel(ByVal channel As Integer) As Boolean
         Return channel <= channels AndAlso channel > 0
-    End Function
-
-    ''' <summary>
-    ''' Returns the smallest free layer of the given channel
-    ''' </summary>
-    ''' <param name="channel"></param>
-    ''' <returns></returns>
-    ''' <remarks></remarks>
-    Public Function getFreeLayer(ByVal channel As Integer) As Integer
-        Dim layer As Integer = Integer.MaxValue
-        While Not isLayerFree(layer, channel) AndAlso layer > 0
-            layer = layer - 1
-        End While
-        Return layer
-    End Function
-
-    ''' <summary>
-    ''' Returns whether or not a layer of a channel is free, which means no producer is playing on it.
-    ''' </summary>
-    ''' <param name="layer"></param>
-    ''' <param name="channel"></param>
-    ''' <returns></returns>
-    ''' <remarks></remarks>
-    Public Function isLayerFree(ByVal layer As Integer, ByVal channel As Integer, Optional ByVal onlyForeground As Boolean = False, Optional ByVal onlyBackground As Boolean = False) As Boolean
-        If isConnected() Then
-            Dim info As New InfoCommand(channel, layer, onlyBackground, onlyForeground)
-            Dim doc As New MSXML2.DOMDocument()
-            If info.execute(testConnection).isOK AndAlso doc.loadXML(info.getResponse.getXMLData) Then
-                For Each type As MSXML2.IXMLDOMNode In doc.getElementsByTagName("type")
-                    If Not type.nodeTypedValue.Equals("empty-producer") Then
-                        Return False
-                    End If
-                Next
-                Return True
-            Else
-                If Not IsNothing(doc.parseError) Then
-                    logger.warn("ServerController.isLayerFree: Error checking layer." & vbNewLine & doc.parseError.reason & vbNewLine & doc.parseError.line & ":" & doc.parseError.linepos & vbNewLine & doc.parseError.srcText)
-                    logger.warn("Server command and response was: " & info.getResponse.getCommand & vbNewLine & info.getResponse.getServerMessage)
-                Else
-                    logger.warn("ServerController.isLayerFree: Could not check layer. Server response was incorrect.")
-                End If
-            End If
-        End If
-        Return False
     End Function
 
     ''' <summary>
@@ -321,42 +286,42 @@ Public Class ServerControler
         Return -1
     End Function
 
-    Public Function getMediaInfo(ByRef media As CasparCGMedia) As String
-        If isConnected() Then
-            If media.getMediaType = CasparCGMedia.MediaType.TEMPLATE Then
-                Dim info As New InfoTemplateCommand(media)
-                If info.execute(testConnection).isOK Then
-                    Return info.getResponse.getXMLData
-                Else
-                    logger.err("ServerController.getMediaInfo: Error loading xml data received from server for " & media.toString)
-                    logger.err("ServerController.getMediaInfo: ServerMessage dump: " & info.getResponse.getServerMessage)
-                End If
-            Else
-                Dim layer = getFreeLayer(testChannel)
-                Dim cmd As ICommand = New LoadbgCommand(testChannel, layer, media.getFullName)
-                If cmd.execute(testConnection).isOK Then
-                    Dim infoDoc As New MSXML2.DOMDocument
-                    cmd = New InfoCommand(testChannel, layer, True)
+    'Public Function getMediaInfo(ByRef media As CasparCGMedia) As String
+    '    If isConnected() Then
+    '        If media.getMediaType = CasparCGMedia.MediaType.TEMPLATE Then
+    '            Dim info As New InfoTemplateCommand(media)
+    '            If info.execute(testConnection).isOK Then
+    '                Return info.getResponse.getXMLData
+    '            Else
+    '                logger.err("ServerController.getMediaInfo: Error loading xml data received from server for " & media.toString)
+    '                logger.err("ServerController.getMediaInfo: ServerMessage dump: " & info.getResponse.getServerMessage)
+    '            End If
+    '        Else
+    '            Dim layer = testConnection.getFreeLayer(testChannel)
+    '            Dim cmd As ICommand = New LoadbgCommand(testChannel, layer, media.getFullName)
+    '            If cmd.execute(testConnection).isOK Then
+    '                Dim infoDoc As New MSXML2.DOMDocument
+    '                cmd = New InfoCommand(testChannel, layer, True)
 
-                    If infoDoc.loadXML(cmd.execute(testConnection).getXMLData()) AndAlso Not IsNothing(infoDoc.selectSingleNode("producer").selectSingleNode("destination")) Then
-                        If infoDoc.selectSingleNode("producer").selectSingleNode("destination").selectSingleNode("producer").selectSingleNode("type").nodeTypedValue.Equals("separated-producer") Then
-                            Return infoDoc.selectSingleNode("producer").selectSingleNode("destination").selectSingleNode("producer").selectSingleNode("fill").selectSingleNode("producer").xml
-                        Else
-                            Return infoDoc.selectSingleNode("producer").selectSingleNode("destination").selectSingleNode("producer").xml
-                        End If
-                    Else
-                        logger.err("ServerController.getMediaInfo: Error loading xml data received from server for " & media.toString & ". Error: " & infoDoc.parseError.reason)
-                        logger.err("ServerController.getMediaInfo: ServerMessages dump: " & cmd.getResponse.getServerMessage)
-                    End If
-                    cmd = New ClearCommand(testChannel, layer)
-                    cmd.execute(testConnection)
-                Else
-                    logger.err("ServerController.getMediaInfo: Error getting media information. Server messages was: " & cmd.getResponse.getServerMessage)
-                End If
-            End If
-        End If
-        Return ""
-    End Function
+    '                If infoDoc.loadXML(cmd.execute(testConnection).getXMLData()) AndAlso Not IsNothing(infoDoc.selectSingleNode("producer").selectSingleNode("destination")) Then
+    '                    If infoDoc.selectSingleNode("producer").selectSingleNode("destination").selectSingleNode("producer").selectSingleNode("type").nodeTypedValue.Equals("separated-producer") Then
+    '                        Return infoDoc.selectSingleNode("producer").selectSingleNode("destination").selectSingleNode("producer").selectSingleNode("fill").selectSingleNode("producer").xml
+    '                    Else
+    '                        Return infoDoc.selectSingleNode("producer").selectSingleNode("destination").selectSingleNode("producer").xml
+    '                    End If
+    '                Else
+    '                    logger.err("ServerController.getMediaInfo: Error loading xml data received from server for " & media.toString & ". Error: " & infoDoc.parseError.reason)
+    '                    logger.err("ServerController.getMediaInfo: ServerMessages dump: " & cmd.getResponse.getServerMessage)
+    '                End If
+    '                cmd = New ClearCommand(testChannel, layer)
+    '                cmd.execute(testConnection)
+    '            Else
+    '                logger.err("ServerController.getMediaInfo: Error getting media information. Server messages was: " & cmd.getResponse.getServerMessage)
+    '            End If
+    '        End If
+    '    End If
+    '    Return ""
+    'End Function
 
     ''' <summary>
     ''' Returns a Dictionary of all media and templates on the server key by their names.
@@ -393,7 +358,8 @@ Public Class ServerControler
                             Case "STILL"
                                 media.Add(name, New CasparCGStill(name))
                         End Select
-                        media.Item(name).parseXML(getMediaInfo(media.Item(name)))
+                        'media.Item(name).parseXML(getMediaInfo(media.Item(name)))
+                        media.Item(name).fillMediaInfo(testConnection, testChannel)
                     End If
                 Next
             End If
@@ -406,7 +372,8 @@ Public Class ServerControler
                     If line <> "" AndAlso line.Split(" ").Length > 2 Then
                         Dim name = line.Substring(1, line.LastIndexOf("""") - 1).ToUpper
                         media.Add(name, New CasparCGTemplate(name))
-                        media.Item(name).parseXML(getMediaInfo(media.Item(name)))
+                        'media.Item(name).parseXML(getMediaInfo(media.Item(name)))
+                        media.Item(name).fillMediaInfo(testConnection, testChannel)
                     End If
                 Next
             End If

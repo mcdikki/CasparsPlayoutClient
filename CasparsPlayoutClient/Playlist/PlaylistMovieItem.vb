@@ -36,7 +36,8 @@ Public Class PlaylistMovieItem
         MyBase.New(name, PlaylistItemTypes.MOVIE, controller, channel, layer, duration)
         If Not IsNothing(movie) Then
             If movie.getInfos.Count = 0 Then
-                movie.parseXML(getController.getMediaInfo(movie))
+                movie.fillMediaInfo(getController.getTestConnection, getController.getTestChannel)
+                'movie.parseXML(getController.getMediaInfo(movie))
             End If
             If movie.containsInfo("nb-frames") AndAlso (duration > getController.getOriginalMediaDuration(movie) OrElse duration = -1) Then
                 'setDuration(getController.getOriginalMediaDuration(movie))
