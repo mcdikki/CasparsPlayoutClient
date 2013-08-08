@@ -158,19 +158,6 @@
     <Compile Include="Forms\Dialog.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\Form1.vb">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\Form1.Designer.vb">
-      <DependentUpon>Form1.vb</DependentUpon>
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\Form2.Designer.vb">
-      <DependentUpon>Form2.vb</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\Form2.vb">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="MediaUpdater.vb" />
     <Compile Include="Interfaces\IPlaylistItem.vb" />
     <Compile Include="Library.vb" />
@@ -221,12 +208,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Dialog.resx">
       <DependentUpon>Dialog.vb</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\Form1.resx">
-      <DependentUpon>Form1.vb</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\Form2.resx">
-      <DependentUpon>Form2.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\MainWindow.resx">
       <DependentUpon>MainWindow.vb</DependentUpon>

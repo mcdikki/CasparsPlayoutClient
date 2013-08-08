@@ -40,11 +40,11 @@ Public Class PlaylistView
         isInit = True
         Dim imgList As New ImageList
         imgList.ImageSize = New Size(24, 24)
-        imgList.ColorDepth = 16
+        imgList.ColorDepth = 32
         imgList.Images.Add(Image.FromFile("img/Play-Green-Button-icon.png"))
         imgList.Images.Add(Image.FromFile("img/Stop-Red-Button-icon.png"))
         imgList.Images.Add(Image.FromFile("img/Play-Blue-Button-icon.png"))
-        cmbToggleButton.ImageList = imgList
+        cmbToggleButton.ImageList = imgList  
 
         imgList = New ImageList
         imgList.ImageSize = New Size(13, 12)

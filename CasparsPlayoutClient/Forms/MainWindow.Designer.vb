@@ -260,6 +260,7 @@ Partial Class MainWindow
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.AutoScroll = True
         Me.AutoSize = True
+        Me.BackColor = System.Drawing.SystemColors.Control
         Me.ClientSize = New System.Drawing.Size(926, 562)
         Me.Controls.Add(Me.layoutPlaylistSplit)
         Me.Name = "MainWindow"
