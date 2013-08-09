@@ -198,6 +198,7 @@
     <Compile Include="Controls\PlaylistView.vb">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="Trigger\ITrigger.vb" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Controls\LibraryView.resx">

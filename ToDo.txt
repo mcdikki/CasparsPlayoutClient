@@ -52,16 +52,16 @@ Example msg flow (PL = Playlist, SPL = SubPlaylist):
 This way, we make sure that we handle everything in the right thread.
 
 
+- implement playlist trigger
+--- alows to trigger the main functions of a playlist like start, stop abort
+--- triggers by time, maybe gpio etc. - keep it generic
+--- ? triggers by conditions?? 
+
+
 - GOD CLASS ServerController: Need to splitt and overwork where the functionality belongs
 ---> Moved Version Controll to CasparCGServerConnection - CD 04/08/13
 ---> Moved Channel query to connection - CD 06/08/13
---- move getMediaInfo to connection???
-
-
-- Change Commands from Functions to own classes
---- Give each command a hint since and up to which version it is supported
---- Give each command a desc etc.
---- Add getCommand and Commands ENUM to CasparCGCommandFactory
+---> Moved getMediaInfo to CasparCGMedia - CD 08/08/13
 
 
 - Implement missing Playlist Types
@@ -75,7 +75,7 @@ This way, we make sure that we handle everything in the right thread.
 
 
 - Add new ACMP commands
---- Layer/Channel routing
+--- Layer/Channel routing - not yet fully defined in ACMP2, waiting for that
 Done - CD 02/08/13
 --- Thumbnail CMDs
 
@@ -85,6 +85,12 @@ Done - CD 02/08/13
 
 - Inkonsistens frame/ms bei viel funktionen und eigenschaften wie getDuratation()/Position etc. auflösen
 
+
+Done - CD 08/08/13
+- Change Commands from Functions to own classes
+--- Give each command a hint since and up to which version it is supported
+--- Give each command a desc etc.
+--- Add getCommand and Commands ENUM to CasparCGCommandFactory
 
 Done - CD 06/08/13
 - Add getter/setter for CasparCGConnection values like timeout etc.
