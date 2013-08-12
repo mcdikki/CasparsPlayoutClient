@@ -43,9 +43,9 @@ Public Class PlaylistBlockItem
         '    End If
         'Next
         MyBase.start(noWait)
-        While isPlaying() 'AndAlso Not isParallel()
-            Thread.Sleep(1)
-        End While
+        'While isPlaying() 'AndAlso Not isParallel()
+        'Thread.Sleep(1)
+        'End While
     End Sub
 
     Public Overrides Function getPosition() As Long

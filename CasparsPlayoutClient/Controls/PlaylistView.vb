@@ -29,6 +29,8 @@ Public Class PlaylistView
     Private noWarn As Integer = 5000
     Private warn As Integer = 1000
 
+    Private updateItems As New Threading.Semaphore(1, 1)
+
     Private Event changedPlaying()
     Public Event dataChanged()
 
@@ -134,9 +136,11 @@ Public Class PlaylistView
         Else
             setData()
         End If
+        updateItems.WaitOne()
         For Each child In childs
             child.onDataChanged()
         Next
+        updateItems.Release()
     End Sub
 
     Private Sub setData()
@@ -183,14 +187,18 @@ Public Class PlaylistView
         Dim child As New PlaylistView(childList, startCompact)
         child.Parent = Me.layoutChild
         child.Show()
+        updateItems.WaitOne()
         childs.Add(child)
+        updateItems.Release()
     End Sub
 
     Friend Sub atResize(ByVal sender As Object, ByVal e As EventArgs) Handles Me.Resize
+        updateItems.WaitOne()
         For Each child In childs
             ' Let child use the whole width
             child.Width = Me.layoutChild.ClientRectangle.Width
         Next
+        updateItems.Release()
     End Sub
 
     Private Sub layoutHeaderContentSplit_DoubleClick(ByVal sender As Object, ByVal e As System.EventArgs) Handles lblExpand.Click, layoutHeaderContentSplit.DoubleClick
@@ -217,12 +225,16 @@ Public Class PlaylistView
             'waiting = False
             playlist.playNextItem()
         ElseIf playlist.isPlaying Then
-            playlist.stoppedPlaying()
+            playlist.halt()
+            'playlist.stoppedPlaying()
         Else
             ' Damit nicht gewartet wird falls der button manuel betätigt wurde aber auto nicht gesetzt ist
             If playlist.getController.containsChannel(playlist.getChannel) OrElse Not playlist.isPlayable Then
-                playlist.playNextItem()
-                playlist.start(True)
+                If playlist.isAutoStarting Then
+                    playlist.start(True)
+                Else
+                    playlist.playNextItem()
+                End If
             Else
                 MsgBox("Error, unknown channel.")
             End If
@@ -260,9 +272,11 @@ Public Class PlaylistView
             nudLayer.Enabled = True
             txtName.ReadOnly = False
         End If
+        updateItems.WaitOne()
         For Each child In childs
             child.onChangedPlayingState()
         Next
+        updateItems.Release()
     End Sub
 
     Private Sub ckbParallel_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ckbParallel.CheckedChanged
@@ -361,7 +375,7 @@ Public Class PlaylistView
             Dim child As IPlaylistItem
             'child = New PlaylistTemplateItem(media.getFullName, playlist.getController, media.clone)
             child = New PlaylistBlockItem("not implemented yet", playlist.getController)
-            playlist.addItem(child)
+            updateItems.WaitOne()
             addChild(child)
         ElseIf e.Data.GetDataPresent("CasparCGNETConnector.CasparCGStill") Then
             ''

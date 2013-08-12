@@ -4,12 +4,13 @@ CORE:
 =====
 
 - Change Playlists to work with Events instead of waiting in Threads
-There are 5 events:
+There are 6 events:
 	1. Stopped --> The Playlist has stopped playing
 	2. Started --> The Playlist has started playing
 	3. Paused --> The Playlist has paused playing
 	4. Changed --> The Playlists parameter has been changed (i.e. duration, type etc.)
 	5. Canceled --> The Playlists canceled an action like play/stop/pause for some given reason. 
+	6. Aborted --> the playlist has been aborted (stopped playing no matter which state it was on)
 Each Playlist is handler for it's child items and may be for it's self.
 Example msg flow (PL = Playlist, SPL = SubPlaylist):
 	PL1 --	SPL1

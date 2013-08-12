@@ -32,19 +32,28 @@ Public MustInherit Class PlaylistItem
 
     ' Die (Kinder)Items dieses Items
     Private items As List(Of IPlaylistItem)
+    Private currentItem As IPlaylistItem
     Private WithEvents controller As ServerControler
     Private Duration As Long ' Gesamtlaufzeit in Frames
     Private Position As Long ' aktuelle Frame
     Private Remaining As Long ' noch zu spielende Frames
     Private ItemType As PlaylistItem.PlaylistItemTypes ' Typ des Item
     Friend playing As Boolean
-    Private paused As Boolean
+    Private _paused As Boolean
     Private startThread As Threading.Thread
     Private pauseThread As Threading.Thread
     Friend playNext As Boolean = False
     Friend waiting As Boolean = False
 
-    Public Event waitForNext() Implements IPlaylistItem.waitForNext
+    Private updateItems As New Threading.Semaphore(1, 1)
+
+    Public Event waitForNext(ByRef sender As IPlaylistItem) Implements IPlaylistItem.waitForNext
+    Public Event aborted(ByRef sender As IPlaylistItem) Implements IPlaylistItem.aborted
+    Public Event canceled(ByRef sender As IPlaylistItem) Implements IPlaylistItem.canceled
+    Public Event changed(ByRef sender As IPlaylistItem) Implements IPlaylistItem.changed
+    Public Event paused(ByRef sender As IPlaylistItem) Implements IPlaylistItem.paused
+    Public Event started(ByRef sender As IPlaylistItem) Implements IPlaylistItem.started
+    Public Event stopped(ByRef sender As IPlaylistItem) Implements IPlaylistItem.stopped
 
     Enum PlaylistItemTypes
         BLOCK = -1
@@ -75,37 +84,33 @@ Public MustInherit Class PlaylistItem
         items = New List(Of IPlaylistItem)
     End Sub
 
+    Public Overridable Sub halt() Implements IPlaylistItem.halt
+        playing = False
+        For Each item In items
+            If item.isPlaying Then RemoveHandler item.stopped, AddressOf itemStopped
+            item.halt()
+        Next
+        stoppedPlaying()
+    End Sub
+
     Public Overridable Sub abort() Implements IPlaylistItem.abort
-        If Not IsNothing(startThread) Then
-            startThread.Abort()
-            startThread = Nothing
-        End If
-        If Not IsNothing(pauseThread) Then
-            pauseThread.Abort()
-            pauseThread = Nothing
-        End If
         waiting = False
-        playNext = False
+        'playNext = False
         playing = False
         setPosition(0)
         For Each item In items
             item.abort()
         Next
+        RaiseEvent aborted(Me)
     End Sub
 
     Public Overridable Sub stoppedPlaying() Implements IPlaylistItem.stoppedPlaying
         playing = False
-        If Not IsNothing(startThread) Then
-            startThread.Abort()
-        End If
-        If Not IsNothing(pauseThread) Then
-            pauseThread.Abort()
-            pauseThread = Nothing
-        End If
-        For Each item In items
-            item.stoppedPlaying()
-        Next
+        'For Each item In items
+        '    item.stoppedPlaying()
+        'Next
         setPosition(0)
+        RaiseEvent stopped(Me)
         logger.debug("PlaylistItem.stoppedPlaying: Stopped playing " & getName() & " (" & getChannel() & "-" & getLayer() & ")")
     End Sub
 
@@ -117,30 +122,13 @@ Public MustInherit Class PlaylistItem
     '' Alle Pause und delay funktionen über events realisieren und eventuell mit dem server Tick synchronisieren
     ''
     Public Overridable Sub pause(ByVal frames As Long) Implements IPlaylistItem.pause
-        For Each item In items
-            item.pause(-1)
-        Next
-
-        '' Wenn gesagt wird wie lange die pause geht, starte einen kleinen 
-        '' wecker der nach dieser Zeit die Pause aufhebt.
-        If frames >= 0 Then
-            pauseThread = New Threading.Thread(AddressOf Me.unPause)
-            pauseThread.Start(ServerControler.getTimeInMS(frames, getFPS))
-        End If
-        paused = True
-    End Sub
-
-    Public Sub unPause(ByVal time As Long)
-        Threading.Thread.Sleep(time)
-        unPause()
+        '' ToDo
+        _paused = True
+        RaiseEvent paused(Me)
     End Sub
 
     Public Overridable Sub unPause() Implements IPlaylistItem.unPause
-        For Each item In items
-            item.unPause()
-        Next
-        pauseThread = Nothing
-        paused = False
+        RaiseEvent started(Me)
     End Sub
 
     ''' <summary>
@@ -150,47 +138,99 @@ Public MustInherit Class PlaylistItem
     ''' <param name="noWait"></param>
     ''' <remarks></remarks>
     Public Overridable Sub start(Optional ByVal noWait As Boolean = False) Implements IPlaylistItem.start
-        logger.debug("PlaylistItem.start: " & getName() & ": received start at thread " & Threading.Thread.CurrentThread.ManagedThreadId)
-        If noWait Then
-            logger.debug("PlaylistItem.start: " & getName() & ": noWait is true. Start new thread")
-            If Not IsNothing(startThread) Then
-                startThread.Abort()
-            End If
-            startThread = New Threading.Thread(AddressOf Me.start)
-            startThread.Start()
-        Else
-            logger.debug("PlaylistItem.start: Start " & getName())
-            playing = True
+        logger.debug("PlaylistItem.start: Start " & getName())
 
-            ' alle Unteritems starten.
-            ' Wenn parallel, dann wird nicht gewaret und alle starten
-            ' semi gleichzeitig
-            ' Sost startet das nächste erst wenn das vorherige fertig ist.
-            If Not isAutoStarting() AndAlso Not playNext Then
-                RaiseEvent waitForNext()
-                waiting = True
-                While Not playNext
-                    Threading.Thread.Sleep(1)
-                End While
-                playNext = False
-                waiting = False
-            End If
-            For Each item In items
-                item.start(isParallel)
-            Next
-            If isLooping() Then
-                While isPlaying()
-                    Threading.Thread.Sleep(1)
-                End While
-                start()
-            End If
+        playing = True
+        RaiseEvent started(Me)
+
+        ' alle Unteritems starten.
+        ' Wenn parallel, dann wird nicht gewaret und alle starten
+        ' semi gleichzeitig
+        ' Sost startet das nächste erst wenn das vorherige fertig ist.
+        If Not isAutoStarting() Then
+            RaiseEvent waitForNext(Me)
+            waiting = True
+        Else
+            playNextItem()
         End If
         logger.debug("PlaylistItem.start: Start " & getName() & " has been completed")
     End Sub
 
-    Public Sub playNextItem() Implements IPlaylistItem.playNextItem
-        playNext = True
+    Public Overridable Sub playNextItem(Optional ByRef lastPlayed As IPlaylistItem = Nothing) Implements IPlaylistItem.playNextItem
+
+        If isParallel() Then
+            'Stat all subitems
+            For Each item In items
+                AddHandler item.stopped, AddressOf itemStopped
+                item.start()
+            Next
+        Else
+            ' only start the next subitem
+            Dim nextItem As IPlaylistItem = getNextToPlay(lastPlayed)
+            waiting = False
+            If Not IsNothing(nextItem) AndAlso Not nextItem.isPlaying Then
+                AddHandler nextItem.stopped, AddressOf itemStopped
+                AddHandler nextItem.aborted, AddressOf itemStopped
+                AddHandler nextItem.canceled, AddressOf itemCanceled
+                'AddHandler nextItem.started, AddressOf itemStarted
+                nextItem.start()
+            Else : RaiseEvent stopped(Me)
+            End If
+        End If
     End Sub
+
+    Private Sub itemStopped(ByRef sender As IPlaylistItem)
+        '' Check what kind of item stopped. If we're parallel and all items has stopped,
+        '' but looping is active, start again.
+        '' If seq. let playNext decide what to do.
+        RemoveHandler sender.stopped, AddressOf itemStopped
+        If isParallel() Then
+            If isLooping() AndAlso Not isPlaying() Then
+                start()
+            End If
+        Else
+            playNextItem(sender)
+        End If
+    End Sub
+
+    Private Sub itemStarted(ByRef sender As IPlaylistItem)
+        RemoveHandler sender.started, AddressOf itemStarted
+    End Sub
+
+    Private Sub itemCanceled(ByRef sender As IPlaylistItem)
+        ' if something unexpected happens, we schedule the next, but wait for the user to start it
+        RemoveHandler sender.canceled, AddressOf itemCanceled
+        playNextItem(sender)
+    End Sub
+
+    Private Function getNextToPlay(ByRef lastPlayed As IPlaylistItem) As IPlaylistItem
+        If Not IsNothing(lastPlayed) AndAlso items.Contains(lastPlayed) Then
+            ' calculate the next item
+            '' LOCK the items list while doing this!!
+            updateItems.WaitOne()
+            Dim pos As Integer = items.IndexOf(lastPlayed)
+            If pos = items.Count - 1 Then
+                ' we played the last item. if loop, start again with first, else return nothing 
+                If isLooping() Then
+                    updateItems.Release()
+                    Return items.First
+                Else
+                    updateItems.Release()
+                    Return Nothing
+                End If
+            Else
+                ' not the end of the list, so return next
+                updateItems.Release()
+                Return items.Item(pos + 1)
+            End If
+        ElseIf items.Count > 0 Then
+            ' No current item, just play the first
+            Return items.First
+        Else
+            ' no Item to play
+            Return Nothing
+        End If
+    End Function
 
     Public Overrides Function toString() As String Implements IPlaylistItem.toString
         Return getName() & "(" & getItemType.ToString & ") " & getChannel() & "-" & getLayer() & " playing: " & isPlaying.ToString
@@ -313,7 +353,7 @@ Public MustInherit Class PlaylistItem
     End Function
 
     Public Function isPaused() As Boolean Implements IPlaylistItem.isPaused
-        Return paused AndAlso getController.isConnected
+        Return _paused AndAlso getController.isConnected
     End Function
 
     Public Function isPlayable() As Boolean Implements IPlaylistItem.isPlayable
@@ -355,29 +395,37 @@ Public MustInherit Class PlaylistItem
 
     Public Sub setParent(ByRef parent As IPlaylistItem) Implements IPlaylistItem.setParent
         Me.parent = parent
+        RaiseEvent changed(Me)
     End Sub
 
     Public Sub setName(ByVal Name As String) Implements IPlaylistItem.setName
         Me.name = Name
+        RaiseEvent changed(Me)
     End Sub
 
     Public Sub setChildItems(ByRef items As System.Collections.Generic.List(Of IPlaylistItem)) Implements IPlaylistItem.setChildItems
         ' einzeln und nicht als block hinzufügen damit die duration berechnet wird
+        updateItems.WaitOne()
         For Each item In items
             addItem(item)
         Next
+        updateItems.Release()
+        RaiseEvent changed(Me)
     End Sub
 
     Public Sub setDuration(ByVal duration As Long) Implements IPlaylistItem.setDuration
         Me.Duration = duration
+        RaiseEvent changed(Me)
     End Sub
 
     Public Overridable Sub setPosition(ByVal position As Long) Implements IPlaylistItem.setPosition
         Me.Position = position
+        'RaiseEvent changed 
     End Sub
 
     Public Sub setRemaining(ByVal remaining As Long) Implements IPlaylistItem.setRemaining
         Me.Remaining = remaining
+        'RaiseEvent changed 
     End Sub
 
     Public Sub addItem(ByRef item As IPlaylistItem) Implements IPlaylistItem.addItem
@@ -391,17 +439,23 @@ Public MustInherit Class PlaylistItem
             End If
 
             item.setParent(Me)
+            updateItems.WaitOne()
             items.Add(item)
+            updateItems.Release()
             If isParallel() Then
                 setDuration(Math.Max(getDuration, item.getDuration))
             Else
                 setDuration(getDuration() + item.getDuration)
             End If
+            RaiseEvent changed(Me)
         End If
     End Sub
 
     Public Sub setAutoStart(ByVal autoStart As Boolean) Implements IPlaylistItem.setAutoStart
-        Me.autoStart = autoStart
+        If autoStart <> isAutoStarting() Then
+            Me.autoStart = autoStart
+            RaiseEvent changed(Me)
+        End If
     End Sub
 
     Public Overridable Sub setChannel(ByVal channel As Integer) Implements IPlaylistItem.setChannel
@@ -414,10 +468,12 @@ Public MustInherit Class PlaylistItem
             End If
         End If
         Me.channel = channel
+        RaiseEvent changed(Me)
     End Sub
 
     Public Sub setDelay(ByVal delay As Long) Implements IPlaylistItem.setDelay
         Me.delay = delay
+        RaiseEvent changed(Me)
     End Sub
 
     Public Sub setLayer(ByVal layer As Integer) Implements IPlaylistItem.setLayer
@@ -427,26 +483,38 @@ Public MustInherit Class PlaylistItem
             logger.warn("PlaylistItem.setLayer: Playlist " & getName() & ": Can't set layer to " & layer & ". Leaving it unset which means it will be the standard layer")
             Me.layer = -1
         End If
+        RaiseEvent changed(Me)
     End Sub
 
     Public Sub setLooping(ByVal looping As Boolean) Implements IPlaylistItem.setLooping
-        Me.looping = looping
+        If Me.isLooping <> looping Then
+            Me.looping = looping
+            RaiseEvent changed(Me)
+        End If
     End Sub
 
     Public Sub setParallel(ByVal parallel As Boolean) Implements IPlaylistItem.setParallel
-        Me.parallel = parallel
+        If Me.isParallel <> parallel Then
+            Me.parallel = parallel
+            RaiseEvent changed(Me)
+        End If
     End Sub
 
     Public Sub removeChild(ByRef child As IPlaylistItem) Implements IPlaylistItem.removeChild
         If items.Contains(child) Then
+            updateItems.WaitOne()
             items.Remove(child)
+            updateItems.Release()
+            RaiseEvent changed(Me)
         End If
     End Sub
 
     Public Sub insertChildAt(ByRef child As IPlaylistItem, ByRef position As IPlaylistItem) Implements IPlaylistItem.insertChildAt
         If items.Contains(position) Then
+            updateItems.WaitOne()
             items.Insert(items.IndexOf(position), child)
+            updateItems.Release()
+            RaiseEvent changed(Me)
         End If
     End Sub
-
 End Class

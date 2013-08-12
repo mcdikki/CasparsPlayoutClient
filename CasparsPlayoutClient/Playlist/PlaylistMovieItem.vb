@@ -22,7 +22,13 @@ Public Class PlaylistMovieItem
     Implements IPlaylistItem
 
     Private media As CasparCGMovie
-    Public Shadows Event waitForNext()
+    Public Shadows Event waitForNext(ByRef sender As IPlaylistItem)
+    Public Shadows Event aborted(ByRef sender As IPlaylistItem)
+    Public Shadows Event canceled(ByRef sender As IPlaylistItem)
+    Public Shadows Event changed(ByRef sender As IPlaylistItem)
+    Public Shadows Event paused(ByRef sender As IPlaylistItem)
+    Public Shadows Event started(ByRef sender As IPlaylistItem)
+    Public Shadows Event stopped(ByRef sender As IPlaylistItem)
 
     ''' <summary>
     ''' Create a PlaylistMovieItem. If a duration is given and smaller than the original duration of the file, the file will only be played for that long.
@@ -55,16 +61,18 @@ Public Class PlaylistMovieItem
     ''-------------------------------------------------------------------------------------
     Public Overrides Sub start(Optional ByVal noWait As Boolean = False)
         ' Wait if autostart not checked
-        If Not isAutoStarting() AndAlso Not playNext Then
-            RaiseEvent waitForNext()
-
+        If Not isAutoStarting() Then
+            RaiseEvent waitForNext(Me)
             waiting = True
-            While Not playNext
-                Threading.Thread.Sleep(1)
-            End While
-            playNext = False
-            waiting = False
+        Else
+            playNextItem()
         End If
+
+
+    End Sub
+
+    Public Overrides Sub playNextItem(Optional ByRef lastPlayed As IPlaylistItem = Nothing)
+        waiting = False
 
         '' CMD an ServerController schicken
         logger.log("PlaylistMovieItem.start: Starte " & getChannel() & "-" & getLayer() & ": " & getMedia.toString)
@@ -74,6 +82,7 @@ Public Class PlaylistMovieItem
 
             'Dim result = getController.getCommandConnection.sendCommand(CasparCGCommandFactory.getPlay(getChannel, getLayer, getMedia, isLooping, False))
             If cmd.execute(getController.getCommandConnection).isOK Then
+                RaiseEvent started(Me)
                 While Not getController.readyForUpdate.WaitOne()
                     logger.warn("PlaylistMovieItem.start: " & getName() & ": Could not get handle to update my status")
                 End While
@@ -86,11 +95,12 @@ Public Class PlaylistMovieItem
                 End If
                 logger.log("PlaylistMovieItem.start: ...gestartet " & getChannel() & "-" & getLayer() & ": " & getMedia.toString)
             Else
+                RaiseEvent canceled(Me)
                 logger.err("PlaylistMovieItem.start: Could not start " & media.getFullName & ". ServerMessage was: " & cmd.getResponse.getServerMessage)
             End If
 
-            While isPlaying() AndAlso Not noWait
-            End While
+            'While isPlaying() AndAlso Not noWait
+            'End While
         Else
             logger.err("PlaylistMovieItem.start: Error playing " & getName() & ". The channel " & getChannel() & " does not exist on the server. Aborting start.")
         End If
@@ -98,15 +108,21 @@ Public Class PlaylistMovieItem
 
     Public Overrides Sub abort()
         '' CMD an ServerController schicken
-        stoppedPlaying()
+        halt()
+        'stoppedPlaying()
         setPosition(0)
         '' Der rest wird von der Elternklasse erledigt
         MyBase.abort()
     End Sub
 
-    Public Overrides Sub stoppedPlaying()
+    Public Overrides Sub halt()
         Dim cmd As New StopCommand(getChannel, getLayer)
         cmd.execute(getController.getCommandConnection)
+        MyBase.halt()
+    End Sub
+
+
+    Public Overrides Sub stoppedPlaying()
         MyBase.stoppedPlaying()
     End Sub
 
@@ -120,6 +136,9 @@ Public Class PlaylistMovieItem
 
     Public Overrides Sub unPause()
         '' cms an ServerController schicken
+
+        ' check if a media is loaded to bg, than we need to play me with seek!!
+        ' because otherwise it would start the bg clip
         Dim cmd As New PlayCommand(getChannel(), getLayer())
         cmd.execute(getController.getCommandConnection)
         MyBase.unPause()
@@ -143,6 +162,7 @@ Public Class PlaylistMovieItem
         ElseIf Not isPlaying() Then
             getMedia.setInfo("frame-number", "0")
         End If
+        'RaiseEvent changed 
     End Sub
 
     Public Overrides Sub setChannel(ByVal channel As Integer)
