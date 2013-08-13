@@ -96,7 +96,7 @@ Public Class ServerControler
             ' Channels des Servers bestimmen
             channels = testConnection.getServerChannels
             testChannel = channels
-            If channels < 1 Then
+            If channels > 1 Then
                 channels = channels - 1
             End If
             '' Test: removed -1 because the number should be the length, not the upper bound of the array
