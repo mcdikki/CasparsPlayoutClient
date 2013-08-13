@@ -426,16 +426,17 @@ Public Class PlaylistView
             If Not IsNothing(item.playlist.getParent) Then
                 ' Playlist von seiner alten liste lösen
                 item.playlist.getParent.removeChild(item.playlist)
-                If Not IsNothing(playlist.getParent) Then
+
+                If IsNothing(playlist.getParent) OrElse ModifierKeys = Keys.Control Then
+                    ' oder, wenn es auf den Freiraum der neuen liste 
+                    playlist.addItem(item.playlist)
+                    item.Parent = Me.layoutChild
+                Else
                     ' und an den platz dieser Playlist in dem Vater einfügen
                     playlist.getParent.insertChildAt(item.playlist, playlist)
                     'jetzt noch die Controls entsprechend verschieben.
                     item.Parent = Me.Parent
                     Me.Parent.Controls.SetChildIndex(item, Me.Parent.Controls.GetChildIndex(Me))
-                Else
-                    ' oder, wenn es auf den Freiraum der neuen liste 
-                    playlist.addItem(item.playlist)
-                    item.Parent = Me.layoutChild
                 End If
             End If
         End If
@@ -447,7 +448,15 @@ Public Class PlaylistView
             ' Display the copy cursor. 
             e.Effect = DragDropEffects.Copy
         ElseIf e.Data.GetDataPresent("CasparsPlayoutClient.PlaylistView") Then
-            e.Effect = DragDropEffects.Move
+            If ModifierKeys = Keys.Control Then
+                If playlist.getItemType = AbstractPlaylistItem.PlaylistItemTypes.BLOCK Then
+                    e.Effect = DragDropEffects.Copy
+                Else
+                    e.Effect = DragDropEffects.None
+                End If
+            Else
+                e.Effect = DragDropEffects.Move
+            End If
         Else
             ' Display the no-drop cursor. 
             e.Effect = DragDropEffects.None
@@ -462,7 +471,12 @@ Public Class PlaylistView
     Private Sub handleMouseMove(ByVal sender As Object, ByVal e As MouseEventArgs) Handles MyBase.MouseMove, layoutButton.MouseMove, layoutContentSplit.MouseMove, layoutInfos.MouseMove, layoutName.MouseMove, layoutHeaderTable.MouseMove
         If MouseIsDown Then
             ' Initiate dragging. 
-            DoDragDrop(Me, DragDropEffects.Move)
+            If ModifierKeys = Keys.Control Then
+                DoDragDrop(Me, DragDropEffects.Copy)
+            Else
+                DoDragDrop(Me, DragDropEffects.Move)
+            End If
+
         End If
         MouseIsDown = False
     End Sub
