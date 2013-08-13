@@ -23,6 +23,7 @@ Public Class PlaylistMovieItem
 
     Private media As CasparCGMovie
     Private timer As System.Timers.Timer
+    Private stopWatch As New Stopwatch()
 
     ''' <summary>
     ''' Create a PlaylistMovieItem. If a duration is given and smaller than the original duration of the file, the file will only be played for that long.
@@ -65,17 +66,22 @@ Public Class PlaylistMovieItem
     End Sub
 
     Public Overrides Sub playNextItem(Optional ByRef lastPlayed As IPlaylistItem = Nothing)
-        waiting = False
-        playing = True
-
         '' CMD an ServerController schicken
         logger.log("PlaylistMovieItem.start: Starte " & getChannel() & "-" & getLayer() & ": " & getMedia.toString)
-
         If getDelay() > 0 AndAlso timer.Enabled = False Then
+            stopWatch.Reset()
             timer.Interval = getDelay()
             timer.Enabled = True
+            stopWatch.Start()
+            waiting = True
+            raiseWaitForNext(Me)
         Else
+            stopWatch.Stop()
             timer.Enabled = False
+            stopWatch.Reset()
+            waiting = False
+            playing = True
+
             If getControler.containsChannel(getChannel) AndAlso getLayer() > -1 Then
                 Dim cmd As ICommand = New PlayCommand(getChannel, getLayer, getMedia, isLooping, False)
 
@@ -155,6 +161,8 @@ Public Class PlaylistMovieItem
     Public Overrides Function getPosition() As Long
         If getMedia.containsInfo("frame-number") AndAlso isPlaying() Then 'OrElse hasPlayingParent()) Then
             Return ServerControler.getTimeInMS(Long.Parse(getMedia.getInfo("frame-number")), getFPS())
+        ElseIf timer.Enabled Then
+            Return stopWatch.ElapsedMilliseconds - timer.Interval
         Else
             Return 0
         End If

@@ -220,12 +220,21 @@ Public Class ServerControler
     ''' <returns></returns>
     ''' <remarks></remarks>
     Public Shared Function getTimeStringOfMS(ByVal milliseconds As Long) As String
-        If milliseconds > 0 Then
-            Dim h As String = Convert.ToUInt16(Math.Truncate(milliseconds / 3600000)).ToString("D2")
-            Dim m As String = Convert.ToUInt16(Math.Truncate((milliseconds / 60000) Mod 60)).ToString("D2")
-            Dim s As String = Convert.ToUInt16(Math.Truncate((milliseconds / 1000) Mod 60)).ToString("D2")
-            Dim ms As String = Convert.ToUInt16(Math.Truncate(milliseconds Mod 1000)).ToString("D2").Substring(0, 2)
-            Return h & ":" & m & ":" & s & "." & ms
+        If Not milliseconds = 0 Then
+            Dim neg As Boolean = False
+            If milliseconds < 0 Then
+                milliseconds = milliseconds * -1
+                neg = True
+            End If
+            Dim h As String = Convert.ToUInt16(Math.Truncate(Math.Abs(milliseconds) / 3600000)).ToString("D2")
+            Dim m As String = Convert.ToUInt16(Math.Truncate((Math.Abs(milliseconds) / 60000) Mod 60)).ToString("D2")
+            Dim s As String = Convert.ToUInt16(Math.Truncate((Math.Abs(milliseconds) / 1000) Mod 60)).ToString("D2")
+            Dim ms As String = Convert.ToUInt16(Math.Truncate(Math.Abs(milliseconds) Mod 1000)).ToString("D2").Substring(0, 2)
+            If neg Then
+                Return "-" & h & ":" & m & ":" & s & "." & ms
+            Else
+                Return h & ":" & m & ":" & s & "." & ms
+            End If
         Else : Return "00:00:00.00"
         End If
     End Function
