@@ -50,19 +50,19 @@ Public Class MainWindow
     End Sub
 
 
-    Private Sub setMonitor()
-        lsvPlayingMedia.View = View.List
-        With lsvPlayingMedia.Columns
-            .Add("Name")
-            .Add("Channel")
-            .Add("Layer")
-            .Add("Laufzeit")
-            .Add("Verbleibend")
-            .Add("% gespielt")
-        End With
-        'AddHandler sc.getTicker.frameTick, AddressOf Updater_Tick
-        'AddHandler sc.getTicker.frameTick, AddressOf Clock_Tick
-    End Sub
+    'Private Sub setMonitor()
+    '    lsvPlayingMedia.View = View.List
+    '    With lsvPlayingMedia.Columns
+    '        .Add("Name")
+    '        .Add("Channel")
+    '        .Add("Layer")
+    '        .Add("Laufzeit")
+    '        .Add("Verbleibend")
+    '        .Add("% gespielt")
+    '    End With
+    '    'AddHandler sc.getTicker.frameTick, AddressOf Updater_Tick
+    '    'AddHandler sc.getTicker.frameTick, AddressOf Clock_Tick
+    'End Sub
 
 
     Private Sub connect() Handles cmbConnect.Click
@@ -131,39 +131,39 @@ Public Class MainWindow
     End Sub
 
 
-    Private Sub Updater_Tick()
-        If lsvPlayingMedia.InvokeRequired Then
-            Dim d As New updateDelegate(AddressOf updateView)
-            Me.Invoke(d, New Object() {})
-        Else
-            updateView()
-        End If
-    End Sub
+    'Private Sub Updater_Tick()
+    '    If lsvPlayingMedia.InvokeRequired Then
+    '        Dim d As New updateDelegate(AddressOf updateView)
+    '        Me.Invoke(d, New Object() {})
+    '    Else
+    '        updateView()
+    '    End If
+    'End Sub
 
-    Private Sub updateView()
+    'Private Sub updateView()
 
-        'lsvPlayingMedia.Items.Clear()
-        Dim childs = sc.getPlaylistRoot.getChildItems(True)
-        'lsvPlayingMedia.Items.Clear()
-        For Each item In childs
-            If (item.isPlayable) Then 'OrElse lsvPlayingMedia.Items.ContainsKey(item.toString) Then
-                'If lsvPlayingMedia.Items.ContainsKey(item.toString) Then
-                '    lsvPlayingMedia.Items.RemoveByKey(item.toString)
-                'End If
-                If item.isPlaying Then
-                    Dim line As New ListViewItem(item.getName)
-                    line.Name = item.getName
-                    With line.SubItems
-                        .Add(item.getChannel)
-                        .Add(item.getLayer)
-                        .Add(ServerControler.getTimeStringOfMS(item.getDuration))
-                        .Add(ServerControler.getTimeStringOfMS(item.getRemaining))
-                        .Add(item.getPlayed)
-                    End With
-                    lsvPlayingMedia.Items.Add(line)
-                End If
-            End If
-        Next
-    End Sub
+    '    'lsvPlayingMedia.Items.Clear()
+    '    Dim childs = sc.getPlaylistRoot.getChildItems(True)
+    '    'lsvPlayingMedia.Items.Clear()
+    '    For Each item In childs
+    '        If (item.isPlayable) Then 'OrElse lsvPlayingMedia.Items.ContainsKey(item.toString) Then
+    '            'If lsvPlayingMedia.Items.ContainsKey(item.toString) Then
+    '            '    lsvPlayingMedia.Items.RemoveByKey(item.toString)
+    '            'End If
+    '            If item.isPlaying Then
+    '                Dim line As New ListViewItem(item.getName)
+    '                line.Name = item.getName
+    '                With line.SubItems
+    '                    .Add(item.getChannel)
+    '                    .Add(item.getLayer)
+    '                    .Add(ServerControler.getTimeStringOfMS(item.getDuration))
+    '                    .Add(ServerControler.getTimeStringOfMS(item.getRemaining))
+    '                    .Add(item.getPlayed)
+    '                End With
+    '                lsvPlayingMedia.Items.Add(line)
+    '            End If
+    '        End If
+    '    Next
+    'End Sub
 
 End Class

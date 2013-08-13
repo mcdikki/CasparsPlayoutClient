@@ -31,7 +31,7 @@ Public Interface IPlaylistItem
     Function getDuration() As Long ' Gesamtlaufzeit in ms
     Function getPosition() As Long ' aktuelle ms
     Function getRemaining() As Long ' noch zu spielende ms
-    Function getItemType() As PlaylistItem.PlaylistItemTypes ' Typ des Item
+    Function getItemType() As AbstractPlaylistItem.PlaylistItemTypes ' Typ des Item
     Function isPlaying() As Boolean
     Function isPaused() As Boolean
     Function isWaiting() As Boolean
@@ -40,7 +40,7 @@ Public Interface IPlaylistItem
     Function getPlayingChildItems(Optional ByVal recursiv As Boolean = False, Optional ByVal onlyPlayable As Boolean = False) As IEnumerable(Of IPlaylistItem) ' alle activen, spielenden Items in diesem Item
     Function getMedia() As CasparCGMedia
     Function getFPS() As Integer
-    Function getController() As ServerControler
+    Function getControler() As ServerControler
     Function getParent() As IPlaylistItem
     Function hasPlayingParent() As Boolean
     'Function getLayerUser(Optional ByVal recursiv As Boolean = False) As Dictionary(Of Integer, Integer)
@@ -69,7 +69,7 @@ Public Interface IPlaylistItem
 
 
     Sub load() ' lädt wenn möglich item schon im Hintergrund (ACMP loadbg)
-    Sub start(Optional ByVal noWait As Boolean = False)
+    Sub start()
     Sub playNextItem(Optional ByRef lastPlayed As IPlaylistItem = Nothing)
     Sub abort() ' bricht ausführung ab
     Sub halt()  'stopt item (ACMP stop)

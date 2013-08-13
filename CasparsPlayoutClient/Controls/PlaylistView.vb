@@ -59,6 +59,7 @@ Public Class PlaylistView
         lblExpand.ImageList = imgList
 
         init()
+        initMenu()
         AddHandler playlist.waitForNext, AddressOf waitForNext
     End Sub
 
@@ -69,7 +70,7 @@ Public Class PlaylistView
 
         '' ChildLayout füllen
         Select Case playlist.getItemType
-            Case PlaylistItem.PlaylistItemTypes.MOVIE
+            Case AbstractPlaylistItem.PlaylistItemTypes.MOVIE
                 ' set default behaviour and view
                 lblExpand.ImageIndex = 1
                 ckbAuto.Checked = True
@@ -84,12 +85,12 @@ Public Class PlaylistView
                 thumb.SizeMode = PictureBoxSizeMode.AutoSize
                 thumb.Parent = Me.layoutChild
                 thumb.Show()
-            Case PlaylistItem.PlaylistItemTypes.AUDIO
+            Case AbstractPlaylistItem.PlaylistItemTypes.AUDIO
                 ' set default behaviour and view
                 lblExpand.ImageIndex = 3
                 ckbAuto.Checked = True
                 ckbParallel.Enabled = False
-            Case PlaylistItem.PlaylistItemTypes.STILL
+            Case AbstractPlaylistItem.PlaylistItemTypes.STILL
                 ' set default behaviour and view
                 lblExpand.ImageIndex = 2
                 ckbAuto.Checked = True
@@ -97,21 +98,21 @@ Public Class PlaylistView
                 ckbLoop.Enabled = False
 
                 ' load thumbnail
-                Dim thumb As New PictureBox()
-                If playlist.getMedia.getBase64Thumb.Length > 0 Then
-                    thumb.Image = ServerControler.getBase64ToImage(playlist.getMedia.getBase64Thumb)
-                End If
-                thumb.Dock = DockStyle.Fill
-                thumb.SizeMode = PictureBoxSizeMode.AutoSize
-                thumb.Parent = Me.layoutChild
-                thumb.Show()
-            Case PlaylistItem.PlaylistItemTypes.TEMPLATE
+                'Dim thumb As New PictureBox()
+                'If playlist.getMedia.getBase64Thumb.Length > 0 Then
+                'thumb.Image = ServerControler.getBase64ToImage(playlist.getMedia.getBase64Thumb)
+                'End If
+                'thumb.Dock = DockStyle.Fill
+                'thumb.SizeMode = PictureBoxSizeMode.AutoSize
+                'thumb.Parent = Me.layoutChild
+                'thumb.Show()
+            Case AbstractPlaylistItem.PlaylistItemTypes.TEMPLATE
                 ' set default behaviour and view
                 lblExpand.ImageIndex = 4
-            Case PlaylistItem.PlaylistItemTypes.COMMAND
+            Case AbstractPlaylistItem.PlaylistItemTypes.COMMAND
                 ' set default behaviour and view
                 lblExpand.ImageIndex = 5
-            Case PlaylistItem.PlaylistItemTypes.BLOCK
+            Case AbstractPlaylistItem.PlaylistItemTypes.BLOCK
                 ' set default behaviour and view
                 lblExpand.ImageIndex = 0
                 '' BlockItem, schauen ob childs geladen werden können
@@ -121,10 +122,20 @@ Public Class PlaylistView
         End Select
         layoutHeaderContentSplit_DoubleClick(Nothing, Nothing)
         If startCompact Then layoutHeaderContentSplit_DoubleClick(Nothing, Nothing)
+    End Sub
 
+    Private Sub initMenu()
         '' ContexMenü hinzufügen
         cMenu = New ContextMenuStrip
         cMenu.Items.Add(New ToolStripMenuItem("Add Block", Nothing, New EventHandler(AddressOf addBlockItem)))
+
+        Dim sMenu = New ToolStripMenuItem("Add Command")
+        sMenu.Name = "Add Command Menu"
+        sMenu.Text = "Add Command"
+        sMenu.DropDownItems.Add(New ToolStripMenuItem("Add ClearCommand", Nothing, New EventHandler(Sub() addCommandItem(CasparCGCommandFactory.Command.ClearCommand))))
+        sMenu.DropDownItems.Add(New ToolStripMenuItem("Add StopCommand", Nothing, New EventHandler(Sub() addCommandItem(CasparCGCommandFactory.Command.StopCommand))))
+
+        cMenu.Items.Add(sMenu)
         cMenu.Items.Add(New ToolStripMenuItem("Remove item", Nothing, New EventHandler(AddressOf removeItem)))
         Me.ContextMenuStrip = cMenu
     End Sub
@@ -146,7 +157,7 @@ Public Class PlaylistView
     Private Sub setData()
         '' Werte eintragen
         With playlist
-            If playlist.getController.isOpen Then
+            If playlist.getControler.isOpen Then
                 If Not txtName.Focused Then Me.txtName.Text = .getName
                 Me.nudChannel.Value = Math.Max(.getChannel, 0)
                 Me.nudLayer.Value = Math.Max(.getLayer, -1)
@@ -229,9 +240,9 @@ Public Class PlaylistView
             'playlist.stoppedPlaying()
         Else
             ' Damit nicht gewartet wird falls der button manuel betätigt wurde aber auto nicht gesetzt ist
-            If playlist.getController.containsChannel(playlist.getChannel) OrElse Not playlist.isPlayable Then
+            If playlist.getControler.containsChannel(playlist.getChannel) OrElse Not playlist.isPlayable Then
                 If playlist.isAutoStarting Then
-                    playlist.start(True)
+                    playlist.start()
                 Else
                     playlist.playNextItem()
                 End If
@@ -272,11 +283,13 @@ Public Class PlaylistView
             nudLayer.Enabled = True
             txtName.ReadOnly = False
         End If
+        '' Hier kommt es immer wieder zum Deadlock und ich weiß nicht wieso!
         updateItems.WaitOne()
         For Each child In childs
             child.onChangedPlayingState()
         Next
         updateItems.Release()
+
     End Sub
 
     Private Sub ckbParallel_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ckbParallel.CheckedChanged
@@ -311,7 +324,7 @@ Public Class PlaylistView
 
     Private Sub nudChannel_ValueChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles nudChannel.ValueChanged
         If isInit Then
-            If nudChannel.Value < 1 OrElse Not playlist.getController.containsChannel(nudChannel.Value) Then
+            If nudChannel.Value < 1 OrElse Not playlist.getControler.containsChannel(nudChannel.Value) Then
                 nudChannel.BackColor = Color.Red
                 playlist.setChannel(-1)
             Else
@@ -339,10 +352,19 @@ Public Class PlaylistView
     ''
 
     Public Sub addBlockItem()
-        If playlist.getItemType = PlaylistItem.PlaylistItemTypes.BLOCK Then
-            Dim bi As New PlaylistBlockItem("BlockItem", playlist.getController)
+        If playlist.getItemType = AbstractPlaylistItem.PlaylistItemTypes.BLOCK Then
+            Dim bi As New PlaylistBlockItem("BlockItem", playlist.getControler)
             playlist.addItem(bi)
             addChild(bi)
+        End If
+    End Sub
+
+    Public Sub addCommandItem(ByVal command As CasparCGCommandFactory.Command)
+        If playlist.getItemType = AbstractPlaylistItem.PlaylistItemTypes.BLOCK Then
+            Dim ci As New PlaylistCommandItem(command.ToString, playlist.getControler, CasparCGCommandFactory.getCommand(command))
+            ci.setAutoStart(True)
+            playlist.addItem(ci)
+            addChild(ci)
         End If
     End Sub
 
@@ -364,7 +386,7 @@ Public Class PlaylistView
             ''
             Dim media As CasparCGMedia = e.Data.GetData("CasparCGNETConnector.CasparCGMovie")
             Dim child As IPlaylistItem
-            child = New PlaylistMovieItem(media.getFullName, playlist.getController, media.clone)
+            child = New PlaylistMovieItem(media.getFullName, playlist.getControler, media.clone)
             playlist.addItem(child)
             addChild(child)
         ElseIf e.Data.GetDataPresent("CasparCGNETConnector.CasparCGTemplate") Then
@@ -373,9 +395,8 @@ Public Class PlaylistView
             ''
             Dim media As CasparCGMedia = e.Data.GetData("CasparCGNETConnector.CasparCGTemplate")
             Dim child As IPlaylistItem
-            'child = New PlaylistTemplateItem(media.getFullName, playlist.getController, media.clone)
-            child = New PlaylistBlockItem("not implemented yet", playlist.getController)
-            updateItems.WaitOne()
+            child = New PlaylistTemplateItem(media.getFullName, playlist.getControler, media.clone)
+            ' child = New PlaylistBlockItem("not implemented yet", playlist.getController)
             addChild(child)
         ElseIf e.Data.GetDataPresent("CasparCGNETConnector.CasparCGStill") Then
             ''
@@ -383,8 +404,8 @@ Public Class PlaylistView
             ''
             Dim media As CasparCGMedia = e.Data.GetData("CasparCGNETConnector.CasparCGStill")
             Dim child As IPlaylistItem
-            'child = New PlaylistStillItem(media.getFullName, playlist.getController, media.clone)
-            child = New PlaylistBlockItem("not implemented yet", playlist.getController)
+            child = New PlaylistStillItem(media.getFullName, playlist.getControler, media.clone)
+            'child = New PlaylistBlockItem("not implemented yet", playlist.getController)
             playlist.addItem(child)
             addChild(child)
         ElseIf e.Data.GetDataPresent("CasparCGNETConnector.CasparCGAudio") Then
@@ -393,15 +414,15 @@ Public Class PlaylistView
             ''
             Dim media As CasparCGMedia = e.Data.GetData("CasparCGNETConnector.CasparCGAudio")
             Dim child As IPlaylistItem
-            'child = New PlaylistAudioItem(media.getFullName, playlist.getController, media.clone)
-            child = New PlaylistBlockItem("not implemented yet", playlist.getController)
+            child = New PlaylistAudioItem(media.getFullName, playlist.getControler, media.clone)
+            'child = New PlaylistBlockItem("not implemented yet", playlist.getController)
             playlist.addItem(child)
             addChild(child)
-        ElseIf e.Data.GetDataPresent("CasparPlayoutClient.PlaylistView") Then
+        ElseIf e.Data.GetDataPresent("CasparsPlayoutClient.PlaylistView") Then
             ''
             '' PlaylistItems verschieben
             ''
-            Dim item As PlaylistView = e.Data.GetData("CasparPlayoutClient.PlaylistView")
+            Dim item As PlaylistView = e.Data.GetData("CasparsPlayoutClient.PlaylistView")
             If Not IsNothing(item.playlist.getParent) Then
                 ' Playlist von seiner alten liste lösen
                 item.playlist.getParent.removeChild(item.playlist)
@@ -422,10 +443,10 @@ Public Class PlaylistView
 
     Private Overloads Sub handleDragEnter(ByVal sender As Object, ByVal e As DragEventArgs) Handles Me.DragEnter
         ' Check the format of the data being dropped. 
-        If playlist.getItemType = PlaylistItem.PlaylistItemTypes.BLOCK AndAlso (e.Data.GetDataPresent("CasparCGNETConnector.CasparCGMovie")) Then 'OrElse e.Data.GetDataPresent("CasparCGNETConnector.CasparCGAudio") OrElse e.Data.GetDataPresent("CasparCGNETConnector.CasparCGStill") OrElse e.Data.GetDataPresent("CasparCGNETConnector.CasparCGTemplate")) Then
+        If playlist.getItemType = AbstractPlaylistItem.PlaylistItemTypes.BLOCK AndAlso (e.Data.GetDataPresent("CasparCGNETConnector.CasparCGMovie")) OrElse e.Data.GetDataPresent("CasparCGNETConnector.CasparCGAudio") OrElse e.Data.GetDataPresent("CasparCGNETConnector.CasparCGStill") OrElse e.Data.GetDataPresent("CasparCGNETConnector.CasparCGTemplate") Then
             ' Display the copy cursor. 
             e.Effect = DragDropEffects.Copy
-        ElseIf e.Data.GetDataPresent("CasparPlayoutClient.PlaylistView") Then
+        ElseIf e.Data.GetDataPresent("CasparsPlayoutClient.PlaylistView") Then
             e.Effect = DragDropEffects.Move
         Else
             ' Display the no-drop cursor. 

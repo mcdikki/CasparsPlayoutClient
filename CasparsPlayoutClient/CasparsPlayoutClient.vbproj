@@ -189,7 +189,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="Playlist\PlaylistBlockItem.vb" />
-    <Compile Include="Playlist\PlaylistItem.vb" />
+    <Compile Include="Playlist\AbstractPlaylistItem.vb" />
     <Compile Include="Playlist\PlaylistMovieItem.vb" />
     <Compile Include="ServerControler.vb" />
     <Compile Include="Controls\PlaylistView.Designer.vb">

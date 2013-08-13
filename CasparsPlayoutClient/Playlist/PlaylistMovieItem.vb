@@ -18,17 +18,10 @@ Imports CasparCGNETConnector
 Imports logger
 
 Public Class PlaylistMovieItem
-    Inherits PlaylistItem
+    Inherits AbstractPlaylistItem
     Implements IPlaylistItem
 
     Private media As CasparCGMovie
-    Public Shadows Event waitForNext(ByRef sender As IPlaylistItem)
-    Public Shadows Event aborted(ByRef sender As IPlaylistItem)
-    Public Shadows Event canceled(ByRef sender As IPlaylistItem)
-    Public Shadows Event changed(ByRef sender As IPlaylistItem)
-    Public Shadows Event paused(ByRef sender As IPlaylistItem)
-    Public Shadows Event started(ByRef sender As IPlaylistItem)
-    Public Shadows Event stopped(ByRef sender As IPlaylistItem)
 
     ''' <summary>
     ''' Create a PlaylistMovieItem. If a duration is given and smaller than the original duration of the file, the file will only be played for that long.
@@ -42,12 +35,10 @@ Public Class PlaylistMovieItem
         MyBase.New(name, PlaylistItemTypes.MOVIE, controller, channel, layer, duration)
         If Not IsNothing(movie) Then
             If movie.getInfos.Count = 0 Then
-                movie.fillMediaInfo(getController.getTestConnection, getController.getTestChannel)
-                'movie.parseXML(getController.getMediaInfo(movie))
+                movie.fillMediaInfo(getControler.getTestConnection, getControler.getTestChannel)
             End If
-            If movie.containsInfo("nb-frames") AndAlso (duration > getController.getOriginalMediaDuration(movie) OrElse duration = -1) Then
-                'setDuration(getController.getOriginalMediaDuration(movie))
-                setDuration(getController.getMediaDuration(movie, channel))
+            If movie.containsInfo("nb-frames") AndAlso (duration > getControler.getOriginalMediaDuration(movie) OrElse duration = -1) Then
+                setDuration(getControler.getMediaDuration(movie, channel))
             End If
             media = movie
         Else
@@ -59,48 +50,45 @@ Public Class PlaylistMovieItem
 
     '' Methoden die überschrieben werden müssen weil sie andere oder mehr functionen haben
     ''-------------------------------------------------------------------------------------
-    Public Overrides Sub start(Optional ByVal noWait As Boolean = False)
+    Public Overrides Sub start()
         ' Wait if autostart not checked
         If Not isAutoStarting() Then
-            RaiseEvent waitForNext(Me)
+            raiseWaitForNext(Me)
             waiting = True
         Else
             playNextItem()
         End If
-
-
     End Sub
 
     Public Overrides Sub playNextItem(Optional ByRef lastPlayed As IPlaylistItem = Nothing)
         waiting = False
+        playing = True
 
         '' CMD an ServerController schicken
         logger.log("PlaylistMovieItem.start: Starte " & getChannel() & "-" & getLayer() & ": " & getMedia.toString)
 
-        If getController.containsChannel(getChannel) AndAlso getLayer() > -1 Then
+        If getControler.containsChannel(getChannel) AndAlso getLayer() > -1 Then
             Dim cmd As ICommand = New PlayCommand(getChannel, getLayer, getMedia, isLooping, False)
 
             'Dim result = getController.getCommandConnection.sendCommand(CasparCGCommandFactory.getPlay(getChannel, getLayer, getMedia, isLooping, False))
-            If cmd.execute(getController.getCommandConnection).isOK Then
-                RaiseEvent started(Me)
-                While Not getController.readyForUpdate.WaitOne()
+            If cmd.execute(getControler.getCommandConnection).isOK Then
+                raiseStarted(Me)
+                While Not getControler.readyForUpdate.WaitOne()
                     logger.warn("PlaylistMovieItem.start: " & getName() & ": Could not get handle to update my status")
                 End While
                 playing = True
-                getController.readyForUpdate.Release()
+                getControler.readyForUpdate.Release()
                 ' InfoMediaUpdater needs an empty to detect end of file due to BUG: frame-number never reaches nb-frames
-                If Not getController.getCommandConnection.isOSCSupported() Then
+                If Not getControler.getCommandConnection.isOSCSupported() Then
                     cmd = New LoadbgCommand(getChannel, getLayer, "empty", True)
-                    cmd.execute(getController.getCommandConnection)
+                    cmd.execute(getControler.getCommandConnection)
                 End If
                 logger.log("PlaylistMovieItem.start: ...gestartet " & getChannel() & "-" & getLayer() & ": " & getMedia.toString)
             Else
-                RaiseEvent canceled(Me)
+                playing = False
+                raiseCanceled(Me)
                 logger.err("PlaylistMovieItem.start: Could not start " & media.getFullName & ". ServerMessage was: " & cmd.getResponse.getServerMessage)
             End If
-
-            'While isPlaying() AndAlso Not noWait
-            'End While
         Else
             logger.err("PlaylistMovieItem.start: Error playing " & getName() & ". The channel " & getChannel() & " does not exist on the server. Aborting start.")
         End If
@@ -108,30 +96,31 @@ Public Class PlaylistMovieItem
 
     Public Overrides Sub abort()
         '' CMD an ServerController schicken
-        halt()
-        'stoppedPlaying()
+        Dim cmd As New StopCommand(getChannel, getLayer)
+        cmd.execute(getControler.getCommandConnection)
         setPosition(0)
-        '' Der rest wird von der Elternklasse erledigt
-        MyBase.abort()
+        waiting = False
+        playing = False
+        raiseAborted(Me)
     End Sub
 
     Public Overrides Sub halt()
         Dim cmd As New StopCommand(getChannel, getLayer)
-        cmd.execute(getController.getCommandConnection)
-        MyBase.halt()
+        cmd.execute(getControler.getCommandConnection)
+        stoppedPlaying()
     End Sub
 
 
     Public Overrides Sub stoppedPlaying()
-        MyBase.stoppedPlaying()
+        playing = False
+        raiseStopped(Me)
     End Sub
 
     Public Overrides Sub pause(ByVal frames As Long)
         '' cmd an ServerController schicken
         Dim cmd As New PauseCommand(getChannel, getLayer)
-        cmd.execute(getController.getCommandConnection)
-        '' pause wird über die Elternklasse realisiert
-        MyBase.pause(frames)
+        cmd.execute(getControler.getCommandConnection)
+        raisePaused(Me)
     End Sub
 
     Public Overrides Sub unPause()
@@ -140,8 +129,12 @@ Public Class PlaylistMovieItem
         ' check if a media is loaded to bg, than we need to play me with seek!!
         ' because otherwise it would start the bg clip
         Dim cmd As New PlayCommand(getChannel(), getLayer())
-        cmd.execute(getController.getCommandConnection)
-        MyBase.unPause()
+        cmd.execute(getControler.getCommandConnection)
+        raiseStarted(Me)
+    End Sub
+
+    Public Overrides Sub load()
+        ''ToDo
     End Sub
 
     Public Overrides Function getMedia() As CasparCGMedia
@@ -149,7 +142,7 @@ Public Class PlaylistMovieItem
     End Function
 
     Public Overrides Function getPosition() As Long
-        If getMedia.containsInfo("frame-number") AndAlso (isPlaying() OrElse hasPlayingParent()) Then
+        If getMedia.containsInfo("frame-number") AndAlso isPlaying() Then 'OrElse hasPlayingParent()) Then
             Return ServerControler.getTimeInMS(Long.Parse(getMedia.getInfo("frame-number")), getFPS())
         Else
             Return 0
@@ -160,15 +153,16 @@ Public Class PlaylistMovieItem
         If Not isPlaying() AndAlso getMedia.containsInfo("frame-number") AndAlso getMedia.containsInfo("nb-frames") AndAlso Integer.Parse(getMedia.getInfo("nb-frames")) <= position Then
             getMedia.setInfo("frame-number", position)
         ElseIf Not isPlaying() Then
-            getMedia.setInfo("frame-number", "0")
+            '' warum habe ich das gemacht? Warum nicht immer die position übernehmen?
+            'getMedia.setInfo("frame-number", "0")
+            getMedia.setInfo("frame-number", position)
         End If
-        'RaiseEvent changed 
     End Sub
 
     Public Overrides Sub setChannel(ByVal channel As Integer)
         MyBase.setChannel(channel)
-        If getController.containsChannel(channel) AndAlso Not IsNothing(getMedia) Then
-            setDuration(getController.getMediaDuration(getMedia, channel))
+        If getControler.containsChannel(channel) AndAlso Not IsNothing(getMedia) Then
+            setDuration(getControler.getMediaDuration(getMedia, channel))
         End If
     End Sub
 
