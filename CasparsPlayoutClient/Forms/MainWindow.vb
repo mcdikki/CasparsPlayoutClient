@@ -125,7 +125,7 @@ Public Class MainWindow
         End If
     End Sub
 
-    Private Sub onTick(ByVal sender As Object, ByVal e As frameTickEventArgs)
+    Private Sub onTick()
         playlistView.onDataChanged()
         'Updater_Tick()
     End Sub
