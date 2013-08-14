@@ -291,6 +291,7 @@ Partial Class PlaylistView
         Me.txtDelay.Size = New System.Drawing.Size(60, 18)
         Me.txtDelay.TabIndex = 0
         Me.txtDelay.Text = "00:00:00.00"
+        Me.txtDelay.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
         Me.txtDelay.WordWrap = False
         '
         'grbDuration
@@ -318,6 +319,7 @@ Partial Class PlaylistView
         Me.txtDuration.Size = New System.Drawing.Size(60, 18)
         Me.txtDuration.TabIndex = 0
         Me.txtDuration.Text = "+00:00:00.00"
+        Me.txtDuration.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
         Me.txtDuration.WordWrap = False
         '
         'grpPosition
@@ -345,6 +347,7 @@ Partial Class PlaylistView
         Me.txtPosition.Size = New System.Drawing.Size(60, 18)
         Me.txtPosition.TabIndex = 0
         Me.txtPosition.Text = "+00:00:00.00"
+        Me.txtPosition.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
         Me.txtPosition.WordWrap = False
         '
         'grpRemaining
@@ -371,6 +374,7 @@ Partial Class PlaylistView
         Me.txtRemaining.Size = New System.Drawing.Size(60, 18)
         Me.txtRemaining.TabIndex = 0
         Me.txtRemaining.Text = "+00:00:00.00"
+        Me.txtRemaining.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
         Me.txtRemaining.WordWrap = False
         '
         'layoutName
