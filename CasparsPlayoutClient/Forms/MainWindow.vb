@@ -33,7 +33,7 @@ Public Class MainWindow
         mediaLib = New Library(sc)
         AddPlaylist()
         AddLibrary()
-        initClock()
+        initInfo()
     End Sub
 
     Private Sub AddLibrary()
@@ -72,11 +72,15 @@ Public Class MainWindow
         End If
     End Sub
 
-    Private Sub initClock()
+    Private Sub initInfo()
         timer = New Timers.Timer(100)
         timer.Enabled = True
         AddHandler timer.Elapsed, AddressOf updateClock
-        lblClock.Text = ServerControler.getTimeStringOfMS(Now.TimeOfDay.TotalMilliseconds).Substring(0, 10)
+        AddHandler timer.Elapsed, AddressOf updateDate
+        AddHandler timer.Elapsed, AddressOf updateStatus
+        updateClock()
+        updateDate()
+        updateStatus()
     End Sub
 
     Private Sub updateClock()
@@ -84,7 +88,35 @@ Public Class MainWindow
             Dim d = New updateDelegate(AddressOf updateClock)
             lblClock.Invoke(d)
         Else
-            lblClock.Text = ServerControler.getTimeStringOfMS(Now.TimeOfDay.TotalMilliseconds).Substring(0, 10)
+            lblClock.Text = Now.TimeOfDay.ToString.Substring(0, 8)
+        End If
+    End Sub
+
+    Private Sub updateDate()
+        If lblDate.InvokeRequired Then
+            Dim d = New updateDelegate(AddressOf updateDate)
+            lblDate.Invoke(d)
+        Else
+            lblDate.Text = Now.Date.ToShortDateString
+        End If
+    End Sub
+
+    Private Sub updateStatus()
+        If lblStatus.InvokeRequired Then
+            Dim d = New updateDelegate(AddressOf updateStatus)
+            lblStatus.Invoke(d)
+        Else
+            If sc.isConnected Then
+                lblStatus.ForeColor = Color.Lime
+                If sc.getPlaylistRoot.isPlaying OrElse sc.getPlaylistRoot.isWaiting Then
+                    lblStatus.Text = "Running"
+                Else
+                    lblStatus.Text = "Idle"
+                End If
+            Else
+                lblStatus.Text = "Stopped"
+                lblStatus.ForeColor = Color.Red
+            End If
         End If
     End Sub
 
