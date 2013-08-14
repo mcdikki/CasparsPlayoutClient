@@ -117,6 +117,8 @@ Public Class PlaylistMovieItem
         setPosition(0)
         waiting = False
         playing = False
+        timer.Enabled = False
+        stopWatch.Stop()
         raiseAborted(Me)
     End Sub
 
@@ -128,6 +130,8 @@ Public Class PlaylistMovieItem
 
 
     Public Overrides Sub stoppedPlaying()
+        timer.Enabled = False
+        stopWatch.Stop()
         playing = False
         setPosition(0)
         raiseStopped(Me)
