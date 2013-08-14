@@ -459,6 +459,7 @@ Public Class FrameTicker
     Private channelLastUpdate() As Long
     Private channelFrame As New Dictionary(Of Integer, Long)
     Private minFrameTime As Integer = Integer.MaxValue
+    Private sysTimer As Timers.Timer
 
     Public Event frameTick(ByVal sender As Object, ByVal e As frameTickEventArgs)
 
@@ -486,80 +487,93 @@ Public Class FrameTicker
             channelFrame.Add(i, 0)
         Next
 
+        '' Test: Use timer instead of server syncronised frames as we don't need it anymore
+        sysTimer = New Timers.Timer(minFrameTime)
+        sysTimer.Enabled = False
+        AddHandler sysTimer.Elapsed, Sub() RaiseEvent frameTick(Me, Nothing)
+
         logger.debug("frameTicker.New: Ticker init by thread " & Thread.CurrentThread.ManagedThreadId)
     End Sub
 
     Public Sub tick()
         logger.debug("frameTicker.tick: Ticker thread " & Thread.CurrentThread.ManagedThreadId & " started")
-        Dim timer As New Stopwatch ' Timer to measure the time it takes to calc current frame / channel and inform listeners
-        Dim offsetTimer As New Stopwatch
-        Dim iterationStart As Long
-        Dim iterationEnd As Long
-        Dim interpolatingSince As Integer
 
-        Dim infoDoc As New MSXML2.DOMDocument
-        Dim frame As Long = 0
-        Dim ch = 0
-        Dim info As New InfoCommand(1, Integer.MaxValue)
+        If Not sysTimer.Enabled Then
+            sysTimer.Enabled = True
+        Else
+            sysTimer.Enabled = False
+        End If
 
-        Try
-            timer.Start()
-            offsetTimer.Start()
-            While True
-                ' Alle channels durchgehen
-                For channel As Integer = 1 To channels
-                    ch = channel - 1
-                    'werte einlesen
-                    DirectCast(info.getParameter("channel"), CommandParameter(Of Integer)).setValue(channel)
-                    offsetTimer.Restart()
-                    infoDoc.loadXML(info.execute(con).getXMLData)
-                    frame = infoDoc.firstChild.selectSingleNode("frame-number").nodeTypedValue + (offsetTimer.ElapsedMilliseconds / 2 / channelFameTime(ch))
-                    offsetTimer.Stop()
 
-                    ' Korrigierten Wert für die Frame number berechen aus dem rückgabewert des servers + der frames die in der bearbeitungszeit
-                    ' vermeintlich vergangen sind. Wir gehen vereinfacht davon aus, das die hälfte der Zeit für den Rückweg 
-                    ' vom Server zu uns gebaucht wurde da wir das nicht genau messen können.
-                    If frame <> channelFrame.Item(channel) Then
-                        channelFrame.Item(channel) = frame
-                    End If
-                Next
-                ' Event auslösen
-                RaiseEvent frameTick(Me, New frameTickEventArgs(channelFrame))
-                logger.debug("FrameTicker.tick: Raise frameTick()")
+        '    Dim timer As New Stopwatch ' Timer to measure the time it takes to calc current frame / channel and inform listeners
+        '    Dim offsetTimer As New Stopwatch
+        '    Dim iterationStart As Long
+        '    Dim iterationEnd As Long
+        '    Dim interpolatingSince As Integer
 
-                ' Jetzt ein paar frames nur rechnen und dann wieder mit dem Serverwert vergleichen
-                Dim hasChanged = False
-                interpolatingSince = timer.ElapsedMilliseconds
-                While timer.ElapsedMilliseconds - interpolatingSince < interpolationTime
-                    iterationStart = timer.ElapsedMilliseconds
-                    For channel As Integer = 0 To channels - 1
-                        ' Interpoliere frames indem wir die vergange zeit der der letzen aktualisierung betrachten.
-                        ' Ist sie größer als die frameTime müssen wir die frame ändern.
-                        If iterationStart - channelLastUpdate(channel) >= channelFameTime(channel) Then
-                            hasChanged = True
-                            channelFrame.Item(channel + 1) = channelFrame.Item(channel + 1) + ((iterationStart - channelLastUpdate(channel)) / channelFameTime(channel))
-                            channelLastUpdate(channel) = iterationStart
-                        End If
-                    Next
-                    '' Event auslösen
-                    If hasChanged Then
-                        RaiseEvent frameTick(Me, New frameTickEventArgs(channelFrame))
-                        logger.debug("FrameTicker.tick: Raise frameTick()")
-                    End If
-                    hasChanged = False
+        '    Dim infoDoc As New MSXML2.DOMDocument
+        '    Dim frame As Long = 0
+        '    Dim ch = 0
+        '    Dim info As New InfoCommand(1, Integer.MaxValue)
 
-                    ' Jetzt noch ein bisschen warten um die cpu zu entlasten. Mindestens bis die nächste frame möglich ist
-                    ' oder soviele Frames wie im frameInterval angegeben
-                    iterationEnd = timer.ElapsedMilliseconds
-                    If iterationEnd - iterationStart < (minFrameTime * frameInterval) Then
-                        While timer.ElapsedMilliseconds < iterationEnd + (minFrameTime * frameInterval) - (iterationEnd - iterationStart)
-                            'Thread.Sleep((minFrameTime * frameInterval) - (iterationEnd - iterationStart))
-                        End While
-                    End If
-                End While
-            End While
-        Catch e As ThreadInterruptedException
-        End Try
+        '    Try
+        '        timer.Start()
+        '        offsetTimer.Start()
+        '        While True
+        '            ' Alle channels durchgehen
+        '            For channel As Integer = 1 To channels
+        '                ch = channel - 1
+        '                'werte einlesen
+        '                DirectCast(info.getParameter("channel"), CommandParameter(Of Integer)).setValue(channel)
+        '                offsetTimer.Restart()
+        '                infoDoc.loadXML(info.execute(con).getXMLData)
+        '                frame = infoDoc.firstChild.selectSingleNode("frame-number").nodeTypedValue + (offsetTimer.ElapsedMilliseconds / 2 / channelFameTime(ch))
+        '                offsetTimer.Stop()
+
+        '                ' Korrigierten Wert für die Frame number berechen aus dem rückgabewert des servers + der frames die in der bearbeitungszeit
+        '                ' vermeintlich vergangen sind. Wir gehen vereinfacht davon aus, das die hälfte der Zeit für den Rückweg 
+        '                ' vom Server zu uns gebaucht wurde da wir das nicht genau messen können.
+        '                If frame <> channelFrame.Item(channel) Then
+        '                    channelFrame.Item(channel) = frame
+        '                End If
+        '            Next
+        '            ' Event auslösen
+        '            RaiseEvent frameTick(Me, New frameTickEventArgs(channelFrame))
+        '            logger.debug("FrameTicker.tick: Raise frameTick()")
+
+        '            ' Jetzt ein paar frames nur rechnen und dann wieder mit dem Serverwert vergleichen
+        '            Dim hasChanged = False
+        '            interpolatingSince = timer.ElapsedMilliseconds
+        '            While timer.ElapsedMilliseconds - interpolatingSince < interpolationTime
+        '                iterationStart = timer.ElapsedMilliseconds
+        '                For channel As Integer = 0 To channels - 1
+        '                    ' Interpoliere frames indem wir die vergange zeit der der letzen aktualisierung betrachten.
+        '                    ' Ist sie größer als die frameTime müssen wir die frame ändern.
+        '                    If iterationStart - channelLastUpdate(channel) >= channelFameTime(channel) Then
+        '                        hasChanged = True
+        '                        channelFrame.Item(channel + 1) = channelFrame.Item(channel + 1) + ((iterationStart - channelLastUpdate(channel)) / channelFameTime(channel))
+        '                        channelLastUpdate(channel) = iterationStart
+        '                    End If
+        '                Next
+        '                '' Event auslösen
+        '                If hasChanged Then
+        '                    RaiseEvent frameTick(Me, New frameTickEventArgs(channelFrame))
+        '                    logger.debug("FrameTicker.tick: Raise frameTick()")
+        '                End If
+        '                hasChanged = False
+
+        '                ' Jetzt noch ein bisschen warten um die cpu zu entlasten. Mindestens bis die nächste frame möglich ist
+        '                ' oder soviele Frames wie im frameInterval angegeben
+        '                iterationEnd = timer.ElapsedMilliseconds
+        '                If iterationEnd - iterationStart < (minFrameTime * frameInterval) Then
+        '                    While timer.ElapsedMilliseconds < iterationEnd + (minFrameTime * frameInterval) - (iterationEnd - iterationStart)
+        '                        'Thread.Sleep((minFrameTime * frameInterval) - (iterationEnd - iterationStart))
+        '                    End While
+        '                End If
+        '            End While
+        '        End While
+        '    Catch e As ThreadInterruptedException
+        '    End Try
     End Sub
 End Class
 
