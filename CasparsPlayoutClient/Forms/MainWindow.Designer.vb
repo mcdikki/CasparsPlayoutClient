@@ -28,7 +28,6 @@ Partial Class MainWindow
         Me.layoutPlaylistSplit = New System.Windows.Forms.SplitContainer()
         Me.layoutUpDownSplit = New System.Windows.Forms.SplitContainer()
         Me.layoutCgLib = New System.Windows.Forms.SplitContainer()
-        Me.lsvPlayingMedia = New System.Windows.Forms.ListView()
         Me.layoutButtonsPanel = New System.Windows.Forms.Panel()
         Me.layoutButtonsFlow = New System.Windows.Forms.FlowLayoutPanel()
         Me.cmbConnect = New System.Windows.Forms.Button()
@@ -50,7 +49,6 @@ Partial Class MainWindow
         Me.layoutUpDownSplit.Panel2.SuspendLayout()
         Me.layoutUpDownSplit.SuspendLayout()
         CType(Me.layoutCgLib, System.ComponentModel.ISupportInitialize).BeginInit()
-        Me.layoutCgLib.Panel1.SuspendLayout()
         Me.layoutCgLib.SuspendLayout()
         Me.layoutButtonsPanel.SuspendLayout()
         Me.layoutButtonsFlow.SuspendLayout()
@@ -100,23 +98,9 @@ Partial Class MainWindow
         Me.layoutCgLib.Dock = System.Windows.Forms.DockStyle.Fill
         Me.layoutCgLib.Location = New System.Drawing.Point(0, 0)
         Me.layoutCgLib.Name = "layoutCgLib"
-        '
-        'layoutCgLib.Panel1
-        '
-        Me.layoutCgLib.Panel1.Controls.Add(Me.lsvPlayingMedia)
         Me.layoutCgLib.Size = New System.Drawing.Size(617, 469)
         Me.layoutCgLib.SplitterDistance = 542
         Me.layoutCgLib.TabIndex = 0
-        '
-        'lsvPlayingMedia
-        '
-        Me.lsvPlayingMedia.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.lsvPlayingMedia.GridLines = True
-        Me.lsvPlayingMedia.Location = New System.Drawing.Point(0, 0)
-        Me.lsvPlayingMedia.Name = "lsvPlayingMedia"
-        Me.lsvPlayingMedia.Size = New System.Drawing.Size(540, 467)
-        Me.lsvPlayingMedia.TabIndex = 1
-        Me.lsvPlayingMedia.UseCompatibleStateImageBehavior = False
         '
         'layoutButtonsPanel
         '
@@ -273,7 +257,6 @@ Partial Class MainWindow
         Me.layoutUpDownSplit.Panel2.ResumeLayout(False)
         CType(Me.layoutUpDownSplit, System.ComponentModel.ISupportInitialize).EndInit()
         Me.layoutUpDownSplit.ResumeLayout(False)
-        Me.layoutCgLib.Panel1.ResumeLayout(False)
         CType(Me.layoutCgLib, System.ComponentModel.ISupportInitialize).EndInit()
         Me.layoutCgLib.ResumeLayout(False)
         Me.layoutButtonsPanel.ResumeLayout(False)
@@ -296,7 +279,6 @@ Partial Class MainWindow
         ' Fügen Sie Initialisierungen nach dem InitializeComponent()-Aufruf hinzu.
 
     End Sub
-    Friend WithEvents lsvPlayingMedia As System.Windows.Forms.ListView
     Friend WithEvents layoutButtonsPanel As System.Windows.Forms.Panel
     Friend WithEvents layoutAdressPanel As System.Windows.Forms.Panel
     Friend WithEvents lblAddress As System.Windows.Forms.Label
