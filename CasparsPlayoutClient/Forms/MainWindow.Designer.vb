@@ -28,6 +28,9 @@ Partial Class MainWindow
         Me.layoutPlaylistSplit = New System.Windows.Forms.SplitContainer()
         Me.layoutUpDownSplit = New System.Windows.Forms.SplitContainer()
         Me.layoutCgLib = New System.Windows.Forms.SplitContainer()
+        Me.layoutTableMain = New System.Windows.Forms.TableLayoutPanel()
+        Me.layoutInfoPanel = New System.Windows.Forms.Panel()
+        Me.lblClock = New System.Windows.Forms.Label()
         Me.layoutButtonsPanel = New System.Windows.Forms.Panel()
         Me.layoutButtonsFlow = New System.Windows.Forms.FlowLayoutPanel()
         Me.cmbConnect = New System.Windows.Forms.Button()
@@ -49,7 +52,10 @@ Partial Class MainWindow
         Me.layoutUpDownSplit.Panel2.SuspendLayout()
         Me.layoutUpDownSplit.SuspendLayout()
         CType(Me.layoutCgLib, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.layoutCgLib.Panel1.SuspendLayout()
         Me.layoutCgLib.SuspendLayout()
+        Me.layoutTableMain.SuspendLayout()
+        Me.layoutInfoPanel.SuspendLayout()
         Me.layoutButtonsPanel.SuspendLayout()
         Me.layoutButtonsFlow.SuspendLayout()
         CType(Me.nudLayerClear, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -98,9 +104,53 @@ Partial Class MainWindow
         Me.layoutCgLib.Dock = System.Windows.Forms.DockStyle.Fill
         Me.layoutCgLib.Location = New System.Drawing.Point(0, 0)
         Me.layoutCgLib.Name = "layoutCgLib"
+        '
+        'layoutCgLib.Panel1
+        '
+        Me.layoutCgLib.Panel1.Controls.Add(Me.layoutTableMain)
         Me.layoutCgLib.Size = New System.Drawing.Size(617, 469)
         Me.layoutCgLib.SplitterDistance = 542
         Me.layoutCgLib.TabIndex = 0
+        '
+        'layoutTableMain
+        '
+        Me.layoutTableMain.AutoSize = True
+        Me.layoutTableMain.ColumnCount = 1
+        Me.layoutTableMain.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
+        Me.layoutTableMain.Controls.Add(Me.layoutInfoPanel, 0, 0)
+        Me.layoutTableMain.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.layoutTableMain.Location = New System.Drawing.Point(0, 0)
+        Me.layoutTableMain.Name = "layoutTableMain"
+        Me.layoutTableMain.RowCount = 2
+        Me.layoutTableMain.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 50.0!))
+        Me.layoutTableMain.RowStyles.Add(New System.Windows.Forms.RowStyle())
+        Me.layoutTableMain.Size = New System.Drawing.Size(540, 467)
+        Me.layoutTableMain.TabIndex = 0
+        '
+        'layoutInfoPanel
+        '
+        Me.layoutInfoPanel.BackColor = System.Drawing.SystemColors.ControlDarkDark
+        Me.layoutInfoPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.layoutInfoPanel.Controls.Add(Me.lblClock)
+        Me.layoutInfoPanel.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.layoutInfoPanel.Location = New System.Drawing.Point(3, 3)
+        Me.layoutInfoPanel.Name = "layoutInfoPanel"
+        Me.layoutInfoPanel.Size = New System.Drawing.Size(534, 44)
+        Me.layoutInfoPanel.TabIndex = 0
+        '
+        'lblClock
+        '
+        Me.lblClock.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom), System.Windows.Forms.AnchorStyles)
+        Me.lblClock.BackColor = System.Drawing.Color.Transparent
+        Me.lblClock.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.lblClock.Font = New System.Drawing.Font("Lucida Console", 20.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.lblClock.ForeColor = System.Drawing.Color.Lime
+        Me.lblClock.Location = New System.Drawing.Point(164, 5)
+        Me.lblClock.Name = "lblClock"
+        Me.lblClock.Size = New System.Drawing.Size(205, 33)
+        Me.lblClock.TabIndex = 0
+        Me.lblClock.Text = "00:00:00.00"
+        Me.lblClock.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
         '
         'layoutButtonsPanel
         '
@@ -257,8 +307,12 @@ Partial Class MainWindow
         Me.layoutUpDownSplit.Panel2.ResumeLayout(False)
         CType(Me.layoutUpDownSplit, System.ComponentModel.ISupportInitialize).EndInit()
         Me.layoutUpDownSplit.ResumeLayout(False)
+        Me.layoutCgLib.Panel1.ResumeLayout(False)
+        Me.layoutCgLib.Panel1.PerformLayout()
         CType(Me.layoutCgLib, System.ComponentModel.ISupportInitialize).EndInit()
         Me.layoutCgLib.ResumeLayout(False)
+        Me.layoutTableMain.ResumeLayout(False)
+        Me.layoutInfoPanel.ResumeLayout(False)
         Me.layoutButtonsPanel.ResumeLayout(False)
         Me.layoutButtonsFlow.ResumeLayout(False)
         CType(Me.nudLayerClear, System.ComponentModel.ISupportInitialize).EndInit()
@@ -292,4 +346,7 @@ Partial Class MainWindow
     Friend WithEvents cmbClearChannel As System.Windows.Forms.Button
     Friend WithEvents nudLayerClear As System.Windows.Forms.NumericUpDown
     Friend WithEvents cmbClearLayer As System.Windows.Forms.Button
+    Friend WithEvents layoutTableMain As System.Windows.Forms.TableLayoutPanel
+    Friend WithEvents layoutInfoPanel As System.Windows.Forms.Panel
+    Friend WithEvents lblClock As System.Windows.Forms.Label
 End Class

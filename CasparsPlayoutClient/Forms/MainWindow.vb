@@ -21,9 +21,10 @@ Public Class MainWindow
 
     Private sc As ServerControler
     Private mediaLib As Library
-    Dim WithEvents playlistView As PlaylistView
-    Dim WithEvents libraryView As LibraryView
-    Delegate Sub updateDelegate()
+    Private WithEvents playlistView As PlaylistView
+    Private WithEvents libraryView As LibraryView
+    Private Delegate Sub updateDelegate()
+    Private timer As Timers.Timer
 
     Private Sub MainWindow_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
         logger.addLogAction(New consoleLogger(3))
@@ -32,6 +33,7 @@ Public Class MainWindow
         mediaLib = New Library(sc)
         AddPlaylist()
         AddLibrary()
+        initClock()
     End Sub
 
     Private Sub AddLibrary()
@@ -67,6 +69,22 @@ Public Class MainWindow
             End If
         Else
             MsgBox("Allready connected")
+        End If
+    End Sub
+
+    Private Sub initClock()
+        timer = New Timers.Timer(100)
+        timer.Enabled = True
+        AddHandler timer.Elapsed, AddressOf updateClock
+        lblClock.Text = ServerControler.getTimeStringOfMS(Now.TimeOfDay.TotalMilliseconds).Substring(0, 10)
+    End Sub
+
+    Private Sub updateClock()
+        If lblClock.InvokeRequired Then
+            Dim d = New updateDelegate(AddressOf updateClock)
+            lblClock.Invoke(d)
+        Else
+            lblClock.Text = ServerControler.getTimeStringOfMS(Now.TimeOfDay.TotalMilliseconds).Substring(0, 10)
         End If
     End Sub
 
@@ -108,5 +126,6 @@ Public Class MainWindow
     Private Sub onTick()
         playlistView.onDataChanged()
     End Sub
+
 
 End Class
