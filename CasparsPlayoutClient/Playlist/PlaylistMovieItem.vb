@@ -24,6 +24,7 @@ Public Class PlaylistMovieItem
     Private media As CasparCGMovie
     Private timer As System.Timers.Timer
     Private stopWatch As New Stopwatch()
+    Private loaded As Boolean = False
 
     ''' <summary>
     ''' Create a PlaylistMovieItem. If a duration is given and smaller than the original duration of the file, the file will only be played for that long.
@@ -67,7 +68,7 @@ Public Class PlaylistMovieItem
 
     Public Overrides Sub playNextItem(Optional ByRef lastPlayed As IPlaylistItem = Nothing)
         '' CMD an ServerController schicken
-        logger.log("PlaylistMovieItem.start: Starte " & getChannel() & "-" & getLayer() & ": " & getMedia.toString)
+        'logger.log("PlaylistMovieItem.playNextItem: Starte " & getChannel() & "-" & getLayer() & ": " & getMedia.getName)
         If getDelay() > 0 AndAlso timer.Enabled = False Then
             stopWatch.Reset()
             timer.Interval = getDelay()
@@ -83,29 +84,38 @@ Public Class PlaylistMovieItem
             playing = True
 
             If getControler.containsChannel(getChannel) AndAlso getLayer() > -1 Then
-                Dim cmd As ICommand = New PlayCommand(getChannel, getLayer, getMedia, isLooping, False)
+                ' if the clip is allready loaded to bg, just start, else load & start
+                Dim cmd As ICommand
+                If isLoaded() Then
+                    cmd = New PlayCommand(getChannel, getLayer)
+                    loaded = False
+                    logger.log("PlaylistMovieItem.playNextItem: Start allready loaded clip " & getMedia.getName)
+                Else
+                    cmd = New PlayCommand(getChannel, getLayer, getMedia, isLooping, False)
+                    logger.log("PlaylistMovieItem.playNextItem: Load and start clip " & getMedia.getName)
+                End If
 
                 'Dim result = getController.getCommandConnection.sendCommand(CasparCGCommandFactory.getPlay(getChannel, getLayer, getMedia, isLooping, False))
                 If cmd.execute(getControler.getCommandConnection).isOK Then
                     raiseStarted(Me)
-                    While Not getControler.readyForUpdate.WaitOne()
-                        logger.warn("PlaylistMovieItem.start: " & getName() & ": Could not get handle to update my status")
-                    End While
-                    playing = True
-                    getControler.readyForUpdate.Release()
+                    'While Not getControler.readyForUpdate.WaitOne()
+                    '    logger.warn("PlaylistMovieItem.start: " & getName() & ": Could not get handle to update my status")
+                    'End While
+                    'playing = True
+                    'getControler.readyForUpdate.Release()
                     ' InfoMediaUpdater needs an empty to detect end of file due to BUG: frame-number never reaches nb-frames
                     If Not getControler.getCommandConnection.isOSCSupported() Then
                         cmd = New LoadbgCommand(getChannel, getLayer, "empty", True)
                         cmd.execute(getControler.getCommandConnection)
                     End If
-                    logger.log("PlaylistMovieItem.start: ...gestartet " & getChannel() & "-" & getLayer() & ": " & getMedia.toString)
+                    logger.log("PlaylistMovieItem.playNextItem: " & getChannel() & "-" & getLayer() & ": " & getMedia.getName & " started.")
                 Else
                     playing = False
                     raiseCanceled(Me)
-                    logger.err("PlaylistMovieItem.start: Could not start " & media.getFullName & ". ServerMessage was: " & cmd.getResponse.getServerMessage)
+                    logger.err("PlaylistMovieItem..playNextItem: Could not start " & media.getFullName & ". ServerMessage was: " & cmd.getResponse.getServerMessage)
                 End If
             Else
-                logger.err("PlaylistMovieItem.start: Error playing " & getName() & ". The channel " & getChannel() & " does not exist on the server. Aborting start.")
+                logger.err("PlaylistMovieItem..playNextItem: Error playing " & getName() & ". The channel " & getChannel() & " does not exist on the server. Aborting start.")
             End If
         End If
     End Sub
@@ -117,9 +127,11 @@ Public Class PlaylistMovieItem
         setPosition(0)
         waiting = False
         playing = False
+        loaded = False
         timer.Enabled = False
         stopWatch.Stop()
         raiseAborted(Me)
+        logger.log("PlaylistMovieItem.abort: " & getChannel() & "-" & getLayer() & ": " & getMedia.getName & " aborted.")
     End Sub
 
     Public Overrides Sub halt()
@@ -135,6 +147,7 @@ Public Class PlaylistMovieItem
         playing = False
         setPosition(0)
         raiseStopped(Me)
+        logger.log("PlaylistMovieItem.stoppedPlaying: " & getChannel() & "-" & getLayer() & ": " & getMedia.getName & " stopped playing.")
     End Sub
 
     Public Overrides Sub pause(ByVal frames As Long)
@@ -142,6 +155,7 @@ Public Class PlaylistMovieItem
         Dim cmd As New PauseCommand(getChannel, getLayer)
         cmd.execute(getControler.getCommandConnection)
         raisePaused(Me)
+        logger.log("PlaylistMovieItem.pause: " & getChannel() & "-" & getLayer() & ": " & getMedia.getName & " paused.")
     End Sub
 
     Public Overrides Sub unPause()
@@ -152,11 +166,28 @@ Public Class PlaylistMovieItem
         Dim cmd As New PlayCommand(getChannel(), getLayer())
         cmd.execute(getControler.getCommandConnection)
         raiseStarted(Me)
+        logger.log("PlaylistMovieItem.unPause: " & getChannel() & "-" & getLayer() & ": " & getMedia.getName & " restarted.")
     End Sub
 
     Public Overrides Sub load()
         ''ToDo
+        If getControler.getCommandConnection.isLayerFree(getLayer, getChannel, False, True) Then
+            Dim cmd As New LoadbgCommand(getChannel, getLayer, getMedia, False, isLooping)
+            If cmd.execute(getControler.getCommandConnection).isOK Then
+                loaded = True
+                logger.log("PlaylistMovieItem.load: Loaded " & getMedia.getName + " to " & getChannel() & "-" & getLayer())
+            Else
+                loaded = False
+                logger.warn("PlaylistMovieItem.load: Could not load " & getMedia.getName + " to " & getChannel() & "-" & getLayer() & ". Server resonded " & vbNewLine & cmd.getResponse.getServerMessage)
+            End If
+        Else
+            logger.warn("PlaylistMovieItem.load: Can't load background if layer isn't free. Did not load " & getMedia.getName + " to " & getChannel() & "-" & getLayer())
+        End If
     End Sub
+
+    Public Overrides Function isLoaded() As Boolean
+        Return loaded
+    End Function
 
     Public Overrides Function getMedia() As CasparCGMedia
         Return media

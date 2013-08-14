@@ -107,10 +107,11 @@ Public Class MainWindow
             lblStatus.Invoke(d)
         Else
             If sc.isConnected Then
-                lblStatus.ForeColor = Color.Lime
                 If sc.getPlaylistRoot.isPlaying OrElse sc.getPlaylistRoot.isWaiting Then
+                    lblStatus.ForeColor = Color.DarkOrange
                     lblStatus.Text = "Running"
                 Else
+                    lblStatus.ForeColor = Color.Lime
                     lblStatus.Text = "Idle"
                 End If
             Else

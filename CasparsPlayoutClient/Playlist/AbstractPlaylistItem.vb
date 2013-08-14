@@ -269,6 +269,10 @@ Public MustInherit Class AbstractPlaylistItem
         End If
     End Function
 
+    Public Overridable Function isLoaded() As Boolean Implements IPlaylistItem.isLoaded
+        Return False
+    End Function
+
 
     '' SETTER:
     ''---------

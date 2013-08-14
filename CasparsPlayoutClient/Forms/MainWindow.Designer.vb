@@ -30,6 +30,8 @@ Partial Class MainWindow
         Me.layoutCgLib = New System.Windows.Forms.SplitContainer()
         Me.layoutTableMain = New System.Windows.Forms.TableLayoutPanel()
         Me.layoutInfoPanel = New System.Windows.Forms.Panel()
+        Me.lblStatus = New System.Windows.Forms.Label()
+        Me.lblDate = New System.Windows.Forms.Label()
         Me.lblClock = New System.Windows.Forms.Label()
         Me.layoutButtonsPanel = New System.Windows.Forms.Panel()
         Me.layoutButtonsFlow = New System.Windows.Forms.FlowLayoutPanel()
@@ -44,8 +46,6 @@ Partial Class MainWindow
         Me.lblAddress = New System.Windows.Forms.Label()
         Me.txtPort = New System.Windows.Forms.TextBox()
         Me.txtAddress = New System.Windows.Forms.TextBox()
-        Me.lblDate = New System.Windows.Forms.Label()
-        Me.lblStatus = New System.Windows.Forms.Label()
         CType(Me.layoutPlaylistSplit, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.layoutPlaylistSplit.Panel2.SuspendLayout()
         Me.layoutPlaylistSplit.SuspendLayout()
@@ -142,6 +142,40 @@ Partial Class MainWindow
         Me.layoutInfoPanel.Size = New System.Drawing.Size(534, 44)
         Me.layoutInfoPanel.TabIndex = 0
         '
+        'lblStatus
+        '
+        Me.lblStatus.AccessibleDescription = "Date"
+        Me.lblStatus.AccessibleName = "Date"
+        Me.lblStatus.AccessibleRole = System.Windows.Forms.AccessibleRole.Clock
+        Me.lblStatus.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom), System.Windows.Forms.AnchorStyles)
+        Me.lblStatus.BackColor = System.Drawing.Color.Transparent
+        Me.lblStatus.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
+        Me.lblStatus.Font = New System.Drawing.Font("Franklin Gothic Medium", 14.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.lblStatus.ForeColor = System.Drawing.Color.Red
+        Me.lblStatus.Location = New System.Drawing.Point(364, 1)
+        Me.lblStatus.Name = "lblStatus"
+        Me.lblStatus.Size = New System.Drawing.Size(125, 40)
+        Me.lblStatus.TabIndex = 2
+        Me.lblStatus.Text = "Stopped"
+        Me.lblStatus.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+        '
+        'lblDate
+        '
+        Me.lblDate.AccessibleDescription = "Date"
+        Me.lblDate.AccessibleName = "Date"
+        Me.lblDate.AccessibleRole = System.Windows.Forms.AccessibleRole.Clock
+        Me.lblDate.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom), System.Windows.Forms.AnchorStyles)
+        Me.lblDate.BackColor = System.Drawing.Color.Transparent
+        Me.lblDate.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
+        Me.lblDate.Font = New System.Drawing.Font("Franklin Gothic Medium", 14.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.lblDate.ForeColor = System.Drawing.Color.Lime
+        Me.lblDate.Location = New System.Drawing.Point(39, 1)
+        Me.lblDate.Name = "lblDate"
+        Me.lblDate.Size = New System.Drawing.Size(125, 40)
+        Me.lblDate.TabIndex = 1
+        Me.lblDate.Text = "01/01/2013"
+        Me.lblDate.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+        '
         'lblClock
         '
         Me.lblClock.AccessibleDescription = "Clock"
@@ -150,13 +184,13 @@ Partial Class MainWindow
         Me.lblClock.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom), System.Windows.Forms.AnchorStyles)
         Me.lblClock.BackColor = System.Drawing.Color.Transparent
         Me.lblClock.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
-        Me.lblClock.Font = New System.Drawing.Font("Lucida Console", 20.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.lblClock.Font = New System.Drawing.Font("Courier New", 26.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.lblClock.ForeColor = System.Drawing.Color.Lime
         Me.lblClock.Location = New System.Drawing.Point(164, 1)
         Me.lblClock.Name = "lblClock"
         Me.lblClock.Size = New System.Drawing.Size(200, 40)
         Me.lblClock.TabIndex = 0
-        Me.lblClock.Text = "00:00:00.0"
+        Me.lblClock.Text = "00:00:00"
         Me.lblClock.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
         '
         'layoutButtonsPanel
@@ -294,40 +328,6 @@ Partial Class MainWindow
         Me.txtAddress.Size = New System.Drawing.Size(544, 20)
         Me.txtAddress.TabIndex = 0
         Me.txtAddress.Text = "localhost"
-        '
-        'lblDate
-        '
-        Me.lblDate.AccessibleDescription = "Date"
-        Me.lblDate.AccessibleName = "Date"
-        Me.lblDate.AccessibleRole = System.Windows.Forms.AccessibleRole.Clock
-        Me.lblDate.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom), System.Windows.Forms.AnchorStyles)
-        Me.lblDate.BackColor = System.Drawing.Color.Transparent
-        Me.lblDate.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
-        Me.lblDate.Font = New System.Drawing.Font("Lucida Console", 14.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblDate.ForeColor = System.Drawing.Color.Lime
-        Me.lblDate.Location = New System.Drawing.Point(39, 1)
-        Me.lblDate.Name = "lblDate"
-        Me.lblDate.Size = New System.Drawing.Size(125, 40)
-        Me.lblDate.TabIndex = 1
-        Me.lblDate.Text = "01/01/2013"
-        Me.lblDate.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
-        '
-        'lblStatus
-        '
-        Me.lblStatus.AccessibleDescription = "Date"
-        Me.lblStatus.AccessibleName = "Date"
-        Me.lblStatus.AccessibleRole = System.Windows.Forms.AccessibleRole.Clock
-        Me.lblStatus.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom), System.Windows.Forms.AnchorStyles)
-        Me.lblStatus.BackColor = System.Drawing.Color.Transparent
-        Me.lblStatus.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
-        Me.lblStatus.Font = New System.Drawing.Font("Lucida Console", 14.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblStatus.ForeColor = System.Drawing.Color.Red
-        Me.lblStatus.Location = New System.Drawing.Point(364, 1)
-        Me.lblStatus.Name = "lblStatus"
-        Me.lblStatus.Size = New System.Drawing.Size(125, 40)
-        Me.lblStatus.TabIndex = 2
-        Me.lblStatus.Text = "Stopped"
-        Me.lblStatus.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
         '
         'MainWindow
         '

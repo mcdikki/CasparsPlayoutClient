@@ -132,6 +132,11 @@ Public Class PlaylistBlockItem
                     AddHandler nextItem.aborted, AddressOf itemStopped
                     AddHandler nextItem.canceled, AddressOf itemCanceled
                     nextItem.start()
+                    ' check if we can safely load the next item
+                    Dim itemToLoad As IPlaylistItem = getNextToPlay(nextItem)
+                    If Not IsNothing(itemToLoad) AndAlso itemToLoad.isPlayable AndAlso nextItem.isPlayable AndAlso nextItem.getChannel = itemToLoad.getChannel AndAlso nextItem.getLayer = itemToLoad.getLayer Then
+                        itemToLoad.load()
+                    End If
                 ElseIf isLooping() Then
                     start()
                 Else : stoppedPlaying()
