@@ -52,11 +52,10 @@ Public Class Library
     End Function
 
     Public Function getItem(ByVal name As String) As CasparCGMedia
-        If media.ContainsKey(name.ToUpper) Then
-            Return media.Item(name.ToUpper)
-        Else
-            Return Nothing
-        End If
+        For Each med In media.Values
+            If med.getFullName.Equals(name) OrElse med.getName.Equals(name) Then Return med
+        Next
+        Return Nothing
     End Function
 
     ''' <summary>

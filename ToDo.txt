@@ -3,6 +3,7 @@ ToDo:
 CORE:
 =====
 
+- BUG: Medias with different types but same names are not supported yet and let the program throw a exception.
 
 - implement playlist trigger
 --- alows to trigger the main functions of a playlist like start, stop abort

@@ -110,7 +110,7 @@ Public Class OscMediaUpdater
             For Each item In playlist.getPlayingChildItems(True, True)
                 'logger.log("OSC: Checking Item " & item.getChannel & "-" & item.getLayer & item.getMedia.getName)
                 If item.getChannel = c AndAlso item.getLayer = l Then
-                    logger.log("OSC: ReceiverItem found: " & item.getMedia.getName & " [" & item.getMedia.getInfo("frame-number") & "/" & item.getMedia.getInfo("duration") & "]")
+                    logger.debug("OSC: ReceiverItem found: " & item.getMedia.getName & " [" & item.getMedia.getInfo("frame-number") & "/" & item.getMedia.getInfo("duration") & "]")
 
                     item.getMedia.setInfo("nb-frames", Integer.Parse(msg.Data.Item(1)))
                     '' BUGFIX CasparCG-FFMPEG Producer never reachses nb-frames
