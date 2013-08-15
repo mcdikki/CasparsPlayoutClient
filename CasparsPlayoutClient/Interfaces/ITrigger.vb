@@ -75,11 +75,11 @@ Public Interface ITrigger
     Function getParameters() As Dictionary(Of String, String)
 
     ''' <summary>
-    ''' Returns a describtion of the given parameter or "" if the parameter is not set.
+    ''' Returns a Description of the given parameter or "" if the parameter is not set.
     ''' </summary>
     ''' <param name="parameter">the parameter</param>
-    ''' <returns>a describtion</returns>
-    Function getParameterDescribtion(ByVal parameter As String) As String
+    ''' <returns>a Description</returns>
+    Function getParameterDescription(ByVal parameter As String) As String
 
     ''' <summary>
     ''' The action a trigger performs in the playlist
