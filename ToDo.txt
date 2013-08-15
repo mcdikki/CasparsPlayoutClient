@@ -3,8 +3,6 @@ ToDo:
 CORE:
 =====
 
-- BUG: Medias with different types but same names are not supported yet and let the program throw a exception.
-
 - implement playlist trigger
 --- alows to trigger the main functions of a playlist like start, stop abort
 --- triggers by time, maybe gpio etc. - keep it generic
@@ -66,6 +64,9 @@ Done - CD 02/08/13
 
 Done - CD 27/07/13
 - Handle problem duration in mediaLib != real duration when playing
+
+Fixed - CD 16/08/13
+- BUG: Medias with different types but same names are not supported yet and let the program throw a exception.
 
 Fixed - CD 04/08/13
 - BUG: InfoMediaUpdaters "End media detection" broken with Osc changes on PlaylistMovieItem.
