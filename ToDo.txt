@@ -3,8 +3,6 @@ ToDo:
 CORE:
 =====
 
-- change frameTick from synced to normal timer as we don't need synced frameticks anymore
-
 
 - implement playlist trigger
 --- alows to trigger the main functions of a playlist like start, stop abort
@@ -31,15 +29,17 @@ CORE:
 
 - Add new ACMP commands
 --- Layer/Channel routing - not yet fully defined in ACMP2, waiting for that
-Done - CD 02/08/13
---- Thumbnail CMDs
+---> Thumbnail CMDs - CD 02/08/13
 
 
 - Add config class and functions
 
 
-- Inkonsistens frame/ms bei viel funktionen und eigenschaften wie getDuratation()/Position etc. auflösen
+Done - CD 14/08/13
+- change frameTick from synced to normal timer as we don't need synced frameticks anymore
 
+Done - CD 14/08/13
+- Inkonsistens frame/ms bei viel funktionen und eigenschaften wie getDuratation()/Position etc. auflösen --> Alles in ms
 
 Done - CD 13/08/13
 - Change Playlists to work with Events instead of waiting in Threads
@@ -84,8 +84,6 @@ Fixed - CD 29/07/13
 GUI:
 ==== 
 
- - Add Connection State for ACMP/OSC
-
  - Channel reset of Items at connect should only appear if channel is not valid
 
  - Overwork scaling issues of sub PLItems
@@ -100,7 +98,7 @@ GUI:
  
  - Add minimalistic kind of TreeView for PlaylistView
 
- - Improofe ExpandButton of MediaLibrary (to hard to get clicked)
+ - Improve ExpandButton of MediaLibrary (to hard to get clicked)
  
  - Implement sensible controlls to expanded PlaylistView for PlaylistTypes:
  --- Movie
@@ -109,6 +107,8 @@ GUI:
  --- Template
  --- Command
  
+Done - CD 14/08/13
+ - Add Connection State for ACMP/OSC
  
 Done - CD 02/08/13
  - Make update Library async to handle long update times freezing GUI
