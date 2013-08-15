@@ -77,7 +77,7 @@ Public Class PlaylistView
                 ' load thumbnail
                 Dim thumb As New PictureBox()
                 If playlist.getMedia.getBase64Thumb.Length > 0 Then
-                    thumb.Image = ServerControler.getBase64ToImage(playlist.getMedia.getBase64Thumb)
+                    thumb.Image = ServerController.getBase64ToImage(playlist.getMedia.getBase64Thumb)
                 End If
                 thumb.Dock = DockStyle.Fill
                 thumb.SizeMode = PictureBoxSizeMode.AutoSize
@@ -157,13 +157,13 @@ Public Class PlaylistView
     Private Sub setData()
         '' Werte eintragen
         With playlist
-            If playlist.getControler.isOpen Then
+            If playlist.getController.isOpen Then
                 If Not txtName.Focused Then Me.txtName.Text = .getName
                 Me.nudChannel.Value = Math.Max(.getChannel, 0)
                 Me.nudLayer.Value = Math.Max(.getLayer, -1)
-                Me.txtPosition.Text = ServerControler.getTimeStringOfMS(.getPosition)
-                If Not txtDuration.Focused Then Me.txtDuration.Text = ServerControler.getTimeStringOfMS(.getDuration)
-                Me.txtRemaining.Text = ServerControler.getTimeStringOfMS(.getRemaining)
+                Me.txtPosition.Text = ServerController.getTimeStringOfMS(.getPosition)
+                If Not txtDuration.Focused Then Me.txtDuration.Text = ServerController.getTimeStringOfMS(.getDuration)
+                Me.txtRemaining.Text = ServerController.getTimeStringOfMS(.getRemaining)
                 Select Case .getRemaining
                     Case Is < 1
                         txtRemaining.BackColor = Color.White
@@ -174,17 +174,17 @@ Public Class PlaylistView
                     Case Else
                         txtRemaining.BackColor = Color.White
                 End Select
-                If Not txtDelay.Focused Then Me.txtDelay.Text = ServerControler.getTimeStringOfMS(.getDelay)
+                If Not txtDelay.Focused Then Me.txtDelay.Text = ServerController.getTimeStringOfMS(.getDelay)
                 Me.ckbAuto.Checked = .isAutoStarting
                 Me.ckbParallel.Checked = .isParallel
                 Me.ckbLoop.Checked = .isLooping
                 Me.pbPlayed.Value = .getPlayed
             Else
-                Me.txtPosition.Text = ServerControler.getTimeStringOfMS(0)
-                Me.txtDuration.Text = ServerControler.getTimeStringOfMS(.getDuration)
-                Me.txtRemaining.Text = ServerControler.getTimeStringOfMS(.getDuration)
+                Me.txtPosition.Text = ServerController.getTimeStringOfMS(0)
+                Me.txtDuration.Text = ServerController.getTimeStringOfMS(.getDuration)
+                Me.txtRemaining.Text = ServerController.getTimeStringOfMS(.getDuration)
                 txtRemaining.BackColor = Color.White
-                Me.txtDelay.Text = ServerControler.getTimeStringOfMS(.getDelay)
+                Me.txtDelay.Text = ServerController.getTimeStringOfMS(.getDelay)
                 Me.ckbAuto.Checked = .isAutoStarting
                 Me.ckbParallel.Checked = .isParallel
                 Me.ckbLoop.Checked = .isLooping
@@ -237,7 +237,7 @@ Public Class PlaylistView
             playlist.halt()
         Else
             ' Damit nicht gewartet wird falls der button manuel betätigt wurde aber auto nicht gesetzt ist
-            If playlist.getControler.containsChannel(playlist.getChannel) OrElse Not playlist.isPlayable Then
+            If playlist.getController.containsChannel(playlist.getChannel) OrElse Not playlist.isPlayable Then
                 If playlist.isAutoStarting Then
                     playlist.start()
                 Else
@@ -314,7 +314,7 @@ Public Class PlaylistView
 
     Private Sub nudChannel_ValueChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles nudChannel.ValueChanged
         If isInit Then
-            If nudChannel.Value < 1 OrElse Not playlist.getControler.containsChannel(nudChannel.Value) Then
+            If nudChannel.Value < 1 OrElse Not playlist.getController.containsChannel(nudChannel.Value) Then
                 nudChannel.BackColor = Color.Red
                 playlist.setChannel(-1)
             Else
@@ -326,7 +326,7 @@ Public Class PlaylistView
 
     Private Sub txtDelay_Leave(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles txtDelay.Leave
         playlist.setDelay(Long.Parse(txtDelay.Text))
-        txtDelay.Text = ServerControler.getTimeStringOfMS(txtDelay.Text)
+        txtDelay.Text = ServerController.getTimeStringOfMS(txtDelay.Text)
     End Sub
 
     Private Sub txtDelay_Enter(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles txtDelay.GotFocus
@@ -339,7 +339,7 @@ Public Class PlaylistView
 
     Private Sub txtDuration_Leave(ByVal sender As Object, ByVal e As System.EventArgs) Handles txtDuration.Leave
         playlist.setDuration(Long.Parse(txtDuration.Text))
-        txtDuration.Text = ServerControler.getTimeStringOfMS(txtDuration.Text)
+        txtDuration.Text = ServerController.getTimeStringOfMS(txtDuration.Text)
     End Sub
 
     Private Sub txtDuration_Enter(ByVal sender As Object, ByVal e As System.EventArgs) Handles txtDuration.GotFocus
@@ -352,7 +352,7 @@ Public Class PlaylistView
 
     Public Sub addBlockItem()
         If playlist.getItemType = AbstractPlaylistItem.PlaylistItemTypes.BLOCK Then
-            Dim bi As New PlaylistBlockItem("BlockItem", playlist.getControler)
+            Dim bi As New PlaylistBlockItem("BlockItem", playlist.getController)
             playlist.addItem(bi)
             addChild(bi)
         End If
@@ -360,7 +360,7 @@ Public Class PlaylistView
 
     Public Sub addCommandItem(ByVal command As CasparCGCommandFactory.Command)
         If playlist.getItemType = AbstractPlaylistItem.PlaylistItemTypes.BLOCK Then
-            Dim ci As New PlaylistCommandItem(command.ToString, playlist.getControler, CasparCGCommandFactory.getCommand(command))
+            Dim ci As New PlaylistCommandItem(command.ToString, playlist.getController, CasparCGCommandFactory.getCommand(command))
             ci.setAutoStart(True)
             playlist.addItem(ci)
             addChild(ci)
@@ -385,7 +385,7 @@ Public Class PlaylistView
             ''
             Dim media As CasparCGMedia = e.Data.GetData("CasparCGNETConnector.CasparCGMovie")
             Dim child As IPlaylistItem
-            child = New PlaylistMovieItem(media.getFullName, playlist.getControler, media.clone)
+            child = New PlaylistMovieItem(media.getFullName, playlist.getController, media.clone)
             playlist.addItem(child)
             addChild(child)
         ElseIf e.Data.GetDataPresent("CasparCGNETConnector.CasparCGTemplate") Then
@@ -394,7 +394,7 @@ Public Class PlaylistView
             ''
             Dim media As CasparCGMedia = e.Data.GetData("CasparCGNETConnector.CasparCGTemplate")
             Dim child As IPlaylistItem
-            child = New PlaylistTemplateItem(media.getFullName, playlist.getControler, media.clone)
+            child = New PlaylistTemplateItem(media.getFullName, playlist.getController, media.clone)
             ' child = New PlaylistBlockItem("not implemented yet", playlist.getController)
             addChild(child)
         ElseIf e.Data.GetDataPresent("CasparCGNETConnector.CasparCGStill") Then
@@ -403,7 +403,7 @@ Public Class PlaylistView
             ''
             Dim media As CasparCGMedia = e.Data.GetData("CasparCGNETConnector.CasparCGStill")
             Dim child As IPlaylistItem
-            child = New PlaylistStillItem(media.getFullName, playlist.getControler, media.clone)
+            child = New PlaylistStillItem(media.getFullName, playlist.getController, media.clone)
             'child = New PlaylistBlockItem("not implemented yet", playlist.getController)
             playlist.addItem(child)
             addChild(child)
@@ -413,7 +413,7 @@ Public Class PlaylistView
             ''
             Dim media As CasparCGMedia = e.Data.GetData("CasparCGNETConnector.CasparCGAudio")
             Dim child As IPlaylistItem
-            child = New PlaylistAudioItem(media.getFullName, playlist.getControler, media.clone)
+            child = New PlaylistAudioItem(media.getFullName, playlist.getController, media.clone)
             'child = New PlaylistBlockItem("not implemented yet", playlist.getController)
             playlist.addItem(child)
             addChild(child)

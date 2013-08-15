@@ -34,7 +34,7 @@ Public Class PlaylistMovieItem
     ''' <param name="movie"></param>
     ''' <param name="duration"></param>
     ''' <remarks></remarks>
-    Public Sub New(ByVal name As String, ByRef controller As ServerControler, ByVal movie As CasparCGMovie, Optional ByVal channel As Integer = -1, Optional ByVal layer As Integer = -1, Optional ByVal duration As Long = -1)
+    Public Sub New(ByVal name As String, ByRef controller As ServerController, ByVal movie As CasparCGMovie, Optional ByVal channel As Integer = -1, Optional ByVal layer As Integer = -1, Optional ByVal duration As Long = -1)
         MyBase.New(name, PlaylistItemTypes.MOVIE, controller, channel, layer, duration)
         If Not IsNothing(movie) Then
             If movie.getInfos.Count = 0 Then
@@ -92,7 +92,7 @@ Public Class PlaylistMovieItem
                     logger.log("PlaylistMovieItem.playNextItem: Start allready loaded clip " & getMedia.getName)
                 Else
                     Dim d As Long = getMedia.getInfo("nb-frames")
-                    If getDuration() < getControler.getMediaDuration(getMedia, getChannel) Then d = ServerControler.getMsToFrames(getDuration, getFPS)
+                    If getDuration() < getControler.getMediaDuration(getMedia, getChannel) Then d = ServerController.getMsToFrames(getDuration, getFPS)
                     getMedia.setInfo("duration", d)
                     cmd = New PlayCommand(getChannel, getLayer, getMedia, isLooping, , d)
                     logger.log("PlaylistMovieItem.playNextItem: Load and start clip " & getMedia.getName)
@@ -177,7 +177,7 @@ Public Class PlaylistMovieItem
         If getControler.getCommandConnection.isLayerFree(getLayer, getChannel, False, True) Then
 
             Dim d As Long = getMedia.getInfo("nb-frames")
-            If getDuration() < getControler.getMediaDuration(getMedia, getChannel) Then d = ServerControler.getMsToFrames(getDuration, getFPS)
+            If getDuration() < getControler.getMediaDuration(getMedia, getChannel) Then d = ServerController.getMsToFrames(getDuration, getFPS)
             getMedia.setInfo("duration", d)
 
             Dim cmd As New LoadbgCommand(getChannel, getLayer, getMedia, False, isLooping, , d)
@@ -203,7 +203,7 @@ Public Class PlaylistMovieItem
 
     Public Overrides Function getPosition() As Long
         If getMedia.containsInfo("frame-number") AndAlso isPlaying() Then 'OrElse hasPlayingParent()) Then
-            Return ServerControler.getFramesToMS(Long.Parse(getMedia.getInfo("frame-number")), getFPS())
+            Return ServerController.getFramesToMS(Long.Parse(getMedia.getInfo("frame-number")), getFPS())
         ElseIf timer.Enabled Then
             Return stopWatch.ElapsedMilliseconds - timer.Interval
         Else
@@ -213,7 +213,7 @@ Public Class PlaylistMovieItem
 
     Public Overrides Sub setPosition(ByVal position As Long)
         'If Not isPlaying() Then
-            getMedia.setInfo("frame-number", ServerControler.getMsToFrames(position, getFPS))
+        getMedia.setInfo("frame-number", ServerController.getMsToFrames(position, getFPS))
         'End If
     End Sub
 
@@ -223,7 +223,7 @@ Public Class PlaylistMovieItem
         If isLoaded() Then
 
             Dim d As Long = getMedia.getInfo("nb-frames")
-            If getDuration() < getControler.getMediaDuration(getMedia, getChannel) Then d = ServerControler.getMsToFrames(getDuration, getFPS)
+            If getDuration() < getControler.getMediaDuration(getMedia, getChannel) Then d = ServerController.getMsToFrames(getDuration, getFPS)
             getMedia.setInfo("duration", d)
 
             Dim cmd As New CallCommand(getChannel, getLayer, isLooping, , d)

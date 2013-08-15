@@ -33,7 +33,7 @@ Public MustInherit Class AbstractPlaylistItem
     ' Die (Kinder)Items dieses Items
     Private items As List(Of IPlaylistItem)
     Private currentItem As IPlaylistItem
-    Private WithEvents controler As ServerControler
+    Private WithEvents controller As ServerController
     Private Duration As Long ' Gesamtlaufzeit in Frames
     Private Position As Long ' aktuelle Frame
     Private Remaining As Long ' noch zu spielende Frames
@@ -72,10 +72,10 @@ Public MustInherit Class AbstractPlaylistItem
     ''' <param name="controler"></param>
     ''' <param name="duration"></param>
     ''' <remarks></remarks>
-    Protected Sub New(ByVal name As String, ByVal itemType As PlaylistItemTypes, ByRef controler As ServerControler, Optional ByVal channel As Integer = -1, Optional ByVal layer As Integer = -1, Optional ByVal duration As Long = -1)
+    Protected Sub New(ByVal name As String, ByVal itemType As PlaylistItemTypes, ByRef controler As ServerController, Optional ByVal channel As Integer = -1, Optional ByVal layer As Integer = -1, Optional ByVal duration As Long = -1)
         Me.name = name
         Me.ItemType = itemType
-        Me.controler = controler
+        Me.controller = controler
         setChannel(channel)
         setLayer(layer)
         If duration > -1 Then
@@ -245,8 +245,8 @@ Public MustInherit Class AbstractPlaylistItem
         End Select
     End Function
 
-    Public Function getControler() As ServerControler Implements IPlaylistItem.getControler
-        Return controler
+    Public Function getControler() As ServerController Implements IPlaylistItem.getController
+        Return controller
     End Function
 
     Public Overridable Function getMedia() As CasparCGMedia Implements IPlaylistItem.getMedia
@@ -321,7 +321,7 @@ Public MustInherit Class AbstractPlaylistItem
 
     Public Overridable Sub setChannel(ByVal channel As Integer) Implements IPlaylistItem.setChannel
         If channel <> -1 Then
-            If Not controler.containsChannel(channel) Then
+            If Not controller.containsChannel(channel) Then
                 logger.warn("PlaylistItem.setChannel: Playlist " & getName() & ": The channel " & channel & " is not configured at the given server. This could lead to errors during playlist playback.")
                 fps = -1
             Else

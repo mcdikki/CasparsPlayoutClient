@@ -19,7 +19,7 @@ Imports logger
 
 Public Class MainWindow
 
-    Private sc As ServerControler
+    Private sc As ServerController
     Private mediaLib As Library
     Private WithEvents playlistView As PlaylistView
     Private WithEvents libraryView As LibraryView
@@ -29,7 +29,7 @@ Public Class MainWindow
     Private Sub MainWindow_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
         logger.addLogAction(New consoleLogger(3))
         'logger.addLogAction(New fileLogger(3, "c:\daten\cpc2.log", True, False))
-        sc = New ServerControler
+        sc = New ServerController
         mediaLib = New Library(sc)
         AddPlaylist()
         AddLibrary()

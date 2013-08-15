@@ -25,14 +25,14 @@ Imports logger
 Public Class Library
 
     Private media As Dictionary(Of String, CasparCGMedia)
-    Private controller As ServerControler
+    Private controller As ServerController
     Private updateThread As Threading.Thread
 
     Public Event updated(ByRef sender As Object, ByRef media As Dictionary(Of String, CasparCGMedia))
     Public Event updatedAborted(ByRef sender As Object)
 
 
-    Public Sub New(ByVal controller As ServerControler)
+    Public Sub New(ByVal controller As ServerController)
         Me.controller = controller
         media = New Dictionary(Of String, CasparCGMedia)
     End Sub
