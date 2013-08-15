@@ -110,16 +110,16 @@ Public Class OscMediaUpdater
             For Each item In playlist.getPlayingChildItems(True, True)
                 'logger.log("OSC: Checking Item " & item.getChannel & "-" & item.getLayer & item.getMedia.getName)
                 If item.getChannel = c AndAlso item.getLayer = l Then
-                    'logger.log("OSC: ReceiverItem found: " & item.getMedia.getName & " [" & item.getMedia.getInfo("frame-number") & "/" & item.getMedia.getInfo("frame-number") & "]")
+                    logger.log("OSC: ReceiverItem found: " & item.getMedia.getName & " [" & item.getMedia.getInfo("frame-number") & "/" & item.getMedia.getInfo("duration") & "]")
 
+                    item.getMedia.setInfo("nb-frames", Integer.Parse(msg.Data.Item(1)))
                     '' BUGFIX CasparCG-FFMPEG Producer never reachses nb-frames
-                    If Integer.Parse(msg.Data.Item(0)) >= Integer.Parse(msg.Data.Item(1)) - 10 Then
+                    If Integer.Parse(msg.Data.Item(0)) >= Integer.Parse(item.getMedia.getInfo("duration")) - 10 Then
                         item.getMedia.setInfo("frame-number", Integer.Parse(item.getMedia.getInfo("frame-number")) + 1)
                     Else
                         item.getMedia.setInfo("frame-number", Integer.Parse(msg.Data.Item(0)))
                     End If
-                    item.getMedia.setInfo("nb-frames", Integer.Parse(msg.Data.Item(1)))
-                    If Integer.Parse(item.getMedia.getInfo("frame-number")) = Integer.Parse(msg.Data.Item(1)) AndAlso Not item.isLooping Then
+                    If Integer.Parse(item.getMedia.getInfo("frame-number")) = Integer.Parse(item.getMedia.getInfo("duration")) AndAlso Not item.isLooping Then
                         item.stoppedPlaying()
                     End If
                     logger.debug("OscMediaUpdater: Frame Update msg received " & msg.Address & ": " & item.getMedia.getInfo("frame-number") & "/" & item.getMedia.getInfo("nb-frames"))
@@ -181,7 +181,7 @@ Public Class InfoMediaUpdater
         ' nicht erreichen, verwirft es das update für diesen Tick
 
         Dim info As New InfoCommand()
-        If controller.readyForUpdate.WaitOne(1) AndAlso controller.isOpen Then
+        If controller.isOpen AndAlso controller.readyForUpdate.WaitOne(1) Then
             '' Listen und variablen vorbereiten
             xml = ""
             mediaName = ""
@@ -264,8 +264,8 @@ Public Class InfoMediaUpdater
                     logger.err("mediaUpdater.UpdateMedia: Could not update media at channel " & c + 1 & ". Unable to load xml data. " & infoDoc.parseError.reason)
                 End If
             Next
+            controller.readyForUpdate.Release()
         End If
-        controller.readyForUpdate.Release()
     End Sub
 End Class
 

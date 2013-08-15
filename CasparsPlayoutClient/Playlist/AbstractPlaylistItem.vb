@@ -297,7 +297,7 @@ Public MustInherit Class AbstractPlaylistItem
         RaiseEvent changed(Me)
     End Sub
 
-    Public Sub setDuration(ByVal duration As Long) Implements IPlaylistItem.setDuration
+    Public Overridable Sub setDuration(ByVal duration As Long) Implements IPlaylistItem.setDuration
         Me.Duration = duration
         RaiseEvent changed(Me)
     End Sub
@@ -307,7 +307,7 @@ Public MustInherit Class AbstractPlaylistItem
         'RaiseEvent changed 
     End Sub
 
-    Public Sub setRemaining(ByVal remaining As Long) Implements IPlaylistItem.setRemaining
+    Public Overridable Sub setRemaining(ByVal remaining As Long) Implements IPlaylistItem.setRemaining
         Me.Remaining = remaining
         'RaiseEvent changed 
     End Sub
@@ -332,7 +332,7 @@ Public MustInherit Class AbstractPlaylistItem
         RaiseEvent changed(Me)
     End Sub
 
-    Public Sub setDelay(ByVal delay As Long) Implements IPlaylistItem.setDelay
+    Public Overridable Sub setDelay(ByVal delay As Long) Implements IPlaylistItem.setDelay
         Me.delay = delay
         RaiseEvent changed(Me)
     End Sub

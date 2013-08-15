@@ -91,7 +91,10 @@ Public Class PlaylistMovieItem
                     loaded = False
                     logger.log("PlaylistMovieItem.playNextItem: Start allready loaded clip " & getMedia.getName)
                 Else
-                    cmd = New PlayCommand(getChannel, getLayer, getMedia, isLooping, False)
+                    Dim d As Long = getMedia.getInfo("nb-frames")
+                    If getDuration() < getControler.getMediaDuration(getMedia, getChannel) Then d = ServerControler.getMsToFrames(getDuration, getFPS)
+                    getMedia.setInfo("duration", d)
+                    cmd = New PlayCommand(getChannel, getLayer, getMedia, isLooping, , d)
                     logger.log("PlaylistMovieItem.playNextItem: Load and start clip " & getMedia.getName)
                 End If
 
@@ -172,7 +175,12 @@ Public Class PlaylistMovieItem
     Public Overrides Sub load()
         ''ToDo
         If getControler.getCommandConnection.isLayerFree(getLayer, getChannel, False, True) Then
-            Dim cmd As New LoadbgCommand(getChannel, getLayer, getMedia, False, isLooping)
+
+            Dim d As Long = getMedia.getInfo("nb-frames")
+            If getDuration() < getControler.getMediaDuration(getMedia, getChannel) Then d = ServerControler.getMsToFrames(getDuration, getFPS)
+            getMedia.setInfo("duration", d)
+
+            Dim cmd As New LoadbgCommand(getChannel, getLayer, getMedia, False, isLooping, , d)
             If cmd.execute(getControler.getCommandConnection).isOK Then
                 loaded = True
                 logger.log("PlaylistMovieItem.load: Loaded " & getMedia.getName + " to " & getChannel() & "-" & getLayer())
@@ -195,7 +203,7 @@ Public Class PlaylistMovieItem
 
     Public Overrides Function getPosition() As Long
         If getMedia.containsInfo("frame-number") AndAlso isPlaying() Then 'OrElse hasPlayingParent()) Then
-            Return ServerControler.getTimeInMS(Long.Parse(getMedia.getInfo("frame-number")), getFPS())
+            Return ServerControler.getFramesToMS(Long.Parse(getMedia.getInfo("frame-number")), getFPS())
         ElseIf timer.Enabled Then
             Return stopWatch.ElapsedMilliseconds - timer.Interval
         Else
@@ -204,12 +212,22 @@ Public Class PlaylistMovieItem
     End Function
 
     Public Overrides Sub setPosition(ByVal position As Long)
-        If Not isPlaying() AndAlso getMedia.containsInfo("frame-number") AndAlso getMedia.containsInfo("nb-frames") AndAlso Integer.Parse(getMedia.getInfo("nb-frames")) <= position Then
-            getMedia.setInfo("frame-number", position)
-        ElseIf Not isPlaying() Then
-            '' warum habe ich das gemacht? Warum nicht immer die position übernehmen?
-            'getMedia.setInfo("frame-number", "0")
-            getMedia.setInfo("frame-number", position)
+        'If Not isPlaying() Then
+            getMedia.setInfo("frame-number", ServerControler.getMsToFrames(position, getFPS))
+        'End If
+    End Sub
+
+    Public Overrides Sub setDuration(ByVal duration As Long)
+        MyBase.setDuration(duration)
+        ' if we're allready loaded to bg, we need to update us
+        If isLoaded() Then
+
+            Dim d As Long = getMedia.getInfo("nb-frames")
+            If getDuration() < getControler.getMediaDuration(getMedia, getChannel) Then d = ServerControler.getMsToFrames(getDuration, getFPS)
+            getMedia.setInfo("duration", d)
+
+            Dim cmd As New CallCommand(getChannel, getLayer, isLooping, , d)
+            cmd.execute(getControler.getCommandConnection)
         End If
     End Sub
 

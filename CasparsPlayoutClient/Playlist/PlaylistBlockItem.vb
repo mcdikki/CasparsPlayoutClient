@@ -246,4 +246,7 @@ Public Class PlaylistBlockItem
 
     Public Overrides Sub unPause()
     End Sub
+
+    Public Overrides Sub setDuration(duration As Long)
+    End Sub
 End Class

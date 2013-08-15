@@ -154,7 +154,7 @@ Public Class ServerControler
                         'If Not progressive Then
                         '    fps = fps / 2
                         'End If
-                        Return getTimeInMS(media.getInfo("file-nb-frames"), fps)
+                        Return getFramesToMS(media.getInfo("file-nb-frames"), fps)
                     End If
                     logger.err("ServerController.getOriginalMediaDuration: Could not get media duration of " & media.getFullName & "(" & media.getMediaType.ToString & ").")
             End Select
@@ -188,7 +188,7 @@ Public Class ServerControler
                         media.fillMediaInfo(testConnection, testChannel)
                     End If
                     If media.containsInfo("nb-frames") Then
-                        Return getTimeInMS(media.getInfo("nb-frames"), getFPS(channel))
+                        Return getFramesToMS(media.getInfo("nb-frames"), getFPS(channel))
                     End If
                     logger.err("ServerController.getMediaDuration: Could not get media duration of " & media.getFullName & "(" & media.getMediaType.ToString & ").")
             End Select
@@ -232,6 +232,13 @@ Public Class ServerControler
         End If
     End Function
 
+    Public Shared Function getMsToFrames(ByVal milliseconds As Long, ByVal fps As Integer) As Long
+        If milliseconds = 0 Then
+            Return 0
+        Else
+            Return (milliseconds * fps) / 100000
+        End If
+    End Function
 
     ''' <summary>
     ''' Returns the time in milliseconds needed to play the given number of frames at a specified framerate.
@@ -240,7 +247,7 @@ Public Class ServerControler
     ''' <param name="fps">the framerate multiplied by 100 to avoid floating numbers like 59.94.</param> 
     ''' <returns></returns>
     ''' <remarks></remarks>
-    Public Shared Function getTimeInMS(ByVal frames As Long, ByVal fps As Integer) As Long
+    Public Shared Function getFramesToMS(ByVal frames As Long, ByVal fps As Integer) As Long
         If fps = 0 Then fps = -100
         Return (frames * 1000) / (fps / 100)
     End Function
@@ -316,7 +323,7 @@ Public Class ServerControler
                                 media.Item(name).setInfo("Duration", getTimeStringOfMS(getOriginalMediaDuration(media.Item(name))))
                                 ' get Thumbnail
                                 cmd = New ThumbnailRetrieveCommand(name)
-                                If cmd.execute(testConnection).isOK Then
+                                If cmd.isCompatible(testConnection) AndAlso cmd.execute(testConnection).isOK Then
                                     media.Item(name).setBase64Thumb(cmd.getResponse.getData)
                                 End If
                             Case "AUDIO"

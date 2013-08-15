@@ -133,6 +133,9 @@ Public Class PlaylistCommandItem
         '' Nothing to do. Movie Items dosen't have child items
     End Sub
 
+    Public Overrides Sub setDuration(duration As Long)
+    End Sub
+
 
     '' EMPTY MEMBERS
     ''---------------

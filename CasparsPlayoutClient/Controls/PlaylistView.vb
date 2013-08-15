@@ -162,7 +162,7 @@ Public Class PlaylistView
                 Me.nudChannel.Value = Math.Max(.getChannel, 0)
                 Me.nudLayer.Value = Math.Max(.getLayer, -1)
                 Me.txtPosition.Text = ServerControler.getTimeStringOfMS(.getPosition)
-                Me.txtDuration.Text = ServerControler.getTimeStringOfMS(.getDuration)
+                If Not txtDuration.Focused Then Me.txtDuration.Text = ServerControler.getTimeStringOfMS(.getDuration)
                 Me.txtRemaining.Text = ServerControler.getTimeStringOfMS(.getRemaining)
                 Select Case .getRemaining
                     Case Is < 1
@@ -174,7 +174,7 @@ Public Class PlaylistView
                     Case Else
                         txtRemaining.BackColor = Color.White
                 End Select
-                If Not txtDelay.Focused Then Me.txtDelay.Text = .getDelay
+                If Not txtDelay.Focused Then Me.txtDelay.Text = ServerControler.getTimeStringOfMS(.getDelay)
                 Me.ckbAuto.Checked = .isAutoStarting
                 Me.ckbParallel.Checked = .isParallel
                 Me.ckbLoop.Checked = .isLooping
@@ -184,7 +184,7 @@ Public Class PlaylistView
                 Me.txtDuration.Text = ServerControler.getTimeStringOfMS(.getDuration)
                 Me.txtRemaining.Text = ServerControler.getTimeStringOfMS(.getDuration)
                 txtRemaining.BackColor = Color.White
-                Me.txtDelay.Text = .getDelay
+                Me.txtDelay.Text = ServerControler.getTimeStringOfMS(.getDelay)
                 Me.ckbAuto.Checked = .isAutoStarting
                 Me.ckbParallel.Checked = .isParallel
                 Me.ckbLoop.Checked = .isLooping
@@ -326,10 +326,24 @@ Public Class PlaylistView
 
     Private Sub txtDelay_Leave(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles txtDelay.Leave
         playlist.setDelay(Long.Parse(txtDelay.Text))
+        txtDelay.Text = ServerControler.getTimeStringOfMS(txtDelay.Text)
+    End Sub
+
+    Private Sub txtDelay_Enter(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles txtDelay.GotFocus
+        txtDelay.Text = playlist.getDelay
     End Sub
 
     Private Sub txtName_Leave(ByVal sender As Object, ByVal e As System.EventArgs) Handles txtName.Leave
         playlist.setName(txtName.Text)
+    End Sub
+
+    Private Sub txtDuration_Leave(ByVal sender As Object, ByVal e As System.EventArgs) Handles txtDuration.Leave
+        playlist.setDuration(Long.Parse(txtDuration.Text))
+        txtDuration.Text = ServerControler.getTimeStringOfMS(txtDuration.Text)
+    End Sub
+
+    Private Sub txtDuration_Enter(ByVal sender As Object, ByVal e As System.EventArgs) Handles txtDuration.GotFocus
+        txtDuration.Text = playlist.getDuration
     End Sub
 
     ''

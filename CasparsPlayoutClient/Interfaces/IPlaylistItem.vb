@@ -55,9 +55,9 @@ Public Interface IPlaylistItem
     Sub setAutoStart(ByVal autoStart As Boolean)
     Sub setParallel(ByVal parallel As Boolean)
     Sub setDelay(ByVal delay As Long)
-    Sub setDuration(ByVal duration As Long) ' Gesamtlaufzeit in Frames
-    Sub setPosition(ByVal position As Long) ' aktuelle Frame
-    Sub setRemaining(ByVal remaining As Long) ' noch zu spielende Frames
+    Sub setDuration(ByVal duration As Long) ' Gesamtlaufzeit in ms
+    Sub setPosition(ByVal position As Long) ' aktuelle ms
+    Sub setRemaining(ByVal remaining As Long) ' noch zu spielende ms
     Sub setChildItems(ByRef items As List(Of IPlaylistItem))
     Sub addItem(ByRef item As IPlaylistItem)
     Sub removeChild(ByRef child As IPlaylistItem)
