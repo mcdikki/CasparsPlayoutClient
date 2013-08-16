@@ -34,9 +34,9 @@ Partial Class LibraryView
         Me.ckbStill = New System.Windows.Forms.CheckBox()
         Me.ckbTemplate = New System.Windows.Forms.CheckBox()
         Me.Panel1 = New System.Windows.Forms.Panel()
-        Me.layoutItemsFlow = New System.Windows.Forms.FlowLayoutPanel()
-        Me.cmbRefresh = New System.Windows.Forms.Button()
         Me.pbProgress = New System.Windows.Forms.PictureBox()
+        Me.cmbRefresh = New System.Windows.Forms.Button()
+        Me.layoutItemsFlow = New System.Windows.Forms.FlowLayoutPanel()
         CType(Me.layoutHeaderItemSplit, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.layoutHeaderItemSplit.Panel1.SuspendLayout()
         Me.layoutHeaderItemSplit.Panel2.SuspendLayout()
@@ -154,6 +154,7 @@ Partial Class LibraryView
         'ckbAudio
         '
         Me.ckbAudio.AutoSize = True
+        Me.ckbAudio.Enabled = False
         Me.ckbAudio.Location = New System.Drawing.Point(55, 0)
         Me.ckbAudio.Margin = New System.Windows.Forms.Padding(0)
         Me.ckbAudio.Name = "ckbAudio"
@@ -165,6 +166,8 @@ Partial Class LibraryView
         'ckbStill
         '
         Me.ckbStill.AutoSize = True
+        Me.ckbStill.Checked = True
+        Me.ckbStill.CheckState = System.Windows.Forms.CheckState.Checked
         Me.ckbStill.Location = New System.Drawing.Point(108, 0)
         Me.ckbStill.Margin = New System.Windows.Forms.Padding(0)
         Me.ckbStill.Name = "ckbStill"
@@ -195,6 +198,29 @@ Partial Class LibraryView
         Me.Panel1.Size = New System.Drawing.Size(35, 44)
         Me.Panel1.TabIndex = 7
         '
+        'pbProgress
+        '
+        Me.pbProgress.BackColor = System.Drawing.Color.Transparent
+        Me.pbProgress.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.pbProgress.Image = CType(resources.GetObject("pbProgress.Image"), System.Drawing.Image)
+        Me.pbProgress.Location = New System.Drawing.Point(0, 0)
+        Me.pbProgress.Name = "pbProgress"
+        Me.pbProgress.Size = New System.Drawing.Size(35, 44)
+        Me.pbProgress.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage
+        Me.pbProgress.TabIndex = 3
+        Me.pbProgress.TabStop = False
+        Me.pbProgress.Visible = False
+        '
+        'cmbRefresh
+        '
+        Me.cmbRefresh.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.cmbRefresh.Image = CType(resources.GetObject("cmbRefresh.Image"), System.Drawing.Image)
+        Me.cmbRefresh.Location = New System.Drawing.Point(0, 0)
+        Me.cmbRefresh.Name = "cmbRefresh"
+        Me.cmbRefresh.Size = New System.Drawing.Size(35, 44)
+        Me.cmbRefresh.TabIndex = 2
+        Me.cmbRefresh.UseVisualStyleBackColor = True
+        '
         'layoutItemsFlow
         '
         Me.layoutItemsFlow.AutoScroll = True
@@ -208,29 +234,6 @@ Partial Class LibraryView
         Me.layoutItemsFlow.Size = New System.Drawing.Size(285, 89)
         Me.layoutItemsFlow.TabIndex = 0
         Me.layoutItemsFlow.WrapContents = False
-        '
-        'cmbRefresh
-        '
-        Me.cmbRefresh.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.cmbRefresh.Image = CType(resources.GetObject("cmbRefresh.Image"), System.Drawing.Image)
-        Me.cmbRefresh.Location = New System.Drawing.Point(0, 0)
-        Me.cmbRefresh.Name = "cmbRefresh"
-        Me.cmbRefresh.Size = New System.Drawing.Size(35, 44)
-        Me.cmbRefresh.TabIndex = 2
-        Me.cmbRefresh.UseVisualStyleBackColor = True
-        '
-        'pbProgress
-        '
-        Me.pbProgress.BackColor = System.Drawing.Color.Transparent
-        Me.pbProgress.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.pbProgress.Image = CType(resources.GetObject("pbProgress.Image"), System.Drawing.Image)
-        Me.pbProgress.Location = New System.Drawing.Point(0, 0)
-        Me.pbProgress.Name = "pbProgress"
-        Me.pbProgress.Size = New System.Drawing.Size(35, 44)
-        Me.pbProgress.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage
-        Me.pbProgress.TabIndex = 3
-        Me.pbProgress.TabStop = False
-        Me.pbProgress.Visible = False
         '
         'LibraryView
         '

@@ -333,6 +333,11 @@ Public Class ServerController
                                 media.Add(newMedia.getUuid, newMedia)
                             Case "STILL"
                                 newMedia = New CasparCGStill(name)
+                                ' get Thumbnail
+                                cmd = New ThumbnailRetrieveCommand(name)
+                                If cmd.isCompatible(testConnection) AndAlso cmd.execute(testConnection).isOK Then
+                                    newMedia.setBase64Thumb(cmd.getResponse.getData)
+                                End If
                                 media.Add(newMedia.getUuid, newMedia)
                         End Select
                         If Not IsNothing(newMedia) Then newMedia.fillMediaInfo(getTestConnection, testChannel)

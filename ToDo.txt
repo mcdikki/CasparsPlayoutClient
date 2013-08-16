@@ -3,6 +3,8 @@ ToDo:
 CORE:
 =====
 
+- Idee: Statt timer für playlist, einfach nur atualisieren wenn ein changed event gefeuert wurde...
+
 - check removeHandler for delay functions.
 
 - implement playlist trigger
@@ -18,11 +20,11 @@ CORE:
 
 
 - Implement missing Playlist Types
---- Still
 --- Template
 --- Color
 --- audio
 ---> Command - CD 12/08/13
+---> Still - CD 15/08/13
 
 
 - Implement missing save/load Playlist from xml functions

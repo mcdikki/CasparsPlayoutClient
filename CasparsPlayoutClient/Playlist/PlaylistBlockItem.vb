@@ -220,7 +220,7 @@ Public Class PlaylistBlockItem
                     If playedItems.Contains(child) Then
                         pos = pos + child.getDuration
                     Else
-                        pos = pos + child.getPosition
+                        pos = pos + Math.Max(0, child.getPosition)
                     End If
                 End If
             Next

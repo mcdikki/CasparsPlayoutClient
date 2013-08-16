@@ -142,14 +142,28 @@ Public Class PlaylistStillItem
 
     Public Overrides Function getPosition() As Long
         If isPlaying() OrElse (hasPlayingParent() AndAlso Not isWaiting()) Then
-            ' Normal playing
-            Return stopWatch.ElapsedMilliseconds
+            If timer.Enabled And getDuration() > 0 Then
+                ' Normal playing
+                'raiseChanged(Me)
+                Return stopWatch.ElapsedMilliseconds
+            Else
+                'raiseChanged(Me)
+                Return 0 - stopWatch.ElapsedMilliseconds
+            End If
         ElseIf isWaiting() AndAlso timer.Enabled Then
             ' Delay countdown
             Return (0 - timer.Interval) + stopWatch.ElapsedMilliseconds
         Else : Return 0
         End If
     End Function
+
+    'Public Overrides Function getDuration() As Long
+    '    If isPlaying() AndAlso MyBase.getDuration = 0 Then
+    '        Return 0 - getPosition()
+    '    Else
+    '        Return MyBase.getDuration()
+    '    End If
+    'End Function
 
     Public Overrides Function isLoaded() As Boolean
         Return loaded

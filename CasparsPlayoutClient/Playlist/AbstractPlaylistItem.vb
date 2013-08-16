@@ -304,12 +304,12 @@ Public MustInherit Class AbstractPlaylistItem
 
     Public Overridable Sub setPosition(ByVal position As Long) Implements IPlaylistItem.setPosition
         Me.Position = position
-        'RaiseEvent changed 
+        RaiseEvent changed(Me)
     End Sub
 
     Public Overridable Sub setRemaining(ByVal remaining As Long) Implements IPlaylistItem.setRemaining
         Me.Remaining = remaining
-        'RaiseEvent changed 
+        RaiseEvent changed(Me)
     End Sub
 
     Public Sub setAutoStart(ByVal autoStart As Boolean) Implements IPlaylistItem.setAutoStart
@@ -368,6 +368,7 @@ Public MustInherit Class AbstractPlaylistItem
             items.Remove(child)
             updateItems.Release()
             child.setParent(Nothing)
+            RemoveHandler child.changed, AddressOf raiseChanged
             RaiseEvent changed(Me)
         Else
             logger.warn("Playlist " + getName() + ": Can't remove " + child.getName + ". No such child playlist found.")
@@ -404,6 +405,7 @@ Public MustInherit Class AbstractPlaylistItem
             Else
                 setDuration(getDuration() + item.getDuration)
             End If
+            AddHandler item.changed, AddressOf raiseChanged
             RaiseEvent changed(Me)
         End If
     End Sub
@@ -417,22 +419,22 @@ Public MustInherit Class AbstractPlaylistItem
     End Sub
 
     Protected Sub raiseAborted(ByRef sender As IPlaylistItem)
-        RaiseEvent aborted(Me)
+        RaiseEvent aborted(sender)
     End Sub
 
     Protected Sub raiseCanceled(ByRef sender As IPlaylistItem)
-        RaiseEvent canceled(Me)
+        RaiseEvent canceled(sender)
     End Sub
 
     Protected Sub raiseWaitForNext(ByRef sender As IPlaylistItem)
-        RaiseEvent waitForNext(Me)
+        RaiseEvent waitForNext(sender)
     End Sub
 
     Protected Sub raisePaused(ByRef sender As IPlaylistItem)
-        RaiseEvent paused(Me)
+        RaiseEvent paused(sender)
     End Sub
 
     Protected Sub raiseChanged(ByRef sender As IPlaylistItem)
-        RaiseEvent changed(Me)
+        RaiseEvent changed(sender)
     End Sub
 End Class

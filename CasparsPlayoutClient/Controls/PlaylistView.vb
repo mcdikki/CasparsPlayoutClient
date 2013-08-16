@@ -96,14 +96,15 @@ Public Class PlaylistView
                 ckbLoop.Enabled = False
 
                 ' load thumbnail
-                'Dim thumb As New PictureBox()
-                'If playlist.getMedia.getBase64Thumb.Length > 0 Then
-                'thumb.Image = ServerControler.getBase64ToImage(playlist.getMedia.getBase64Thumb)
-                'End If
-                'thumb.Dock = DockStyle.Fill
-                'thumb.SizeMode = PictureBoxSizeMode.AutoSize
-                'thumb.Parent = Me.layoutChild
-                'thumb.Show()
+                Dim thumb As New PictureBox()
+                If playlist.getMedia.getBase64Thumb.Length > 0 Then
+                    thumb.Image = ServerController.getBase64ToImage(playlist.getMedia.getBase64Thumb)
+                End If
+                thumb.Dock = DockStyle.Fill
+                thumb.SizeMode = PictureBoxSizeMode.AutoSize
+                thumb.Parent = Me.layoutChild
+                thumb.Show()
+
             Case AbstractPlaylistItem.PlaylistItemTypes.TEMPLATE
                 ' set default behaviour and view
                 lblExpand.ImageIndex = 4
@@ -395,8 +396,8 @@ Public Class PlaylistView
             Dim media As CasparCGMedia = e.Data.GetData("CasparCGNETConnector.CasparCGTemplate")
             Dim child As IPlaylistItem
             child = New PlaylistTemplateItem(media.getFullName, playlist.getController, media.clone)
-            ' child = New PlaylistBlockItem("not implemented yet", playlist.getController)
-            addChild(child)
+            'child = New PlaylistBlockItem("not implemented yet", playlist.getController)
+            'addChild(child)
         ElseIf e.Data.GetDataPresent("CasparCGNETConnector.CasparCGStill") Then
             ''
             '' Neue MediaItems einfügen
@@ -404,7 +405,6 @@ Public Class PlaylistView
             Dim media As CasparCGMedia = e.Data.GetData("CasparCGNETConnector.CasparCGStill")
             Dim child As IPlaylistItem
             child = New PlaylistStillItem(media.getFullName, playlist.getController, media.clone)
-            'child = New PlaylistBlockItem("not implemented yet", playlist.getController)
             playlist.addItem(child)
             addChild(child)
         ElseIf e.Data.GetDataPresent("CasparCGNETConnector.CasparCGAudio") Then
@@ -415,8 +415,8 @@ Public Class PlaylistView
             Dim child As IPlaylistItem
             child = New PlaylistAudioItem(media.getFullName, playlist.getController, media.clone)
             'child = New PlaylistBlockItem("not implemented yet", playlist.getController)
-            playlist.addItem(child)
-            addChild(child)
+            'playlist.addItem(child)
+            'addChild(child)
         ElseIf e.Data.GetDataPresent("CasparsPlayoutClient.PlaylistView") Then
             ''
             '' PlaylistItems verschieben
@@ -449,7 +449,7 @@ Public Class PlaylistView
 
     Private Overloads Sub handleDragEnter(ByVal sender As Object, ByVal e As DragEventArgs) Handles Me.DragEnter
         ' Check the format of the data being dropped. 
-        If playlist.getItemType = AbstractPlaylistItem.PlaylistItemTypes.BLOCK AndAlso (e.Data.GetDataPresent("CasparCGNETConnector.CasparCGMovie")) OrElse e.Data.GetDataPresent("CasparCGNETConnector.CasparCGAudio") OrElse e.Data.GetDataPresent("CasparCGNETConnector.CasparCGStill") OrElse e.Data.GetDataPresent("CasparCGNETConnector.CasparCGTemplate") Then
+        If playlist.getItemType = AbstractPlaylistItem.PlaylistItemTypes.BLOCK AndAlso (e.Data.GetDataPresent("CasparCGNETConnector.CasparCGMovie")) OrElse e.Data.GetDataPresent("CasparCGNETConnector.CasparCGStill") Then 'OrElse e.Data.GetDataPresent("CasparCGNETConnector.CasparCGTemplate") OrElse e.Data.GetDataPresent("CasparCGNETConnector.CasparCGAudio") Then
             ' Display the copy cursor. 
             e.Effect = DragDropEffects.Copy
         ElseIf e.Data.GetDataPresent("CasparsPlayoutClient.PlaylistView") Then
