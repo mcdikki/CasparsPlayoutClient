@@ -121,6 +121,8 @@ Public Class PlaylistView
         End Select
         layoutHeaderContentSplit_DoubleClick(Nothing, Nothing)
         If startCompact Then layoutHeaderContentSplit_DoubleClick(Nothing, Nothing)
+
+        AddHandler playlist.changed, Sub() onDataChanged()
     End Sub
 
     Private Sub initMenu()
@@ -325,25 +327,32 @@ Public Class PlaylistView
         End If
     End Sub
 
-    Private Sub txtDelay_Leave(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles txtDelay.Leave
+    Private Sub txtDelay_LostFocus(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles txtDelay.LostFocus
         playlist.setDelay(Long.Parse(txtDelay.Text))
-        txtDelay.Text = ServerController.getTimeStringOfMS(txtDelay.Text)
+        txtDelay.Text = ServerController.getTimeStringOfMS(playlist.getDelay)
     End Sub
 
-    Private Sub txtDelay_Enter(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles txtDelay.GotFocus
+    Private Sub txtDelay_GotFocus(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles txtDelay.GotFocus
         txtDelay.Text = playlist.getDelay
     End Sub
 
-    Private Sub txtName_Leave(ByVal sender As Object, ByVal e As System.EventArgs) Handles txtName.Leave
+    ' Handles ENTER to leave the textbox
+    Private Sub txtBox_Ok(ByVal sender As Object, ByVal e As KeyEventArgs) Handles txtDelay.KeyDown, txtDuration.KeyDown, txtName.KeyDown
+        If e.KeyCode = Keys.Enter Then
+            Me.SelectNextControl(DirectCast(sender, TextBox), True, True, True, True)
+        End If
+    End Sub
+
+    Private Sub txtName_LostFocus(ByVal sender As Object, ByVal e As System.EventArgs) Handles txtName.LostFocus
         playlist.setName(txtName.Text)
     End Sub
 
-    Private Sub txtDuration_Leave(ByVal sender As Object, ByVal e As System.EventArgs) Handles txtDuration.Leave
+    Private Sub txtDuration_LostFocus(ByVal sender As Object, ByVal e As System.EventArgs) Handles txtDuration.LostFocus
         playlist.setDuration(Long.Parse(txtDuration.Text))
-        txtDuration.Text = ServerController.getTimeStringOfMS(txtDuration.Text)
+        txtDuration.Text = ServerController.getTimeStringOfMS(playlist.getDuration)
     End Sub
 
-    Private Sub txtDuration_Enter(ByVal sender As Object, ByVal e As System.EventArgs) Handles txtDuration.GotFocus
+    Private Sub txtDuration_GotFocus(ByVal sender As Object, ByVal e As System.EventArgs) Handles txtDuration.GotFocus
         txtDuration.Text = playlist.getDuration
     End Sub
 

@@ -205,6 +205,7 @@ Public Class PlaylistMovieItem
     Public Overrides Sub setPosition(ByVal position As Long)
         'If Not isPlaying() Then
         getMedia.setInfo("frame-number", ServerController.getMsToFrames(position, getFPS))
+        raiseChanged(Me)
         'End If
     End Sub
 

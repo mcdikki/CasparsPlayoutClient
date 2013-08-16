@@ -34,6 +34,8 @@ Partial Class PlaylistView
         Me.pbPlayed = New System.Windows.Forms.ProgressBar()
         Me.layoutInfos = New System.Windows.Forms.FlowLayoutPanel()
         Me.grbChannelLayer = New System.Windows.Forms.GroupBox()
+        Me.grbDelay = New System.Windows.Forms.GroupBox()
+        Me.txtDelay = New System.Windows.Forms.TextBox()
         Me.grbDuration = New System.Windows.Forms.GroupBox()
         Me.txtDuration = New System.Windows.Forms.TextBox()
         Me.grpPosition = New System.Windows.Forms.GroupBox()
@@ -45,8 +47,6 @@ Partial Class PlaylistView
         Me.nudChannel = New System.Windows.Forms.NumericUpDown()
         Me.txtName = New System.Windows.Forms.TextBox()
         Me.layoutHeaderContentSplit = New System.Windows.Forms.SplitContainer()
-        Me.txtDelay = New System.Windows.Forms.TextBox()
-        Me.grbDelay = New System.Windows.Forms.GroupBox()
         CType(Me.layoutContentSplit, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.layoutContentSplit.Panel1.SuspendLayout()
         Me.layoutContentSplit.Panel2.SuspendLayout()
@@ -54,6 +54,7 @@ Partial Class PlaylistView
         Me.layoutButton.SuspendLayout()
         Me.layoutHeaderTable.SuspendLayout()
         Me.layoutInfos.SuspendLayout()
+        Me.grbDelay.SuspendLayout()
         Me.grbDuration.SuspendLayout()
         Me.grpPosition.SuspendLayout()
         Me.grpRemaining.SuspendLayout()
@@ -64,7 +65,6 @@ Partial Class PlaylistView
         Me.layoutHeaderContentSplit.Panel1.SuspendLayout()
         Me.layoutHeaderContentSplit.Panel2.SuspendLayout()
         Me.layoutHeaderContentSplit.SuspendLayout()
-        Me.grbDelay.SuspendLayout()
         Me.SuspendLayout()
         '
         'layoutContentSplit
@@ -269,6 +269,32 @@ Partial Class PlaylistView
         Me.grbChannelLayer.TabStop = False
         Me.grbChannelLayer.Text = "Channel-Layer"
         '
+        'grbDelay
+        '
+        Me.grbDelay.Controls.Add(Me.txtDelay)
+        Me.grbDelay.Font = New System.Drawing.Font("Microsoft Sans Serif", 6.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.grbDelay.Location = New System.Drawing.Point(0, 0)
+        Me.grbDelay.Margin = New System.Windows.Forms.Padding(0)
+        Me.grbDelay.Name = "grbDelay"
+        Me.grbDelay.Padding = New System.Windows.Forms.Padding(0)
+        Me.grbDelay.Size = New System.Drawing.Size(60, 35)
+        Me.grbDelay.TabIndex = 0
+        Me.grbDelay.TabStop = False
+        Me.grbDelay.Text = "Delay"
+        '
+        'txtDelay
+        '
+        Me.txtDelay.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.txtDelay.Location = New System.Drawing.Point(0, 11)
+        Me.txtDelay.Margin = New System.Windows.Forms.Padding(0)
+        Me.txtDelay.MaxLength = 11
+        Me.txtDelay.Name = "txtDelay"
+        Me.txtDelay.Size = New System.Drawing.Size(60, 18)
+        Me.txtDelay.TabIndex = 4
+        Me.txtDelay.Text = "00:00:00.00"
+        Me.txtDelay.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
+        Me.txtDelay.WordWrap = False
+        '
         'grbDuration
         '
         Me.grbDuration.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
@@ -315,10 +341,12 @@ Partial Class PlaylistView
         '
         'txtPosition
         '
+        Me.txtPosition.BackColor = System.Drawing.Color.White
         Me.txtPosition.Dock = System.Windows.Forms.DockStyle.Fill
         Me.txtPosition.Location = New System.Drawing.Point(0, 11)
         Me.txtPosition.Margin = New System.Windows.Forms.Padding(0)
         Me.txtPosition.Name = "txtPosition"
+        Me.txtPosition.ReadOnly = True
         Me.txtPosition.Size = New System.Drawing.Size(60, 18)
         Me.txtPosition.TabIndex = 0
         Me.txtPosition.TabStop = False
@@ -344,9 +372,11 @@ Partial Class PlaylistView
         '
         'txtRemaining
         '
+        Me.txtRemaining.BackColor = System.Drawing.Color.White
         Me.txtRemaining.Location = New System.Drawing.Point(1, 12)
         Me.txtRemaining.Margin = New System.Windows.Forms.Padding(0)
         Me.txtRemaining.Name = "txtRemaining"
+        Me.txtRemaining.ReadOnly = True
         Me.txtRemaining.Size = New System.Drawing.Size(60, 18)
         Me.txtRemaining.TabIndex = 0
         Me.txtRemaining.TabStop = False
@@ -433,32 +463,6 @@ Partial Class PlaylistView
         Me.layoutHeaderContentSplit.TabIndex = 2
         Me.layoutHeaderContentSplit.TabStop = False
         '
-        'txtDelay
-        '
-        Me.txtDelay.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.txtDelay.Location = New System.Drawing.Point(0, 11)
-        Me.txtDelay.Margin = New System.Windows.Forms.Padding(0)
-        Me.txtDelay.MaxLength = 11
-        Me.txtDelay.Name = "txtDelay"
-        Me.txtDelay.Size = New System.Drawing.Size(60, 18)
-        Me.txtDelay.TabIndex = 4
-        Me.txtDelay.Text = "00:00:00.00"
-        Me.txtDelay.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
-        Me.txtDelay.WordWrap = False
-        '
-        'grbDelay
-        '
-        Me.grbDelay.Controls.Add(Me.txtDelay)
-        Me.grbDelay.Font = New System.Drawing.Font("Microsoft Sans Serif", 6.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.grbDelay.Location = New System.Drawing.Point(0, 0)
-        Me.grbDelay.Margin = New System.Windows.Forms.Padding(0)
-        Me.grbDelay.Name = "grbDelay"
-        Me.grbDelay.Padding = New System.Windows.Forms.Padding(0)
-        Me.grbDelay.Size = New System.Drawing.Size(60, 35)
-        Me.grbDelay.TabIndex = 0
-        Me.grbDelay.TabStop = False
-        Me.grbDelay.Text = "Delay"
-        '
         'PlaylistView
         '
         Me.AllowDrop = True
@@ -482,6 +486,8 @@ Partial Class PlaylistView
         Me.layoutHeaderTable.PerformLayout()
         Me.layoutInfos.ResumeLayout(False)
         Me.layoutInfos.PerformLayout()
+        Me.grbDelay.ResumeLayout(False)
+        Me.grbDelay.PerformLayout()
         Me.grbDuration.ResumeLayout(False)
         Me.grbDuration.PerformLayout()
         Me.grpPosition.ResumeLayout(False)
@@ -496,8 +502,6 @@ Partial Class PlaylistView
         Me.layoutHeaderContentSplit.Panel2.ResumeLayout(False)
         CType(Me.layoutHeaderContentSplit, System.ComponentModel.ISupportInitialize).EndInit()
         Me.layoutHeaderContentSplit.ResumeLayout(False)
-        Me.grbDelay.ResumeLayout(False)
-        Me.grbDelay.PerformLayout()
         Me.ResumeLayout(False)
 
     End Sub
