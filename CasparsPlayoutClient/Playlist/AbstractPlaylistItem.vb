@@ -174,7 +174,7 @@ Public MustInherit Class AbstractPlaylistItem
     End Function
 
     Public Function isWaiting() As Boolean Implements IPlaylistItem.isWaiting
-        Return waiting AndAlso getControler.isConnected
+        Return waiting AndAlso getController.isConnected
     End Function
 
     Public Overridable Function getDuration() As Long Implements IPlaylistItem.getDuration
@@ -221,7 +221,7 @@ Public MustInherit Class AbstractPlaylistItem
     End Function
 
     Public Overridable Function getPlayed() As Byte Implements IPlaylistItem.getPlayed
-        If getDuration() > 0 AndAlso getControler.isConnected Then
+        If getDuration() > 0 AndAlso getController.isConnected Then
             Return Math.Min(100, (100 / getDuration()) * Math.Max(getPosition(), 0))
         Else
             Return 0
@@ -229,11 +229,11 @@ Public MustInherit Class AbstractPlaylistItem
     End Function
 
     Public Overridable Function isPlaying() As Boolean Implements IPlaylistItem.isPlaying
-        Return playing AndAlso getControler.isConnected
+        Return playing AndAlso getController.isConnected
     End Function
 
     Public Function isPaused() As Boolean Implements IPlaylistItem.isPaused
-        Return _paused AndAlso getControler.isConnected
+        Return _paused AndAlso getController.isConnected
     End Function
 
     Public Function isPlayable() As Boolean Implements IPlaylistItem.isPlayable
@@ -245,7 +245,7 @@ Public MustInherit Class AbstractPlaylistItem
         End Select
     End Function
 
-    Public Function getControler() As ServerController Implements IPlaylistItem.getController
+    Public Function getController() As ServerController Implements IPlaylistItem.getController
         Return controller
     End Function
 
@@ -255,7 +255,7 @@ Public MustInherit Class AbstractPlaylistItem
 
     Friend Function getFPS() As Integer Implements IPlaylistItem.getFPS
         If fps <= 0 Then
-            Return getControler.getFPS(getChannel)
+            Return getController.getFPS(getChannel)
         Else
             Return fps
         End If
@@ -325,7 +325,7 @@ Public MustInherit Class AbstractPlaylistItem
                 logger.warn("PlaylistItem.setChannel: Playlist " & getName() & ": The channel " & channel & " is not configured at the given server. This could lead to errors during playlist playback.")
                 fps = -1
             Else
-                fps = getControler.getFPS(channel)
+                fps = getController.getFPS(channel)
             End If
         End If
         Me.channel = channel

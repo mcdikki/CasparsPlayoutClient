@@ -110,20 +110,22 @@ Public Class OscMediaUpdater
             For Each item In playlist.getPlayingChildItems(True, True)
                 'logger.log("OSC: Checking Item " & item.getChannel & "-" & item.getLayer & item.getMedia.getName)
                 If item.getChannel = c AndAlso item.getLayer = l Then
-                    logger.debug("OSC: ReceiverItem found: " & item.getMedia.getName & " [" & item.getMedia.getInfo("frame-number") & "/" & item.getMedia.getInfo("duration") & "]")
+                    If item.getItemType = AbstractPlaylistItem.PlaylistItemTypes.MOVIE Then
+                        logger.debug("OSC: ReceiverItem found: " & item.getMedia.getName & " [" & item.getMedia.getInfo("frame-number") & "/" & item.getMedia.getInfo("duration") & "]")
 
-                    item.getMedia.setInfo("nb-frames", Integer.Parse(msg.Data.Item(1)))
-                    '' BUGFIX CasparCG-FFMPEG Producer never reachses nb-frames
-                    If Integer.Parse(msg.Data.Item(0)) >= Integer.Parse(item.getMedia.getInfo("duration")) - 10 Then
-                        item.getMedia.setInfo("frame-number", Integer.Parse(item.getMedia.getInfo("frame-number")) + 1)
-                    Else
-                        item.getMedia.setInfo("frame-number", Integer.Parse(msg.Data.Item(0)))
+                        item.getMedia.setInfo("nb-frames", Integer.Parse(msg.Data.Item(1)))
+                        '' BUGFIX CasparCG-FFMPEG Producer never reachses nb-frames
+                        If Integer.Parse(msg.Data.Item(0)) >= Integer.Parse(item.getMedia.getInfo("duration")) - 10 Then
+                            item.getMedia.setInfo("frame-number", Integer.Parse(item.getMedia.getInfo("frame-number")) + 1)
+                        Else
+                            item.getMedia.setInfo("frame-number", Integer.Parse(msg.Data.Item(0)))
+                        End If
+                        If Integer.Parse(item.getMedia.getInfo("frame-number")) = Integer.Parse(item.getMedia.getInfo("duration")) AndAlso Not item.isLooping Then
+                            item.stoppedPlaying()
+                        End If
+                        logger.debug("OscMediaUpdater: Frame Update msg received " & msg.Address & ": " & item.getMedia.getInfo("frame-number") & "/" & item.getMedia.getInfo("nb-frames"))
+                        Exit Sub
                     End If
-                    If Integer.Parse(item.getMedia.getInfo("frame-number")) = Integer.Parse(item.getMedia.getInfo("duration")) AndAlso Not item.isLooping Then
-                        item.stoppedPlaying()
-                    End If
-                    logger.debug("OscMediaUpdater: Frame Update msg received " & msg.Address & ": " & item.getMedia.getInfo("frame-number") & "/" & item.getMedia.getInfo("nb-frames"))
-                    Exit Sub
                 End If
             Next
         End If

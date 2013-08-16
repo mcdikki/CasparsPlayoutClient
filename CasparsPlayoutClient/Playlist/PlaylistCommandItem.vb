@@ -89,7 +89,7 @@ Public Class PlaylistCommandItem
 
     Private Sub execute()
         raiseStarted(Me)
-        command.execute(getControler.getCommandConnection)
+        command.execute(getController.getCommandConnection)
         stoppedPlaying()
     End Sub
 

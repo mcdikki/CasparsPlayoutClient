@@ -3,6 +3,8 @@ ToDo:
 CORE:
 =====
 
+- check removeHandler for delay functions.
+
 - implement playlist trigger
 --- alows to trigger the main functions of a playlist like start, stop abort
 --- triggers by time, maybe gpio etc. - keep it generic
@@ -85,6 +87,12 @@ Fixed - CD 29/07/13
 
 GUI:
 ==== 
+
+- BUG: Sorting Playlist d'n'd: 
+--- If drag from above to the item under -> sorting doesn't change in list, but on screen. 
+--- If drag from bottom to item above -> sort on list and view.
+
+- Add clear after play checkbox to all playing media
 
  - Channel reset of Items at connect should only appear if channel is not valid
 

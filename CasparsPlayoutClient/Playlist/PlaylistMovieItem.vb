@@ -38,10 +38,10 @@ Public Class PlaylistMovieItem
         MyBase.New(name, PlaylistItemTypes.MOVIE, controller, channel, layer, duration)
         If Not IsNothing(movie) Then
             If movie.getInfos.Count = 0 Then
-                movie.fillMediaInfo(getControler.getTestConnection, getControler.getTestChannel)
+                movie.fillMediaInfo(getController.getTestConnection, getController.getTestChannel)
             End If
-            If movie.containsInfo("nb-frames") AndAlso (duration > getControler.getOriginalMediaDuration(movie) OrElse duration = -1) Then
-                setDuration(getControler.getMediaDuration(movie, channel))
+            If movie.containsInfo("nb-frames") AndAlso (duration > getController.getOriginalMediaDuration(movie) OrElse duration = -1) Then
+                setDuration(getController.getMediaDuration(movie, channel))
             End If
             media = movie
             timer = New Timers.Timer()
@@ -70,20 +70,18 @@ Public Class PlaylistMovieItem
         '' CMD an ServerController schicken
         'logger.log("PlaylistMovieItem.playNextItem: Starte " & getChannel() & "-" & getLayer() & ": " & getMedia.getName)
         If getDelay() > 0 AndAlso timer.Enabled = False Then
-            stopWatch.Reset()
             timer.Interval = getDelay()
             timer.Enabled = True
-            stopWatch.Start()
+            stopWatch.Restart()
             waiting = True
             raiseWaitForNext(Me)
         Else
-            stopWatch.Stop()
             timer.Enabled = False
             stopWatch.Reset()
             waiting = False
             playing = True
 
-            If getControler.containsChannel(getChannel) AndAlso getLayer() > -1 Then
+            If getController.containsChannel(getChannel) AndAlso getLayer() > -1 Then
                 ' if the clip is allready loaded to bg, just start, else load & start
                 Dim cmd As ICommand
                 If isLoaded() Then
@@ -92,24 +90,17 @@ Public Class PlaylistMovieItem
                     logger.log("PlaylistMovieItem.playNextItem: Start allready loaded clip " & getMedia.getName)
                 Else
                     Dim d As Long = getMedia.getInfo("nb-frames")
-                    If getDuration() < getControler.getMediaDuration(getMedia, getChannel) Then d = ServerController.getMsToFrames(getDuration, getFPS)
+                    If getDuration() < getController.getMediaDuration(getMedia, getChannel) Then d = ServerController.getMsToFrames(getDuration, getFPS)
                     getMedia.setInfo("duration", d)
                     cmd = New PlayCommand(getChannel, getLayer, getMedia, isLooping, , d)
                     logger.log("PlaylistMovieItem.playNextItem: Load and start clip " & getMedia.getName)
                 End If
-
-                'Dim result = getController.getCommandConnection.sendCommand(CasparCGCommandFactory.getPlay(getChannel, getLayer, getMedia, isLooping, False))
-                If cmd.execute(getControler.getCommandConnection).isOK Then
+                If cmd.execute(getController.getCommandConnection).isOK Then
                     raiseStarted(Me)
-                    'While Not getControler.readyForUpdate.WaitOne()
-                    '    logger.warn("PlaylistMovieItem.start: " & getName() & ": Could not get handle to update my status")
-                    'End While
-                    'playing = True
-                    'getControler.readyForUpdate.Release()
                     ' InfoMediaUpdater needs an empty to detect end of file due to BUG: frame-number never reaches nb-frames
-                    If Not getControler.getCommandConnection.isOSCSupported() Then
+                    If Not getController.getCommandConnection.isOSCSupported() Then
                         cmd = New LoadbgCommand(getChannel, getLayer, "empty", True)
-                        cmd.execute(getControler.getCommandConnection)
+                        cmd.execute(getController.getCommandConnection)
                     End If
                     logger.log("PlaylistMovieItem.playNextItem: " & getChannel() & "-" & getLayer() & ": " & getMedia.getName & " started.")
                 Else
@@ -126,7 +117,7 @@ Public Class PlaylistMovieItem
     Public Overrides Sub abort()
         '' CMD an ServerController schicken
         Dim cmd As New StopCommand(getChannel, getLayer)
-        cmd.execute(getControler.getCommandConnection)
+        cmd.execute(getController.getCommandConnection)
         setPosition(0)
         waiting = False
         playing = False
@@ -139,7 +130,7 @@ Public Class PlaylistMovieItem
 
     Public Overrides Sub halt()
         Dim cmd As New StopCommand(getChannel, getLayer)
-        cmd.execute(getControler.getCommandConnection)
+        cmd.execute(getController.getCommandConnection)
         stoppedPlaying()
     End Sub
 
@@ -156,7 +147,7 @@ Public Class PlaylistMovieItem
     Public Overrides Sub pause(ByVal frames As Long)
         '' cmd an ServerController schicken
         Dim cmd As New PauseCommand(getChannel, getLayer)
-        cmd.execute(getControler.getCommandConnection)
+        cmd.execute(getController.getCommandConnection)
         raisePaused(Me)
         logger.log("PlaylistMovieItem.pause: " & getChannel() & "-" & getLayer() & ": " & getMedia.getName & " paused.")
     End Sub
@@ -167,26 +158,26 @@ Public Class PlaylistMovieItem
         ' check if a media is loaded to bg, than we need to play me with seek!!
         ' because otherwise it would start the bg clip
         Dim cmd As New PlayCommand(getChannel(), getLayer())
-        cmd.execute(getControler.getCommandConnection)
+        cmd.execute(getController.getCommandConnection)
         raiseStarted(Me)
         logger.log("PlaylistMovieItem.unPause: " & getChannel() & "-" & getLayer() & ": " & getMedia.getName & " restarted.")
     End Sub
 
     Public Overrides Sub load()
         ''ToDo
-        If getControler.getCommandConnection.isLayerFree(getLayer, getChannel, False, True) Then
+        If getController.getCommandConnection.isLayerFree(getLayer, getChannel, False, True) Then
 
             Dim d As Long = getMedia.getInfo("nb-frames")
-            If getDuration() < getControler.getMediaDuration(getMedia, getChannel) Then d = ServerController.getMsToFrames(getDuration, getFPS)
+            If getDuration() < getController.getMediaDuration(getMedia, getChannel) Then d = ServerController.getMsToFrames(getDuration, getFPS)
             getMedia.setInfo("duration", d)
 
             Dim cmd As New LoadbgCommand(getChannel, getLayer, getMedia, False, isLooping, , d)
-            If cmd.execute(getControler.getCommandConnection).isOK Then
+            If cmd.execute(getController.getCommandConnection).isOK Then
                 loaded = True
-                logger.log("PlaylistMovieItem.load: Loaded " & getMedia.getName + " to " & getChannel() & "-" & getLayer())
+                logger.log("PlaylistMovieItem.load: Loaded " & getMedia.getName + " to bg " & getChannel() & "-" & getLayer())
             Else
                 loaded = False
-                logger.warn("PlaylistMovieItem.load: Could not load " & getMedia.getName + " to " & getChannel() & "-" & getLayer() & ". Server resonded " & vbNewLine & cmd.getResponse.getServerMessage)
+                logger.warn("PlaylistMovieItem.load: Could not load " & getMedia.getName + " to bg " & getChannel() & "-" & getLayer() & ". Server resonded " & vbNewLine & cmd.getResponse.getServerMessage)
             End If
         Else
             logger.warn("PlaylistMovieItem.load: Can't load background if layer isn't free. Did not load " & getMedia.getName + " to " & getChannel() & "-" & getLayer())
@@ -223,18 +214,18 @@ Public Class PlaylistMovieItem
         If isLoaded() Then
 
             Dim d As Long = getMedia.getInfo("nb-frames")
-            If getDuration() < getControler.getMediaDuration(getMedia, getChannel) Then d = ServerController.getMsToFrames(getDuration, getFPS)
+            If getDuration() < getController.getMediaDuration(getMedia, getChannel) Then d = ServerController.getMsToFrames(getDuration, getFPS)
             getMedia.setInfo("duration", d)
 
             Dim cmd As New CallCommand(getChannel, getLayer, isLooping, , d)
-            cmd.execute(getControler.getCommandConnection)
+            cmd.execute(getController.getCommandConnection)
         End If
     End Sub
 
     Public Overrides Sub setChannel(ByVal channel As Integer)
         MyBase.setChannel(channel)
-        If getControler.containsChannel(channel) AndAlso Not IsNothing(getMedia) Then
-            setDuration(getControler.getMediaDuration(getMedia, channel))
+        If getController.containsChannel(channel) AndAlso Not IsNothing(getMedia) Then
+            setDuration(getController.getMediaDuration(getMedia, channel))
         End If
     End Sub
 

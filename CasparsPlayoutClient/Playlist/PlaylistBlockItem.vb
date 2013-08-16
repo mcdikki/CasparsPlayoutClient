@@ -131,12 +131,13 @@ Public Class PlaylistBlockItem
                     AddHandler nextItem.stopped, AddressOf itemStopped
                     AddHandler nextItem.aborted, AddressOf itemStopped
                     AddHandler nextItem.canceled, AddressOf itemCanceled
+                    AddHandler nextItem.started, AddressOf itemStarted
                     nextItem.start()
-                    ' check if we can safely load the next item
-                    Dim itemToLoad As IPlaylistItem = getNextToPlay(nextItem)
-                    If Not IsNothing(itemToLoad) AndAlso itemToLoad.isPlayable AndAlso nextItem.isPlayable AndAlso nextItem.getChannel = itemToLoad.getChannel AndAlso nextItem.getLayer = itemToLoad.getLayer Then
-                        itemToLoad.load()
-                    End If
+                    '' check if we can safely load the next item
+                    'Dim itemToLoad As IPlaylistItem = getNextToPlay(nextItem)
+                    'If nextItem.getDelay = 0 AndAlso Not IsNothing(itemToLoad) AndAlso itemToLoad.isPlayable AndAlso nextItem.isPlayable AndAlso nextItem.getChannel = itemToLoad.getChannel AndAlso nextItem.getLayer = itemToLoad.getLayer Then
+                    '    itemToLoad.load()
+                    'End If
                 ElseIf isLooping() Then
                     start()
                 Else : stoppedPlaying()
@@ -163,6 +164,11 @@ Public Class PlaylistBlockItem
     End Sub
 
     Private Sub itemStarted(ByRef sender As IPlaylistItem)
+        ' check if we can safely load the next item
+        Dim itemToLoad As IPlaylistItem = getNextToPlay(sender)
+        If Not IsNothing(itemToLoad) AndAlso itemToLoad.isPlayable AndAlso sender.isPlayable AndAlso sender.getChannel = itemToLoad.getChannel AndAlso sender.getLayer = itemToLoad.getLayer Then
+            itemToLoad.load()
+        End If
         RemoveHandler sender.started, AddressOf itemStarted
     End Sub
 
