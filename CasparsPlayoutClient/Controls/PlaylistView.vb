@@ -194,6 +194,8 @@ Public Class PlaylistView
                 Me.ckbLoop.Checked = .isLooping
                 Me.pbPlayed.Value = .getPlayed
             Else
+                Me.nudChannel.Value = Math.Max(.getChannel, 0)
+                Me.nudLayer.Value = Math.Max(.getLayer, -1)
                 Me.txtPosition.Text = ServerController.getTimeStringOfMS(0)
                 Me.txtDuration.Text = ServerController.getTimeStringOfMS(.getDuration)
                 Me.txtRemaining.Text = ServerController.getTimeStringOfMS(.getDuration)
@@ -315,27 +317,45 @@ Public Class PlaylistView
     End Sub
 
     Private Sub nudLayer_ValueChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles nudLayer.ValueChanged
-        If isInit Then
-            If nudLayer.Value < 0 Then
-                nudLayer.BackColor = Color.Red
-                playlist.setLayer(-1)
-            Else
-                nudLayer.BackColor = Color.White
-                playlist.setLayer(nudLayer.Value)
-            End If
+        ' Test no check, just show wrong
+        'If isInit Then
+        If nudLayer.Value < 0 Then
+            nudLayer.BackColor = Color.Red
+        Else
+            nudLayer.BackColor = Color.White
         End If
+        playlist.setLayer(nudLayer.Value)
+        'End If
+
+        'If isInit Then
+        '    If nudLayer.Value < 0 Then
+        '        nudLayer.BackColor = Color.Red
+        '        playlist.setLayer(-1)
+        '    Else
+        '        nudLayer.BackColor = Color.White
+        '        playlist.setLayer(nudLayer.Value)
+        '    End If
+        'End If
     End Sub
 
     Private Sub nudChannel_ValueChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles nudChannel.ValueChanged
-        If isInit Then
-            If nudChannel.Value < 1 OrElse Not playlist.getController.containsChannel(nudChannel.Value) Then
-                nudChannel.BackColor = Color.Red
-                playlist.setChannel(-1)
-            Else
-                nudChannel.BackColor = Color.White
-                playlist.setChannel(nudChannel.Value)
-            End If
+
+        If nudChannel.Value < 1 OrElse (playlist.getController.isOpen AndAlso nudChannel.Value > playlist.getController.getChannels) Then
+            nudChannel.BackColor = Color.Red
+        Else
+            nudChannel.BackColor = Color.White
         End If
+        playlist.setChannel(nudChannel.Value)
+
+        'If isInit Then
+        '    If nudChannel.Value < 1 OrElse Not playlist.getController.containsChannel(nudChannel.Value) Then
+        '        nudChannel.BackColor = Color.Red
+        '        playlist.setChannel(-1)
+        '    Else
+        '        nudChannel.BackColor = Color.White
+        '        playlist.setChannel(nudChannel.Value)
+        '    End If
+        'End If
     End Sub
 
     Private Sub txtDelay_LostFocus(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles txtDelay.LostFocus

@@ -29,6 +29,7 @@ Public Class PlaylistStillItem
     Public Sub New(ByVal name As String, ByRef controller As ServerController, ByVal still As CasparCGStill, Optional ByVal channel As Integer = -1, Optional ByVal layer As Integer = -1, Optional ByVal duration As Long = -1)
         MyBase.New(name, PlaylistItemTypes.STILL, controller, channel, layer, duration)
         setAutoStart(True)
+        setClearAfterPlayback()
         media = still
         timer = New Timers.Timer()
     End Sub
@@ -40,11 +41,16 @@ Public Class PlaylistStillItem
 
     Public Overrides Sub start()
         ' Wait if autostart not checked
-        If Not isAutoStarting() Then
-            raiseWaitForNext(Me)
-            waiting = True
+        If getChannel() > 0 AndAlso getLayer() > -1 Then
+            ' Wait if autostart not checked
+            If Not isAutoStarting() Then
+                raiseWaitForNext(Me)
+                waiting = True
+            Else
+                playNextItem()
+            End If
         Else
-            playNextItem()
+            raiseCanceled(Me)
         End If
     End Sub
 
@@ -83,7 +89,11 @@ Public Class PlaylistStillItem
                     ' if a duration is given, we need to start a timer as ccg doesn't know a image length at all
                     If getDuration() > 0 Then
                         timer = New Timers.Timer(getDuration())
-                        AddHandler timer.Elapsed, AddressOf stoppedPlaying
+                        If ClearAfterPlayback() Then
+                            AddHandler timer.Elapsed, AddressOf halt
+                        Else
+                            AddHandler timer.Elapsed, AddressOf stoppedPlaying
+                        End If
                         timer.Start()
                     End If
                 Else

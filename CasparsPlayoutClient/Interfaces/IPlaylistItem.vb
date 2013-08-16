@@ -35,6 +35,7 @@ Public Interface IPlaylistItem
     Function isPlaying() As Boolean
     Function isPaused() As Boolean
     Function isWaiting() As Boolean
+    Function clearAfterPlayback() As Boolean
     Function getPlayed() As Byte '% des Items gespielt
     Function getChildItems(Optional ByVal recursiv As Boolean = False) As List(Of IPlaylistItem) ' alle Items in diesem Item
     Function getPlayingChildItems(Optional ByVal recursiv As Boolean = False, Optional ByVal onlyPlayable As Boolean = False) As IEnumerable(Of IPlaylistItem) ' alle activen, spielenden Items in diesem Item
@@ -54,6 +55,7 @@ Public Interface IPlaylistItem
     Sub setLooping(ByVal looping As Boolean)
     Sub setAutoStart(ByVal autoStart As Boolean)
     Sub setParallel(ByVal parallel As Boolean)
+    Sub setClearAfterPlayback(Optional ByVal active As Boolean = True)
     Sub setDelay(ByVal delay As Long)
     Sub setDuration(ByVal duration As Long) ' Gesamtlaufzeit in ms
     Sub setPosition(ByVal position As Long) ' aktuelle ms

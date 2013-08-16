@@ -39,7 +39,7 @@ Public Class ServerController
     Private playlist As IPlaylistItem ' Die Root Playlist unter die alle anderen kommen
 
     Public Sub New()
-        playlist = New PlaylistBlockItem("Playlist", Me, -1, -1)
+        playlist = New PlaylistBlockItem("Playlist", Me, 1, 0)
         playlist.setParallel(True)
     End Sub
 

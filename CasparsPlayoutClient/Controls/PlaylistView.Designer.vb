@@ -420,6 +420,7 @@ Partial Class PlaylistView
         Me.nudChannel.Location = New System.Drawing.Point(161, 3)
         Me.nudChannel.Margin = New System.Windows.Forms.Padding(0)
         Me.nudChannel.Maximum = New Decimal(New Integer() {1000, 0, 0, 0})
+        Me.nudChannel.Minimum = New Decimal(New Integer() {1, 0, 0, -2147483648})
         Me.nudChannel.Name = "nudChannel"
         Me.nudChannel.Size = New System.Drawing.Size(41, 20)
         Me.nudChannel.TabIndex = 2

@@ -54,7 +54,7 @@ Public Class MainWindow
         If Not sc.isConnected Then
             If sc.open(txtAddress.Text, Integer.Parse(txtPort.Text)) Then
                 cmbConnect.Enabled = False
-                For i = 1 To sc.getChannels
+                For i = sc.getChannels To 1 Step -1
                     cbbClearChannel.Text = i
                     cbbClearChannel.Items.Add(i)
                 Next

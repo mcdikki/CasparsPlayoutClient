@@ -57,12 +57,16 @@ Public Class PlaylistMovieItem
     '' Methoden die überschrieben werden müssen weil sie andere oder mehr functionen haben
     ''-------------------------------------------------------------------------------------
     Public Overrides Sub start()
-        ' Wait if autostart not checked
-        If Not isAutoStarting() Then
-            raiseWaitForNext(Me)
-            waiting = True
+        If getChannel() > 0 AndAlso getLayer() > -1 Then
+            ' Wait if autostart not checked
+            If Not isAutoStarting() Then
+                raiseWaitForNext(Me)
+                waiting = True
+            Else
+                playNextItem()
+            End If
         Else
-            playNextItem()
+            raiseCanceled(Me)
         End If
     End Sub
 
@@ -98,7 +102,7 @@ Public Class PlaylistMovieItem
                 If cmd.execute(getController.getCommandConnection).isOK Then
                     raiseStarted(Me)
                     ' InfoMediaUpdater needs an empty to detect end of file due to BUG: frame-number never reaches nb-frames
-                    If Not getController.getCommandConnection.isOSCSupported() Then
+                    If Not getController.getCommandConnection.isOSCSupported() Or ClearAfterPlayback() Then
                         cmd = New LoadbgCommand(getChannel, getLayer, "empty", True)
                         cmd.execute(getController.getCommandConnection)
                     End If

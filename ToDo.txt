@@ -3,7 +3,6 @@ ToDo:
 CORE:
 =====
 
-- Idee: Statt timer für playlist, einfach nur atualisieren wenn ein changed event gefeuert wurde...
 
 - check removeHandler for delay functions.
 
@@ -37,6 +36,11 @@ CORE:
 
 - Add config class and functions
 
+
+Done - CD 16/08/13
+- Idee: Statt timer für playlist, einfach nur atualisieren wenn ein changed event gefeuert wurde...
+---> geht nicht, bzw. nur schwer. Dann müssten alle Playlists die nicht via MediaUpdater updates bekommen eigene timer führen etc. 
+---> Dann lieber einen timer für alle
 
 Done - CD 14/08/13
 - change frameTick from synced to normal timer as we don't need synced frameticks anymore
@@ -90,13 +94,7 @@ Fixed - CD 29/07/13
 GUI:
 ==== 
 
-- BUG: Sorting Playlist d'n'd: 
---- If drag from above to the item under -> sorting doesn't change in list, but on screen. 
---- If drag from bottom to item above -> sort on list and view.
-
 - Add clear after play checkbox to all playing media
-
- - Channel reset of Items at connect should only appear if channel is not valid
 
  - Overwork scaling issues of sub PLItems
  
@@ -119,6 +117,10 @@ GUI:
  --- Template
  --- Command
  
+ 
+ Done - CD 16/08/13
+ - Channel reset of Items at connect should only appear if channel is not valid
+ 
 Done - CD 14/08/13
  - Add Connection State for ACMP/OSC
  
@@ -132,6 +134,11 @@ Done - CD 29/07/13
 Seems to be Fixed - CD 02/08/13
  - BUG: Loop at Root Playlist doesn't work as expected
 
+ Fixed - CD 16/08/13
+- BUG: Sorting Playlist d'n'd: 
+--- If drag from above to the item under -> sorting doesn't change in list, but on screen. 
+--- If drag from bottom to item above -> sort on list and view.
+ 
 Fixed - CD 04/08/13
  - BUG: Window uncloseable after disconnect when InfoMediaUpdater was loaded (ccg version <= 2.0.3)
 ---> close was still for an old thread based design. Changed to event based.

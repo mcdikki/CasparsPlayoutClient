@@ -44,6 +44,7 @@ Public MustInherit Class AbstractPlaylistItem
     Private pauseThread As Threading.Thread
     Friend playNext As Boolean = False
     Friend waiting As Boolean = False
+    Private _clearAfterPlayback As Boolean = False
 
     Private updateItems As New Threading.Semaphore(1, 1)
 
@@ -273,6 +274,10 @@ Public MustInherit Class AbstractPlaylistItem
         Return False
     End Function
 
+    Public Overridable Function ClearAfterPlayback() As Boolean Implements IPlaylistItem.clearAfterPlayback
+        Return _clearAfterPlayback
+    End Function
+
 
     '' SETTER:
     ''---------
@@ -320,7 +325,7 @@ Public MustInherit Class AbstractPlaylistItem
     End Sub
 
     Public Overridable Sub setChannel(ByVal channel As Integer) Implements IPlaylistItem.setChannel
-        If channel <> -1 Then
+        If channel > -1 Then
             If Not controller.containsChannel(channel) Then
                 logger.warn("PlaylistItem.setChannel: Playlist " & getName() & ": The channel " & channel & " is not configured at the given server. This could lead to errors during playlist playback.")
                 fps = -1
@@ -359,6 +364,10 @@ Public MustInherit Class AbstractPlaylistItem
             Me.parallel = parallel
             RaiseEvent changed(Me)
         End If
+    End Sub
+
+    Public Sub setClearAfterPlayback(Optional ByVal active As Boolean = True) Implements IPlaylistItem.setClearAfterPlayback
+        _clearAfterPlayback = active
     End Sub
 
     Public Sub removeChild(ByRef child As IPlaylistItem) Implements IPlaylistItem.removeChild

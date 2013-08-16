@@ -50,12 +50,16 @@ Public Class PlaylistCommandItem
     End Sub
 
     Public Overrides Sub start()
-        ' Wait if autostart not checked
-        If Not isAutoStarting() Then
-            raiseWaitForNext(Me)
-            waiting = True
+        If getChannel() > 0 Then
+            ' Wait if autostart not checked
+            If Not isAutoStarting() Then
+                raiseWaitForNext(Me)
+                waiting = True
+            Else
+                playNextItem()
+            End If
         Else
-            playNextItem()
+            raiseCanceled(Me)
         End If
     End Sub
 
