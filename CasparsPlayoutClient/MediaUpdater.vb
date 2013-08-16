@@ -100,8 +100,6 @@ Public Class OscMediaUpdater
         ' Erst mal filtern
         Dim addressParts() As String = msg.Address.Split("/")
 
-        'logger.log("OSC: Pause msg received " & msg.Address & ": " & msg.Data.First)
-
         If addressParts.Length > 7 AndAlso addressParts(1) = "channel" AndAlso addressParts(4) = "layer" AndAlso addressParts(6) = "file" AndAlso addressParts(7) = "frame" Then
             Dim c As Integer = Integer.Parse(addressParts(2))
             Dim l As Integer = Integer.Parse(addressParts(5))
@@ -111,7 +109,7 @@ Public Class OscMediaUpdater
                 'logger.log("OSC: Checking Item " & item.getChannel & "-" & item.getLayer & item.getMedia.getName)
                 If item.getChannel = c AndAlso item.getLayer = l Then
                     If item.getItemType = AbstractPlaylistItem.PlaylistItemTypes.MOVIE Then
-                        logger.debug("OSC: ReceiverItem found: " & item.getMedia.getName & " [" & item.getMedia.getInfo("frame-number") & "/" & item.getMedia.getInfo("duration") & "]")
+                        'logger.debug("OSC: ReceiverItem found: " & item.getMedia.getName & " [" & item.getMedia.getInfo("frame-number") & "/" & item.getMedia.getInfo("duration") & "]")
 
                         item.getMedia.setInfo("nb-frames", Integer.Parse(msg.Data.Item(1)))
                         '' BUGFIX CasparCG-FFMPEG Producer never reachses nb-frames
