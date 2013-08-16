@@ -73,6 +73,8 @@ Public Class PlaylistView
                 lblExpand.ImageIndex = 1
                 ckbAuto.Checked = True
                 ckbParallel.Enabled = False
+                AddHandler txtDuration.GotFocus, AddressOf txtDuration_GotFocus
+                AddHandler txtDuration.LostFocus, AddressOf txtDuration_LostFocus
 
                 ' load thumbnail
                 Dim thumb As New PictureBox()
@@ -94,6 +96,8 @@ Public Class PlaylistView
                 ckbAuto.Checked = True
                 ckbParallel.Enabled = False
                 ckbLoop.Enabled = False
+                AddHandler txtDuration.GotFocus, AddressOf txtDuration_GotFocus
+                AddHandler txtDuration.LostFocus, AddressOf txtDuration_LostFocus
 
                 ' load thumbnail
                 Dim thumb As New PictureBox()
@@ -111,9 +115,16 @@ Public Class PlaylistView
             Case AbstractPlaylistItem.PlaylistItemTypes.COMMAND
                 ' set default behaviour and view
                 lblExpand.ImageIndex = 5
+                txtDuration.ReadOnly = True
+                txtDuration.BackColor = Color.White
+                txtDuration.TabStop = False
             Case AbstractPlaylistItem.PlaylistItemTypes.BLOCK
                 ' set default behaviour and view
                 lblExpand.ImageIndex = 0
+                txtDuration.ReadOnly = True
+                txtDuration.BackColor = Color.White
+                txtDuration.TabStop = False
+
                 '' BlockItem, schauen ob childs geladen werden können
                 For Each item In playlist.getChildItems(False)
                     addChild(item)
@@ -337,9 +348,9 @@ Public Class PlaylistView
     End Sub
 
     ' Handles ENTER to leave the textbox
-    Private Sub txtBox_Ok(ByVal sender As Object, ByVal e As KeyEventArgs) Handles txtDelay.KeyDown, txtDuration.KeyDown, txtName.KeyDown
+    Private Sub txtBox_Ok(ByVal sender As Object, ByVal e As KeyEventArgs) Handles txtDelay.KeyDown, txtDuration.KeyDown, txtName.KeyDown, nudLayer.KeyDown, nudChannel.KeyDown
         If e.KeyCode = Keys.Enter Then
-            Me.SelectNextControl(DirectCast(sender, TextBox), True, True, True, True)
+            Me.SelectNextControl(sender, True, True, True, True)
         End If
     End Sub
 
@@ -347,12 +358,12 @@ Public Class PlaylistView
         playlist.setName(txtName.Text)
     End Sub
 
-    Private Sub txtDuration_LostFocus(ByVal sender As Object, ByVal e As System.EventArgs) Handles txtDuration.LostFocus
+    Private Sub txtDuration_LostFocus(ByVal sender As Object, ByVal e As System.EventArgs)
         playlist.setDuration(Long.Parse(txtDuration.Text))
         txtDuration.Text = ServerController.getTimeStringOfMS(playlist.getDuration)
     End Sub
 
-    Private Sub txtDuration_GotFocus(ByVal sender As Object, ByVal e As System.EventArgs) Handles txtDuration.GotFocus
+    Private Sub txtDuration_GotFocus(ByVal sender As Object, ByVal e As System.EventArgs)
         txtDuration.Text = playlist.getDuration
     End Sub
 
