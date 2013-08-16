@@ -376,12 +376,48 @@ Public MustInherit Class AbstractPlaylistItem
     End Sub
 
     Public Sub insertChildAt(ByRef child As IPlaylistItem, ByRef position As IPlaylistItem) Implements IPlaylistItem.insertChildAt
-        If items.Contains(position) Then
+        If Not IsNothing(child) AndAlso items.Contains(position) Then
             logger.log("Playlist " + getName() + ": Insert item " + child.getName + " at position of " + position.getName)
-            updateItems.WaitOne()
-            items.Insert(items.IndexOf(position), child)
-            updateItems.Release()
-            child.setParent(Me)
+            If child.getChannel < 0 Then
+                child.setChannel(getChannel)
+            End If
+            If child.getLayer < 0 Then
+                child.setLayer(getLayer)
+            End If
+
+            If items.Contains(child) Then
+                ' The item is already in our list, so we have to care if child and position are neighbors
+                If items.IndexOf(child) + 1 = items.IndexOf(position) Then
+                    ' special case, they are neighbors and child is before pos
+                    ' -> instead of moving child to pos, we move pos. to child
+                    removeChild(position)
+                    position.setParent(Me)
+                    updateItems.WaitOne()
+                    items.Insert(items.IndexOf(child), position)
+                    updateItems.Release()
+                    AddHandler position.changed, AddressOf raiseChanged
+                Else
+                    removeChild(child)
+                    child.setParent(Me)
+                    updateItems.WaitOne()
+                    items.Insert(items.IndexOf(position), child)
+                    updateItems.Release()
+                    AddHandler child.changed, AddressOf raiseChanged
+                End If
+            Else
+                If Not IsNothing(child.getParent) Then child.getParent.removeChild(child)
+                child.setParent(Me)
+                updateItems.WaitOne()
+                items.Insert(items.IndexOf(position), child)
+                updateItems.Release()
+                AddHandler child.changed, AddressOf raiseChanged
+            End If
+
+            If isParallel() Then
+                setDuration(Math.Max(getDuration, child.getDuration))
+            Else
+                setDuration(getDuration() + child.getDuration)
+            End If
             RaiseEvent changed(Me)
         End If
     End Sub

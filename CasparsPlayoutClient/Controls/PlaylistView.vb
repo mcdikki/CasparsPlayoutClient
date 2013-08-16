@@ -448,19 +448,30 @@ Public Class PlaylistView
                 If item.Equals(Me) Then
                     logger.warn("Playlist " + item.playlist.getName + " Can't move or add me to myself.")
                 Else
-                    ' Playlist von seiner alten liste lösen
-                    item.playlist.getParent.removeChild(item.playlist)
-
                     If IsNothing(playlist.getParent) OrElse ModifierKeys = Keys.Control Then
                         ' oder, wenn es auf den Freiraum der neuen liste 
+                        ' Playlist von seiner alten liste lösen
+                        item.playlist.getParent.removeChild(item.playlist)
+
                         playlist.addItem(item.playlist)
                         item.Parent = Me.layoutChild
                     Else
                         ' und an den platz dieser Playlist in dem Vater einfügen
                         playlist.getParent.insertChildAt(item.playlist, playlist)
+
                         'jetzt noch die Controls entsprechend verschieben.
-                        item.Parent = Me.Parent
-                        Me.Parent.Controls.SetChildIndex(item, Me.Parent.Controls.GetChildIndex(Me))
+                        Dim p As Control = Me.Parent
+                        Dim oldItemP As Control = item.Parent
+                        Dim meIndex = p.Controls.GetChildIndex(Me)
+                        Dim oldItemIndex = item.Parent.Controls.GetChildIndex(item)
+
+                        p.Controls.Add(item)
+                        p.Controls.SetChildIndex(item, meIndex)
+                        If p.Controls.GetChildIndex(Me) < meIndex AndAlso oldItemP.Equals(p) AndAlso oldItemIndex < meIndex AndAlso Not meIndex = 1 Then
+                            ' wrong, we want it under the new  item
+                            p.Controls.SetChildIndex(item, p.Controls.GetChildIndex(Me))
+                        End If
+
                     End If
                 End If
             End If
