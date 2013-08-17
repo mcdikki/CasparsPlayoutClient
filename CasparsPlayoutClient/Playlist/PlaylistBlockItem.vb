@@ -49,6 +49,7 @@ Public Class PlaylistBlockItem
     Public Overrides Sub halt()
         timer.Enabled = False
         stopWatch.Stop()
+        waiting = False
         For Each item In getChildItems()
             If item.isPlaying Then RemoveHandler item.stopped, AddressOf itemStopped
             item.halt()

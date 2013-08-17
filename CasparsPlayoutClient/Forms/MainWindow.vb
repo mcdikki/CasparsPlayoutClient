@@ -27,7 +27,7 @@ Public Class MainWindow
     Private timer As Timers.Timer
 
     Private Sub MainWindow_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
-        logger.addLogAction(New consoleLogger(3))
+        logger.addLogAction(New consoleLogger(2))
         'logger.addLogAction(New fileLogger(4, "debug.log", True, False))
         sc = New ServerController
         mediaLib = New Library(sc)

@@ -4,8 +4,6 @@ CORE:
 =====
 
 
-- check removeHandler for delay functions.
-
 - implement playlist trigger
 --- alows to trigger the main functions of a playlist like start, stop abort
 --- triggers by time, maybe gpio etc. - keep it generic

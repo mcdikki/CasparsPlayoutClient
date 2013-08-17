@@ -133,8 +133,11 @@ Public Class PlaylistMovieItem
     End Sub
 
     Public Overrides Sub halt()
-        Dim cmd As New StopCommand(getChannel, getLayer)
-        cmd.execute(getController.getCommandConnection)
+        If isPlaying() Then
+            Dim cmd As New StopCommand(getChannel, getLayer)
+            cmd.execute(getController.getCommandConnection)
+        End If
+        waiting = False
         stoppedPlaying()
     End Sub
 
