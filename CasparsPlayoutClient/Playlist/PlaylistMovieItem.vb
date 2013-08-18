@@ -195,7 +195,7 @@ Public Class PlaylistMovieItem
         Return loaded
     End Function
 
-    Public Overrides Function getMedia() As CasparCGMedia
+    Public Overrides Function getMedia() As AbstractCasparCGMedia
         Return media
     End Function
 

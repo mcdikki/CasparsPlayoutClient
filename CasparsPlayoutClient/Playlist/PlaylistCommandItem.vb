@@ -127,18 +127,11 @@ Public Class PlaylistCommandItem
         End If
     End Function
 
-
-    '' functions that have to be overriden because they shoudl have no effect at all
-    Public Overloads Sub addItem(ByVal item As IPlaylistItem)
-        '' Nothing to do. Movie Items dosen't have child items
-    End Sub
-
-    Public Overloads Sub setChildItems(ByRef items As List(Of IPlaylistItem))
-        '' Nothing to do. Movie Items dosen't have child items
-    End Sub
-
-    Public Overrides Sub setDuration(duration As Long)
-    End Sub
+    Public Overrides Function toXML() As MSXML2.DOMDocument
+        Dim domDoc As MSXML2.DOMDocument = MyBase.toXML
+        domDoc.firstChild.appendChild(command.toXml.firstChild)
+        Return domDoc
+    End Function
 
 
     '' EMPTY MEMBERS
@@ -156,5 +149,17 @@ Public Class PlaylistCommandItem
     End Sub
 
     Public Overrides Sub unPause()
+    End Sub
+
+    '' functions that have to be overriden because they shoudl have no effect at all
+    Public Overloads Sub addItem(ByVal item As IPlaylistItem)
+        '' Nothing to do. Movie Items dosen't have child items
+    End Sub
+
+    Public Overloads Sub setChildItems(ByRef items As List(Of IPlaylistItem))
+        '' Nothing to do. Movie Items dosen't have child items
+    End Sub
+
+    Public Overrides Sub setDuration(duration As Long)
     End Sub
 End Class

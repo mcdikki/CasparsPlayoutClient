@@ -47,7 +47,20 @@ Public Class LibraryView
         '' Add ContexMenu
         cMenu = New ContextMenuStrip
         cMenu.Items.Add(New ToolStripMenuItem("Load from XML", Nothing, Sub() loadXml()))
+        cMenu.Items.Add(New ToolStripMenuItem("Save library to xml", Nothing, Sub() saveXmlLib()))
         Me.ContextMenuStrip = cMenu
+    End Sub
+
+    Public Sub saveXmlLib()
+        Dim domDoc As New MSXML2.DOMDocument
+        Dim pnode = domDoc.createElement("library")
+
+        For Each m In Library.getItems
+            pnode.appendChild(m.toXml.firstChild)
+        Next
+
+        domDoc.appendChild(pnode)
+        domDoc.save("MediaLibrary.xml")
     End Sub
 
     Public Sub loadXml()
@@ -55,31 +68,50 @@ Public Class LibraryView
         fd.DefaultExt = "xml"
         fd.Filter = "Xml Dateien|*.xml"
         fd.CheckFileExists = True
+        fd.Multiselect = True
         fd.ShowDialog()
 
         Dim domDoc As New MSXML2.DOMDocument
-        domDoc.load(fd.FileName)
-        Dim media = CasparCGMediaFactory.createMedia(domDoc.xml)
-        Library.addItem(media)
-        addMediaItem(media)
+        Dim media As AbstractCasparCGMedia
+        For Each f In fd.FileNames
+            If domDoc.load(f) Then
+                If domDoc.firstChild.nodeName.Equals("library") Then
+                    ' load whole lib
+                    For Each m As MSXML2.IXMLDOMNode In domDoc.firstChild.selectNodes("media")
+                        media = CasparCGMediaFactory.createMedia(m.xml)
+                        If Not IsNothing(media) Then
+                            Library.addItem(media)
+                            addMediaItem(media)
+                        End If
+                    Next
+                ElseIf domDoc.firstChild.nodeName.Equals("media") Then
+                    ' single media
+                    media = CasparCGMediaFactory.createMedia(domDoc.xml)
+                    If Not IsNothing(media) Then
+                        Library.addItem(media)
+                        addMediaItem(media)
+                    End If
+                End If
+            End If
+        Next
     End Sub
 
 
     Private Sub applyFilter() Handles ckbAudio.CheckedChanged, ckbMovie.CheckedChanged, ckbStill.CheckedChanged, ckbTemplate.CheckedChanged, txtFilter.TextChanged
-        Dim filteredList As New List(Of CasparCGMedia)
+        Dim filteredList As New List(Of AbstractCasparCGMedia)
 
         ' Filter by type
         If ckbAudio.Checked Then
-            filteredList.AddRange(Library.getItemsOfType(CasparCGMedia.MediaType.AUDIO))
+            filteredList.AddRange(Library.getItemsOfType(AbstractCasparCGMedia.MediaType.AUDIO))
         End If
         If ckbMovie.Checked Then
-            filteredList.AddRange(Library.getItemsOfType(CasparCGMedia.MediaType.MOVIE))
+            filteredList.AddRange(Library.getItemsOfType(AbstractCasparCGMedia.MediaType.MOVIE))
         End If
         If ckbStill.Checked Then
-            filteredList.AddRange(Library.getItemsOfType(CasparCGMedia.MediaType.STILL))
+            filteredList.AddRange(Library.getItemsOfType(AbstractCasparCGMedia.MediaType.STILL))
         End If
         If ckbTemplate.Checked Then
-            filteredList.AddRange(Library.getItemsOfType(CasparCGMedia.MediaType.TEMPLATE))
+            filteredList.AddRange(Library.getItemsOfType(AbstractCasparCGMedia.MediaType.TEMPLATE))
         End If
 
         ' Filter by name
@@ -135,7 +167,7 @@ Public Class LibraryView
     ''' </summary>
     ''' <param name="mediaItem"></param>
     ''' <remarks></remarks>
-    Private Sub addMediaItem(ByRef mediaItem As CasparCGMedia)
+    Private Sub addMediaItem(ByRef mediaItem As AbstractCasparCGMedia)
         Dim libItem As New LibraryViewItem(mediaItem)
         layoutItemsFlow.Controls.Add(libItem)
         libItem.Width = libItem.Parent.ClientRectangle.Width - libItem.Parent.Margin.Horizontal

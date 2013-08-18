@@ -32,18 +32,18 @@ Public MustInherit Class AbstractPlaylistItem
 
     ' Die (Kinder)Items dieses Items
     Private items As List(Of IPlaylistItem)
-    Private currentItem As IPlaylistItem
+    'Private currentItem As IPlaylistItem
     Private WithEvents controller As ServerController
-    Private Duration As Long ' Gesamtlaufzeit in Frames
-    Private Position As Long ' aktuelle Frame
-    Private Remaining As Long ' noch zu spielende Frames
-    Private ItemType As AbstractPlaylistItem.PlaylistItemTypes ' Typ des Item
-    Friend playing As Boolean
+    Private duration As Long ' Gesamtlaufzeit in Frames
+    Private position As Long ' aktuelle Frame
+    Private remaining As Long ' noch zu spielende Frames
+    Private itemType As AbstractPlaylistItem.PlaylistItemTypes ' Typ des Item
+    Protected playing As Boolean
     Private _paused As Boolean
-    Private startThread As Threading.Thread
-    Private pauseThread As Threading.Thread
-    Friend playNext As Boolean = False
-    Friend waiting As Boolean = False
+    'Private startThread As Threading.Thread
+    'Private pauseThread As Threading.Thread
+    'Friend playNext As Boolean = False
+    Protected waiting As Boolean = False
     Private _clearAfterPlayback As Boolean = False
 
     Private updateItems As New Threading.Semaphore(1, 1)
@@ -75,7 +75,7 @@ Public MustInherit Class AbstractPlaylistItem
     ''' <remarks></remarks>
     Protected Sub New(ByVal name As String, ByVal itemType As PlaylistItemTypes, ByRef controler As ServerController, Optional ByVal channel As Integer = -1, Optional ByVal layer As Integer = -1, Optional ByVal duration As Long = -1)
         Me.name = name
-        Me.ItemType = itemType
+        Me.itemType = itemType
         Me.controller = controler
         setChannel(channel)
         setLayer(layer)
@@ -117,24 +117,75 @@ Public MustInherit Class AbstractPlaylistItem
         Return getName() & "(" & getItemType.ToString & ") " & getChannel() & "-" & getLayer() & " playing: " & isPlaying.ToString
     End Function
 
-    Public Function toXML() As String Implements IPlaylistItem.toXML
-        Dim xml As String = "<item><name>" & _
-            name & "</name><type>" & _
-            getItemType.ToString & "</type><layer>" & _
-            layer.ToString & "</layer><channel>" & _
-            channel.ToString & "</channel><autostarting>" & _
-            isAutoStarting.ToString & "</autostarting><isParallel>" & _
-            isParallel.ToString & "</isParallel><isLooping>" & _
-            isLooping.ToString & "</isLooping><duration>" & _
-            Duration.ToString & "</duration><delay>" & _
-            delay.ToString & "</delay> "
-        For Each item As IPlaylistItem In items
-            xml = xml & item.toXML
+    Public Overridable Function toXML() As MSXML2.DOMDocument Implements IPlaylistItem.toXML
+        Dim configDoc As New MSXML2.DOMDocument
+        Dim pnode As MSXML2.IXMLDOMNode
+        Dim node As MSXML2.IXMLDOMNode
+        ' Head and ID data
+        pnode = configDoc.createElement("playlist")
+        node = configDoc.createElement("name")
+        node.nodeTypedValue = getName()
+        pnode.appendChild(node)
+        node = configDoc.createElement("type")
+        node.nodeTypedValue = getItemType()
+        pnode.appendChild(node)
+        node = configDoc.createElement("typename")
+        node.nodeTypedValue = getItemType().ToString
+        pnode.appendChild(node)
+
+        ' Class members
+        node = configDoc.createElement("channel")
+        node.nodeTypedValue = getChannel()
+        pnode.appendChild(node)
+        node = configDoc.createElement("layer")
+        node.nodeTypedValue = getLayer()
+        pnode.appendChild(node)
+        node = configDoc.createElement("loop")
+        node.nodeTypedValue = isLooping()
+        pnode.appendChild(node)
+        node = configDoc.createElement("autostart")
+        node.nodeTypedValue = isAutoStarting()
+        pnode.appendChild(node)
+        node = configDoc.createElement("parallel")
+        node.nodeTypedValue = isParallel()
+        pnode.appendChild(node)
+        node = configDoc.createElement("delay")
+        node.nodeTypedValue = getDelay()
+        pnode.appendChild(node)
+        node = configDoc.createElement("duration")
+        node.nodeTypedValue = getDuration()
+        pnode.appendChild(node)
+        node = configDoc.createElement("clearAfterPlayback")
+        node.nodeTypedValue = ClearAfterPlayback()
+        pnode.appendChild(node)
+
+        ' media if any
+        If Not IsNothing(getMedia) Then
+            pnode.appendChild(getMedia.toXml.firstChild())
+        End If
+
+        '' Add all subplaylists
+        For Each sp As IPlaylistItem In items
+            pnode.appendChild(sp.toXML.firstChild)
         Next
-        Return xml & "</item>"
+
+        '' Trigger (not yet implementet
+        node = configDoc.createElement("trigger")
+        pnode.appendChild(node)
+
+        configDoc.appendChild(pnode)
+        Return configDoc
+    End Function
+
+    Public Function toXMLString() As String Implements IPlaylistItem.toXMLString
+        Return toXML.xml
     End Function
 
     Public Sub loadXML(ByVal xml As String) Implements IPlaylistItem.loadXML
+        '' ToDo
+    End Sub
+
+    Public Sub loadXML(ByRef xmlDoc As MSXML2.DOMDocument) Implements IPlaylistItem.loadXML
         '' ToDo
     End Sub
 
@@ -179,15 +230,15 @@ Public MustInherit Class AbstractPlaylistItem
     End Function
 
     Public Overridable Function getDuration() As Long Implements IPlaylistItem.getDuration
-        Return Duration
+        Return duration
     End Function
 
     Public Function getItemType() As PlaylistItemTypes Implements IPlaylistItem.getItemType
-        Return ItemType
+        Return itemType
     End Function
 
     Public Overridable Function getPosition() As Long Implements IPlaylistItem.getPosition
-        Return Position
+        Return position
     End Function
 
     Public Overridable Function getRemaining() As Long Implements IPlaylistItem.getRemaining
@@ -250,7 +301,7 @@ Public MustInherit Class AbstractPlaylistItem
         Return controller
     End Function
 
-    Public Overridable Function getMedia() As CasparCGMedia Implements IPlaylistItem.getMedia
+    Public Overridable Function getMedia() As AbstractCasparCGMedia Implements IPlaylistItem.getMedia
         Return Nothing
     End Function
 
@@ -303,17 +354,17 @@ Public MustInherit Class AbstractPlaylistItem
     End Sub
 
     Public Overridable Sub setDuration(ByVal duration As Long) Implements IPlaylistItem.setDuration
-        Me.Duration = duration
+        Me.duration = duration
         RaiseEvent changed(Me)
     End Sub
 
     Public Overridable Sub setPosition(ByVal position As Long) Implements IPlaylistItem.setPosition
-        Me.Position = position
+        Me.position = position
         RaiseEvent changed(Me)
     End Sub
 
     Public Overridable Sub setRemaining(ByVal remaining As Long) Implements IPlaylistItem.setRemaining
-        Me.Remaining = remaining
+        Me.remaining = remaining
         RaiseEvent changed(Me)
     End Sub
 

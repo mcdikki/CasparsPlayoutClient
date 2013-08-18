@@ -34,7 +34,7 @@ Public Class PlaylistStillItem
         timer = New Timers.Timer()
     End Sub
 
-    Public Overrides Function getMedia() As CasparCGMedia
+    Public Overrides Function getMedia() As AbstractCasparCGMedia
         Return media
     End Function
 

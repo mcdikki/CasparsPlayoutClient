@@ -136,10 +136,10 @@ Public Class ServerController
     ''' <param name="media"></param>
     ''' <returns></returns>
     ''' <remarks></remarks>
-    Public Function getOriginalMediaDuration(ByRef media As CasparCGMedia) As Long
+    Public Function getOriginalMediaDuration(ByRef media As AbstractCasparCGMedia) As Long
         If isConnected() Then
             Select Case media.getMediaType
-                Case CasparCGMedia.MediaType.COLOR, CasparCGMedia.MediaType.STILL, CasparCGMedia.MediaType.TEMPLATE
+                Case AbstractCasparCGMedia.MediaType.COLOR, AbstractCasparCGMedia.MediaType.STILL, AbstractCasparCGMedia.MediaType.TEMPLATE
                     '' These mediatyps doesn't have any durations
                     Return 0
                 Case Else
@@ -168,7 +168,7 @@ Public Class ServerController
     ''' <param name="media"></param>
     ''' <returns></returns>
     ''' <remarks></remarks>
-    Public Function getMediaDuration(ByRef media As CasparCGMedia, ByVal channel As Integer) As Long
+    Public Function getMediaDuration(ByRef media As AbstractCasparCGMedia, ByVal channel As Integer) As Long
 
         'Return getOriginalMediaDuration(media)
 
@@ -177,7 +177,7 @@ Public Class ServerController
         '' zumindest wenn die metadaten stimmen - aber erst noch ausgiebig testen!
         If isConnected() Then
             Select Case media.getMediaType
-                Case CasparCGMedia.MediaType.COLOR, CasparCGMedia.MediaType.STILL, CasparCGMedia.MediaType.TEMPLATE
+                Case AbstractCasparCGMedia.MediaType.COLOR, AbstractCasparCGMedia.MediaType.STILL, AbstractCasparCGMedia.MediaType.TEMPLATE
                     '' These mediatyps doesn't have any durations
                     Return 0
                 Case Else
@@ -303,12 +303,12 @@ Public Class ServerController
     ''' </summary>
     ''' <returns></returns>
     ''' <remarks></remarks>
-    Public Function getMediaList() As Dictionary(Of String, CasparCGMedia)
-        Dim media As New Dictionary(Of String, CasparCGMedia)
+    Public Function getMediaList() As Dictionary(Of String, AbstractCasparCGMedia)
+        Dim media As New Dictionary(Of String, AbstractCasparCGMedia)
         Dim cmd As ICommand
         '' Catch the media list and create the media objects
         If isConnected() Then
-            Dim newMedia As CasparCGMedia = Nothing
+            Dim newMedia As AbstractCasparCGMedia = Nothing
             cmd = New ClsCommand()
             If cmd.execute(testConnection).isOK Then
                 For Each line As String In cmd.getResponse.getData.Split(vbCrLf)

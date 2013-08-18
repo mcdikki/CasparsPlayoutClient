@@ -20,20 +20,30 @@ CORE:
 --- Template
 --- Color
 --- audio
+---> Movie - CD 03/13
 ---> Command - CD 12/08/13
 ---> Still - CD 15/08/13
 
 
 - Implement missing save/load Playlist from xml functions
-
-
-- Add new ACMP commands
---- Layer/Channel routing - not yet fully defined in ACMP2, waiting for that
----> Thumbnail CMDs - CD 02/08/13
+---> load/save AbstractCasparCGMedia - CD 18/08/13
+------> Movie, Still, Audio, Color - Done
+------ Template - Open
+---> save AbstractPlaylist - Done CD 18/08/13
+------> Movie, Still, Audio, Block - Done
+------> Command - Done
+------ load AbstractPlaylist - Open
+--------- load AbstractCommand + CommandParameter - Open
 
 
 - Add config class and functions
 
+
+
+Done - CD 18/08/13
+- Add new ACMP commands
+---> Layer/Channel routing - CD 18/08/13
+---> Thumbnail CMDs - CD 02/08/13
 
 Done - CD 16/08/13
 - Idee: Statt timer für playlist, einfach nur atualisieren wenn ein changed event gefeuert wurde...

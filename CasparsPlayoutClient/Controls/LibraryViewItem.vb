@@ -19,10 +19,10 @@ Imports logger
 
 Public Class LibraryViewItem
 
-    Public Property MediaItem As CasparCGMedia
+    Public Property MediaItem As AbstractCasparCGMedia
     Private cMenu As ContextMenuStrip
 
-    Public Sub New(ByVal mediaItem As CasparCGMedia)
+    Public Sub New(ByVal mediaItem As AbstractCasparCGMedia)
         Me.MediaItem = mediaItem
         InitializeComponent()
         init()
@@ -47,13 +47,13 @@ Public Class LibraryViewItem
 
             'set type icon
             Select Case MediaItem.getMediaType
-                Case CasparCGMedia.MediaType.MOVIE
+                Case AbstractCasparCGMedia.MediaType.MOVIE
                     lblType.Image = Image.FromFile("img/media-button-movie.gif")
-                Case CasparCGMedia.MediaType.STILL
+                Case AbstractCasparCGMedia.MediaType.STILL
                     lblType.Image = Image.FromFile("img/media-button-still.gif")
-                Case CasparCGMedia.MediaType.AUDIO
+                Case AbstractCasparCGMedia.MediaType.AUDIO
                     lblType.Image = Image.FromFile("img/media-button-audio.gif")
-                Case CasparCGMedia.MediaType.TEMPLATE
+                Case AbstractCasparCGMedia.MediaType.TEMPLATE
                     lblType.Image = Image.FromFile("img/media-button-template.gif")
             End Select
         End If

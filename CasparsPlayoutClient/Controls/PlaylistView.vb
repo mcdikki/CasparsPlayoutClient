@@ -149,6 +149,7 @@ Public Class PlaylistView
 
         cMenu.Items.Add(sMenu)
         cMenu.Items.Add(New ToolStripMenuItem("Remove item", Nothing, New EventHandler(AddressOf removeItem)))
+        cMenu.Items.Add(New ToolStripMenuItem("Save Playlist", Nothing, Sub() playlist.toXML.save(playlist.getName & "(PLAYLIST).xml")))
         Me.ContextMenuStrip = cMenu
     End Sub
 
@@ -424,7 +425,7 @@ Public Class PlaylistView
             ''
             '' Neue MediaItems einfügen
             ''
-            Dim media As CasparCGMedia = e.Data.GetData("CasparCGNETConnector.CasparCGMovie")
+            Dim media As AbstractCasparCGMedia = e.Data.GetData("CasparCGNETConnector.CasparCGMovie")
             Dim child As IPlaylistItem
             child = New PlaylistMovieItem(media.getFullName, playlist.getController, media.clone)
             playlist.addItem(child)
@@ -433,7 +434,7 @@ Public Class PlaylistView
             ''
             '' Neue MediaItems einfügen
             ''
-            Dim media As CasparCGMedia = e.Data.GetData("CasparCGNETConnector.CasparCGTemplate")
+            Dim media As AbstractCasparCGMedia = e.Data.GetData("CasparCGNETConnector.CasparCGTemplate")
             Dim child As IPlaylistItem
             child = New PlaylistTemplateItem(media.getFullName, playlist.getController, media.clone)
             'child = New PlaylistBlockItem("not implemented yet", playlist.getController)
@@ -442,7 +443,7 @@ Public Class PlaylistView
             ''
             '' Neue MediaItems einfügen
             ''
-            Dim media As CasparCGMedia = e.Data.GetData("CasparCGNETConnector.CasparCGStill")
+            Dim media As AbstractCasparCGMedia = e.Data.GetData("CasparCGNETConnector.CasparCGStill")
             Dim child As IPlaylistItem
             child = New PlaylistStillItem(media.getFullName, playlist.getController, media.clone)
             playlist.addItem(child)
@@ -451,7 +452,7 @@ Public Class PlaylistView
             ''
             '' Neue MediaItems einfügen
             ''
-            Dim media As CasparCGMedia = e.Data.GetData("CasparCGNETConnector.CasparCGAudio")
+            Dim media As AbstractCasparCGMedia = e.Data.GetData("CasparCGNETConnector.CasparCGAudio")
             Dim child As IPlaylistItem
             child = New PlaylistAudioItem(media.getFullName, playlist.getController, media.clone)
             'child = New PlaylistBlockItem("not implemented yet", playlist.getController)

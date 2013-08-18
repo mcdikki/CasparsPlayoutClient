@@ -39,13 +39,14 @@ Public Interface IPlaylistItem
     Function getPlayed() As Byte '% des Items gespielt
     Function getChildItems(Optional ByVal recursiv As Boolean = False) As List(Of IPlaylistItem) ' alle Items in diesem Item
     Function getPlayingChildItems(Optional ByVal recursiv As Boolean = False, Optional ByVal onlyPlayable As Boolean = False) As IEnumerable(Of IPlaylistItem) ' alle activen, spielenden Items in diesem Item
-    Function getMedia() As CasparCGMedia
+    Function getMedia() As AbstractCasparCGMedia
     Function getFPS() As Integer
     Function getController() As ServerController
     Function getParent() As IPlaylistItem
     Function hasPlayingParent() As Boolean
     'Function getLayerUser(Optional ByVal recursiv As Boolean = False) As Dictionary(Of Integer, Integer)
-    Function toXML() As String
+    Function toXMLString() As String
+    Function toXML() As MSXML2.DOMDocument
     Function toString() As String
 
     Sub setParent(ByRef parent As IPlaylistItem)
@@ -67,7 +68,7 @@ Public Interface IPlaylistItem
 
 
     Sub loadXML(ByVal xml As String) ' Erstellt ein IPlaylistItem aus einer xml definition)
-
+    Sub loadXML(ByRef xmlDoc As MSXML2.DOMDocument)
 
 
     Sub load() ' lädt wenn möglich item schon im Hintergrund (ACMP loadbg)

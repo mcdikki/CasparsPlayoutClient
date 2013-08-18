@@ -24,29 +24,29 @@ Imports logger
 ''' <remarks></remarks>
 Public Class Library
 
-    Private media As Dictionary(Of String, CasparCGMedia)
+    Private media As Dictionary(Of String, AbstractCasparCGMedia)
     Private controller As ServerController
     Private updateThread As Threading.Thread
 
-    Public Event updated(ByRef sender As Object, ByRef media As Dictionary(Of String, CasparCGMedia))
+    Public Event updated(ByRef sender As Object, ByRef media As Dictionary(Of String, AbstractCasparCGMedia))
     Public Event updatedAborted(ByRef sender As Object)
 
 
     Public Sub New(ByVal controller As ServerController)
         Me.controller = controller
-        media = New Dictionary(Of String, CasparCGMedia)
+        media = New Dictionary(Of String, AbstractCasparCGMedia)
     End Sub
 
-    Public Sub addItem(ByRef item As CasparCGMedia)
+    Public Sub addItem(ByRef item As AbstractCasparCGMedia)
         If Not media.ContainsKey(item.getUuid) Then media.Add(item.getUuid, item)
     End Sub
 
-    Public Function getItems() As IEnumerable(Of CasparCGMedia)
+    Public Function getItems() As IEnumerable(Of AbstractCasparCGMedia)
         Return media.Values
     End Function
 
-    Public Function getItemsOfType(ByVal type As CasparCGMedia.MediaType) As IEnumerable(Of CasparCGMedia)
-        Dim items As New List(Of CasparCGMedia)
+    Public Function getItemsOfType(ByVal type As AbstractCasparCGMedia.MediaType) As IEnumerable(Of AbstractCasparCGMedia)
+        Dim items As New List(Of AbstractCasparCGMedia)
         For Each item In media.Values
             If item.getMediaType = type Then
                 items.Add(item)
@@ -55,7 +55,7 @@ Public Class Library
         Return items
     End Function
 
-    Public Function getItem(ByVal name As String) As CasparCGMedia
+    Public Function getItem(ByVal name As String) As AbstractCasparCGMedia
         For Each med In media.Values
             If med.getFullName.Equals(name) OrElse med.getName.Equals(name) Then Return med
         Next
@@ -71,7 +71,7 @@ Public Class Library
             updateThread = New Threading.Thread(AddressOf update)
             updateThread.Start()
         Else
-            RaiseEvent updated(Me, New Dictionary(Of String, CasparCGMedia))
+            RaiseEvent updated(Me, New Dictionary(Of String, AbstractCasparCGMedia))
         End If
     End Sub
 
@@ -90,7 +90,7 @@ Public Class Library
         RaiseEvent updated(Me, controller.getMediaList)
     End Sub
 
-    Public Sub updateLibrary(ByRef sender As Object, ByRef media As Dictionary(Of String, CasparCGMedia)) Handles Me.updated
+    Public Sub updateLibrary(ByRef sender As Object, ByRef media As Dictionary(Of String, AbstractCasparCGMedia)) Handles Me.updated
         Me.media = media
         updateThread = Nothing
     End Sub
