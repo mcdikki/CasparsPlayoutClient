@@ -37,6 +37,10 @@ Public Class Library
         media = New Dictionary(Of String, CasparCGMedia)
     End Sub
 
+    Public Sub addItem(ByRef item As CasparCGMedia)
+        If Not media.ContainsKey(item.getUuid) Then media.Add(item.getUuid, item)
+    End Sub
+
     Public Function getItems() As IEnumerable(Of CasparCGMedia)
         Return media.Values
     End Function

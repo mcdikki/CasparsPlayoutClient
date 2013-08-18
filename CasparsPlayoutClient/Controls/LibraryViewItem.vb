@@ -20,11 +20,13 @@ Imports logger
 Public Class LibraryViewItem
 
     Public Property MediaItem As CasparCGMedia
+    Private cMenu As ContextMenuStrip
 
     Public Sub New(ByVal mediaItem As CasparCGMedia)
         Me.MediaItem = mediaItem
         InitializeComponent()
         init()
+        initMenu()
     End Sub
 
     Private Sub init()
@@ -57,6 +59,13 @@ Public Class LibraryViewItem
         End If
     End Sub
 
+    Private Sub initMenu()
+        '' Add ContexMenu
+        cMenu = New ContextMenuStrip
+        cMenu.Items.Add(New ToolStripMenuItem("Save as XML", Nothing, Sub() saveXml()))
+        Me.ContextMenuStrip = cMenu
+    End Sub
+
     Private Sub lblExpand_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles lblExpand.Click
         Dim metadata As String = "" '"Metadata"
         For Each info In MediaItem.getInfos.Keys
@@ -72,6 +81,9 @@ Public Class LibraryViewItem
         End If
     End Sub
 
+    Public Sub saveXml()
+        MediaItem.toXml.save(MediaItem.getName & "(" & MediaItem.getMediaType.ToString & ").xml")
+    End Sub
 
     '' DragDrop verarbeiten
 

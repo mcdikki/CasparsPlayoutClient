@@ -21,11 +21,13 @@ Public Class LibraryView
 
     Public WithEvents Library As Library
     Private Delegate Sub updateDelagete()
+    Private cMenu As ContextMenuStrip
 
     Public Sub New()
         InitializeComponent()
         cmbRefresh.Image = Image.FromFile("img/refresh-icon.png")
         pbProgress.Image = Image.FromFile("img/refresh-icon-ani.gif")
+        initMenu()
     End Sub
 
     Public Sub New(ByVal library As Library)
@@ -33,12 +35,36 @@ Public Class LibraryView
         InitializeComponent()
         cmbRefresh.Image = Image.FromFile("img/refresh-icon.png")
         pbProgress.Image = Image.FromFile("img/refresh-icon-ani.gif")
+        initMenu()
         refreshList()
     End Sub
 
     '
     '' Hilfsmethoden
     '
+
+    Private Sub initMenu()
+        '' Add ContexMenu
+        cMenu = New ContextMenuStrip
+        cMenu.Items.Add(New ToolStripMenuItem("Load from XML", Nothing, Sub() loadXml()))
+        Me.ContextMenuStrip = cMenu
+    End Sub
+
+    Public Sub loadXml()
+        Dim fd As New OpenFileDialog()
+        fd.DefaultExt = "xml"
+        fd.Filter = "Xml Dateien|*.xml"
+        fd.CheckFileExists = True
+        fd.ShowDialog()
+
+        Dim domDoc As New MSXML2.DOMDocument
+        domDoc.load(fd.FileName)
+        Dim media = CasparCGMediaFactory.createMedia(domDoc.xml)
+        Library.addItem(media)
+        addMediaItem(media)
+    End Sub
+
+
     Private Sub applyFilter() Handles ckbAudio.CheckedChanged, ckbMovie.CheckedChanged, ckbStill.CheckedChanged, ckbTemplate.CheckedChanged, txtFilter.TextChanged
         Dim filteredList As New List(Of CasparCGMedia)
 
