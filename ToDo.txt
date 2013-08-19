@@ -25,6 +25,12 @@ CORE:
 ---> Still - CD 15/08/13
 
 
+
+- Add config class and functions
+
+
+
+Done - CD 19/08/13
 - Implement missing save/load Playlist to/from xml functions
 ---> load/save AbstractCasparCGMedia - CD 18/08/13
 ------> Movie, Still, Audio, Color - Done
@@ -32,12 +38,8 @@ CORE:
 ---> save AbstractPlaylist - Done CD 18/08/13
 ------> Movie, Still, Audio, Block - Done
 ------> Command - Done
------- load AbstractPlaylist - Open
---------- load AbstractCommand + CommandParameter - Open
-
-
-- Add config class and functions
-
+------> load AbstractPlaylist - Done
+---------> load AbstractCommand + CommandParameter - Done
 
 
 Done - CD 18/08/13
@@ -101,6 +103,8 @@ Fixed - CD 29/07/13
 
 GUI:
 ==== 
+
+- BUG: Names of Playlists are not set when not connected.
 
 - Add clear after play checkbox to all playing media
 

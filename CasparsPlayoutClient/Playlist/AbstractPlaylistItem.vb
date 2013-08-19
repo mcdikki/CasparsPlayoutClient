@@ -32,7 +32,6 @@ Public MustInherit Class AbstractPlaylistItem
 
     ' Die (Kinder)Items dieses Items
     Private items As List(Of IPlaylistItem)
-    'Private currentItem As IPlaylistItem
     Private WithEvents controller As ServerController
     Private duration As Long ' Gesamtlaufzeit in Frames
     Private position As Long ' aktuelle Frame
@@ -40,9 +39,6 @@ Public MustInherit Class AbstractPlaylistItem
     Private itemType As AbstractPlaylistItem.PlaylistItemTypes ' Typ des Item
     Protected playing As Boolean
     Private _paused As Boolean
-    'Private startThread As Threading.Thread
-    'Private pauseThread As Threading.Thread
-    'Friend playNext As Boolean = False
     Protected waiting As Boolean = False
     Private _clearAfterPlayback As Boolean = False
 
@@ -191,6 +187,12 @@ Public MustInherit Class AbstractPlaylistItem
         '' ToDo
         If Not IsNothing(xmlDoc) AndAlso xmlDoc.parsed Then
             If Not IsNothing(xmlDoc.firstChild) AndAlso xmlDoc.firstChild.nodeName.Equals("playlist") AndAlso Not IsNothing(xmlDoc.firstChild.selectSingleNode("name")) Then
+                ' remove old subplaylists
+                For Each item In items
+                    removeChild(item)
+                Next
+
+                ' read in new settings
                 setName(xmlDoc.firstChild.selectSingleNode("name").nodeTypedValue)
 
                 setChannel(xmlDoc.firstChild.selectSingleNode("channel").nodeTypedValue)
@@ -203,9 +205,8 @@ Public MustInherit Class AbstractPlaylistItem
                 setDuration(xmlDoc.firstChild.selectSingleNode("duration").nodeTypedValue)
                 setClearAfterPlayback(xmlDoc.firstChild.selectSingleNode("clearAfterPlayback").nodeTypedValue)
 
+                ' add subplayliss
                 For Each child As MSXML2.IXMLDOMElement In xmlDoc.firstChild.selectNodes("playlist")
-                    ' Neue IPlaylist über Factory bekommen und zu dieser hinzufügen
-                    '' ToDO
                     addItem(PlaylistFactory.getPlaylist(child.xml, getController))
                 Next
             Else

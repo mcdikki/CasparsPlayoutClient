@@ -40,9 +40,11 @@ Public Class PlaylistMovieItem
             If movie.getInfos.Count = 0 Then
                 movie.fillMediaInfo(getController.getTestConnection, getController.getTestChannel)
             End If
-            If movie.containsInfo("nb-frames") AndAlso (duration > getController.getOriginalMediaDuration(movie) OrElse duration = -1) Then
-                setDuration(getController.getMediaDuration(movie, channel))
-            End If
+            'If movie.containsInfo("nb-frames") AndAlso (duration > getController.getOriginalMediaDuration(movie) OrElse duration = -1) Then
+            '    If getController.isConnected Then
+            '        setDuration(getController.getMediaDuration(movie, channel))
+            '    End If
+            'End If
             media = movie
             timer = New Timers.Timer()
             timer.Enabled = False
@@ -206,6 +208,16 @@ Public Class PlaylistMovieItem
             Return stopWatch.ElapsedMilliseconds - timer.Interval
         Else
             Return 0
+        End If
+    End Function
+
+    Public Overrides Function getDuration() As Long
+        If MyBase.getDuration > 0 Then
+            Return MyBase.getDuration()
+        ElseIf getController.isConnected Then
+            Return getController.getMediaDuration(getMedia, getChannel)
+        Else
+            Return getController.getOriginalMediaDuration(getMedia)
         End If
     End Function
 

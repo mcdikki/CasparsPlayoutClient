@@ -139,19 +139,22 @@ Public Class PlaylistView
     Private Sub initMenu()
         '' Add ContexMenu
         cMenu = New ContextMenuStrip
-        cMenu.Items.Add(New ToolStripMenuItem("Add Block", Nothing, New EventHandler(AddressOf addBlockItem)))
 
+
+        cMenu.Items.Add(New ToolStripMenuItem("Save Playlist", Nothing, Sub() playlist.toXML.save(playlist.getName & "(PLAYLIST).xml")))
+        cMenu.Items.Add(New ToolStripMenuItem("Load Playlist", Nothing, Sub() loadPlaylist()))
+        cMenu.Items.Add(New ToolStripSeparator)
+        cMenu.Items.Add(New ToolStripMenuItem("Add Playlist(s) from file", Nothing, Sub() addPlaylist()))
+        cMenu.Items.Add(New ToolStripMenuItem("Add Block", Nothing, New EventHandler(AddressOf addBlockItem)))
         Dim sMenu = New ToolStripMenuItem("Add Command")
         sMenu.Name = "Add Command Menu"
         sMenu.Text = "Add Command"
         sMenu.DropDownItems.Add(New ToolStripMenuItem("Add ClearCommand", Nothing, New EventHandler(Sub() addCommandItem(CasparCGCommandFactory.Command.ClearCommand))))
         sMenu.DropDownItems.Add(New ToolStripMenuItem("Add StopCommand", Nothing, New EventHandler(Sub() addCommandItem(CasparCGCommandFactory.Command.StopCommand))))
-
         cMenu.Items.Add(sMenu)
+        cMenu.Items.Add(New ToolStripSeparator)
         cMenu.Items.Add(New ToolStripMenuItem("Remove item", Nothing, New EventHandler(AddressOf removeItem)))
-        cMenu.Items.Add(New ToolStripMenuItem("Save Playlist", Nothing, Sub() playlist.toXML.save(playlist.getName & "(PLAYLIST).xml")))
-        cMenu.Items.Add(New ToolStripMenuItem("Load Playlist", Nothing, Sub() loadPlaylist()))
-        cMenu.Items.Add(New ToolStripMenuItem("Add Playlist", Nothing, Sub() addPlaylist()))
+
         Me.ContextMenuStrip = cMenu
     End Sub
 
@@ -170,21 +173,25 @@ Public Class PlaylistView
                 If Not IsNothing(pl) Then
                     If IsNothing(playlist.getParent) Then
                         If pl.getItemType.Equals(AbstractPlaylistItem.PlaylistItemTypes.BLOCK) Then
+                            playlist.loadXML(domDoc)
                             layoutChild.Controls.Clear()
                             childs.Clear()
-                            playlist = pl
                             init()
                         Else
                             logger.warn("PlaylistView.loadPlaylist: Unable to load playlist from xml. The root playlist can only be replaced by a Block type playlist. Try add playlist instead.")
                         End If
                     Else
-                        For Each child In childs
-                            child.removeItem()
-                        Next
-                        childs.Clear()
-                        playlist = pl
-                        init()
+                        ' change playlist and create new playlist view
+                        playlist.insertChildAt(pl, playlist)
+                        playlist.getParent.removeChild(playlist)
+
+                        Dim child As New PlaylistView(pl, startCompact)
+
+                        Me.Parent.Controls.Add(child)
+                        Me.Parent.Controls.SetChildIndex(child, Me.Parent.Controls.IndexOf(child))
+                        Me.Parent.Controls.Remove(Me)
                     End If
+                    RaiseEvent dataChanged()
                 End If
             Else
                 logger.warn("PlaylistView.loadPlaylist: Unable to load playlist from xml file " & fd.FileName & ". Xml definition is not valid.")
@@ -199,22 +206,25 @@ Public Class PlaylistView
         fd.DefaultExt = "xml"
         fd.Filter = "Xml Dateien|*.xml"
         fd.CheckFileExists = True
-        fd.Multiselect = False
+        fd.Multiselect = True
         fd.ShowDialog()
 
         Dim domDoc As New MSXML2.DOMDocument
-        If domDoc.load(fd.FileName) Then
-            If domDoc.firstChild.nodeName.Equals("playlist") Then
-                Dim pl = PlaylistFactory.getPlaylist(domDoc, playlist.getController)
-                If Not IsNothing(pl) Then
-                    addChild(pl)
+        For Each f In fd.FileNames
+            If domDoc.load(f) Then
+                If domDoc.firstChild.nodeName.Equals("playlist") Then
+                    Dim pl = PlaylistFactory.getPlaylist(domDoc, playlist.getController)
+                    If Not IsNothing(pl) Then
+                        playlist.addItem(pl)
+                        addChild(pl)
+                    End If
+                Else
+                    logger.warn("PlaylistView.loadPlaylist: Unable to load playlist from xml file " & fd.FileName & ". Xml definition is not valid.")
                 End If
             Else
-                logger.warn("PlaylistView.loadPlaylist: Unable to load playlist from xml file " & fd.FileName & ". Xml definition is not valid.")
+                logger.warn("PlaylistView.loadPlaylist: Unable to xml file " & fd.FileName)
             End If
-        Else
-            logger.warn("PlaylistView.loadPlaylist: Unable to xml file " & fd.FileName)
-        End If
+        Next
     End Sub
 
     Public Sub onDataChanged() Handles Me.dataChanged
@@ -236,39 +246,34 @@ Public Class PlaylistView
     Private Sub setData()
         '' Werte eintragen
         With playlist
+
+            If Not txtName.Focused Then Me.txtName.Text = .getName
+            Me.nudChannel.Value = Math.Max(.getChannel, 0)
+            Me.nudLayer.Value = Math.Max(.getLayer, -1)
+            If Not txtDuration.Focused Then Me.txtDuration.Text = ServerController.getTimeStringOfMS(.getDuration)
+            If Not txtDelay.Focused Then Me.txtDelay.Text = ServerController.getTimeStringOfMS(.getDelay)
+            Me.ckbAuto.Checked = .isAutoStarting
+            Me.ckbParallel.Checked = .isParallel
+            Me.ckbLoop.Checked = .isLooping
+
             If playlist.getController.isOpen Then
-                If Not txtName.Focused Then Me.txtName.Text = .getName
-                Me.nudChannel.Value = Math.Max(.getChannel, 0)
-                Me.nudLayer.Value = Math.Max(.getLayer, -1)
                 Me.txtPosition.Text = ServerController.getTimeStringOfMS(.getPosition)
-                If Not txtDuration.Focused Then Me.txtDuration.Text = ServerController.getTimeStringOfMS(.getDuration)
                 Me.txtRemaining.Text = ServerController.getTimeStringOfMS(.getRemaining)
                 Select Case .getRemaining
                     Case Is < 1
                         txtRemaining.BackColor = Color.White
                     Case Is < warn
                         txtRemaining.BackColor = Color.Red
-                    Case Is < noWarn
+                    Case Is < nowarn
                         txtRemaining.BackColor = Color.Yellow
                     Case Else
                         txtRemaining.BackColor = Color.White
                 End Select
-                If Not txtDelay.Focused Then Me.txtDelay.Text = ServerController.getTimeStringOfMS(.getDelay)
-                Me.ckbAuto.Checked = .isAutoStarting
-                Me.ckbParallel.Checked = .isParallel
-                Me.ckbLoop.Checked = .isLooping
                 Me.pbPlayed.Value = .getPlayed
             Else
-                Me.nudChannel.Value = Math.Max(.getChannel, 0)
-                Me.nudLayer.Value = Math.Max(.getLayer, -1)
                 Me.txtPosition.Text = ServerController.getTimeStringOfMS(0)
-                Me.txtDuration.Text = ServerController.getTimeStringOfMS(.getDuration)
                 Me.txtRemaining.Text = ServerController.getTimeStringOfMS(.getDuration)
                 txtRemaining.BackColor = Color.White
-                Me.txtDelay.Text = ServerController.getTimeStringOfMS(.getDelay)
-                Me.ckbAuto.Checked = .isAutoStarting
-                Me.ckbParallel.Checked = .isParallel
-                Me.ckbLoop.Checked = .isLooping
                 Me.pbPlayed.Value = 0
             End If
         End With
@@ -342,6 +347,7 @@ Public Class PlaylistView
             nudChannel.Enabled = False
             nudLayer.Enabled = False
             txtName.ReadOnly = True
+            If Not IsNothing(Me.ContextMenuStrip) Then Me.ContextMenuStrip.Enabled = False
         ElseIf playlist.isWaiting Then
             txtName.BackColor = Color.LightBlue
             layoutContentSplit.Panel1.BackColor = Color.LightBlue
@@ -350,6 +356,7 @@ Public Class PlaylistView
             nudChannel.Enabled = False
             nudLayer.Enabled = False
             txtName.ReadOnly = True
+            If Not IsNothing(Me.ContextMenuStrip) Then Me.ContextMenuStrip.Enabled = False
         Else
             txtName.BackColor = Color.LightGreen
             layoutContentSplit.Panel1.BackColor = Color.LightGreen
@@ -360,6 +367,7 @@ Public Class PlaylistView
             nudChannel.Enabled = True
             nudLayer.Enabled = True
             txtName.ReadOnly = False
+            If Not IsNothing(Me.ContextMenuStrip) Then Me.ContextMenuStrip.Enabled = True
         End If
     End Sub
 
@@ -477,6 +485,12 @@ Public Class PlaylistView
         If Not IsNothing(playlist.getParent) Then
             playlist.getParent.removeChild(playlist)
             Me.Parent.Controls.Remove(Me)
+        Else
+            Me.layoutChild.Controls.Clear()
+            childs.Clear()
+            For Each child In playlist.getChildItems()
+                playlist.removeChild(child)
+            Next
         End If
     End Sub
 

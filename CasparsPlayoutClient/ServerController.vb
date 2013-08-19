@@ -114,6 +114,12 @@ Public Class ServerController
         Return playlist
     End Function
 
+    Public Sub setPlaylistRoot(ByRef rootPlaylist As IPlaylistItem)
+        If Not IsNothing(rootPlaylist) AndAlso rootPlaylist.getItemType.Equals(AbstractPlaylistItem.PlaylistItemTypes.BLOCK) Then
+            playlist = rootPlaylist
+        End If
+    End Sub
+
     Public Function getCommandConnection() As CasparCGConnection
         Return cmdConnection
     End Function
@@ -137,28 +143,28 @@ Public Class ServerController
     ''' <returns></returns>
     ''' <remarks></remarks>
     Public Function getOriginalMediaDuration(ByRef media As AbstractCasparCGMedia) As Long
-        If isConnected() Then
-            Select Case media.getMediaType
-                Case AbstractCasparCGMedia.MediaType.COLOR, AbstractCasparCGMedia.MediaType.STILL, AbstractCasparCGMedia.MediaType.TEMPLATE
-                    '' These mediatyps doesn't have any durations
-                    Return 0
-                Case Else
-                    If media.getInfos.Count = 0 Then
-                        '' no media info is loaded
-                        '' load it now
+        Select Case media.getMediaType
+            Case AbstractCasparCGMedia.MediaType.COLOR, AbstractCasparCGMedia.MediaType.STILL, AbstractCasparCGMedia.MediaType.TEMPLATE
+                '' These mediatyps doesn't have any durations
+                Return 0
+            Case Else
+                If media.getInfos.Count = 0 Then
+                    '' no media info is loaded
+                    '' load it now
+                    If isConnected() Then
                         media.fillMediaInfo(testConnection, testChannel)
                     End If
-                    If media.containsInfo("file-nb-frames") AndAlso media.containsInfo("fps") AndAlso media.containsInfo("progressive") Then
-                        Dim fps As Integer = Single.Parse(media.getInfo("fps")) * 100
-                        Dim progressive = Boolean.Parse(media.getInfo("progressive"))
-                        'If Not progressive Then
-                        '    fps = fps / 2
-                        'End If
-                        Return getFramesToMS(media.getInfo("file-nb-frames"), fps)
-                    End If
-                    logger.err("ServerController.getOriginalMediaDuration: Could not get media duration of " & media.getFullName & "(" & media.getMediaType.ToString & ").")
-            End Select
-        End If
+                End If
+                If media.containsInfo("file-nb-frames") AndAlso media.containsInfo("fps") AndAlso media.containsInfo("progressive") Then
+                    Dim fps As Integer = Single.Parse(media.getInfo("fps")) * 100
+                    Dim progressive = Boolean.Parse(media.getInfo("progressive"))
+                    'If Not progressive Then
+                    '    fps = fps / 2
+                    'End If
+                    Return getFramesToMS(media.getInfo("file-nb-frames"), fps)
+                End If
+                logger.err("ServerController.getOriginalMediaDuration: Could not get media duration of " & media.getFullName & "(" & media.getMediaType.ToString & ").")
+        End Select
         Return 0
     End Function
 
