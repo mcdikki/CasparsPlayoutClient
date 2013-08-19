@@ -150,7 +150,71 @@ Public Class PlaylistView
         cMenu.Items.Add(sMenu)
         cMenu.Items.Add(New ToolStripMenuItem("Remove item", Nothing, New EventHandler(AddressOf removeItem)))
         cMenu.Items.Add(New ToolStripMenuItem("Save Playlist", Nothing, Sub() playlist.toXML.save(playlist.getName & "(PLAYLIST).xml")))
+        cMenu.Items.Add(New ToolStripMenuItem("Load Playlist", Nothing, Sub() loadPlaylist()))
+        cMenu.Items.Add(New ToolStripMenuItem("Add Playlist", Nothing, Sub() addPlaylist()))
         Me.ContextMenuStrip = cMenu
+    End Sub
+
+    Private Sub loadPlaylist()
+        Dim fd As New OpenFileDialog()
+        fd.DefaultExt = "xml"
+        fd.Filter = "Xml Dateien|*.xml"
+        fd.CheckFileExists = True
+        fd.Multiselect = False
+        fd.ShowDialog()
+
+        Dim domDoc As New MSXML2.DOMDocument
+        If domDoc.load(fd.FileName) Then
+            If domDoc.firstChild.nodeName.Equals("playlist") Then
+                Dim pl = PlaylistFactory.getPlaylist(domDoc, playlist.getController)
+                If Not IsNothing(pl) Then
+                    If IsNothing(playlist.getParent) Then
+                        If pl.getItemType.Equals(AbstractPlaylistItem.PlaylistItemTypes.BLOCK) Then
+                            layoutChild.Controls.Clear()
+                            childs.Clear()
+                            playlist = pl
+                            init()
+                        Else
+                            logger.warn("PlaylistView.loadPlaylist: Unable to load playlist from xml. The root playlist can only be replaced by a Block type playlist. Try add playlist instead.")
+                        End If
+                    Else
+                        For Each child In childs
+                            child.removeItem()
+                        Next
+                        childs.Clear()
+                        playlist = pl
+                        init()
+                    End If
+                End If
+            Else
+                logger.warn("PlaylistView.loadPlaylist: Unable to load playlist from xml file " & fd.FileName & ". Xml definition is not valid.")
+            End If
+        Else
+            logger.warn("PlaylistView.loadPlaylist: Unable to xml file " & fd.FileName)
+        End If
+    End Sub
+
+    Public Sub addPlaylist()
+        Dim fd As New OpenFileDialog()
+        fd.DefaultExt = "xml"
+        fd.Filter = "Xml Dateien|*.xml"
+        fd.CheckFileExists = True
+        fd.Multiselect = False
+        fd.ShowDialog()
+
+        Dim domDoc As New MSXML2.DOMDocument
+        If domDoc.load(fd.FileName) Then
+            If domDoc.firstChild.nodeName.Equals("playlist") Then
+                Dim pl = PlaylistFactory.getPlaylist(domDoc, playlist.getController)
+                If Not IsNothing(pl) Then
+                    addChild(pl)
+                End If
+            Else
+                logger.warn("PlaylistView.loadPlaylist: Unable to load playlist from xml file " & fd.FileName & ". Xml definition is not valid.")
+            End If
+        Else
+            logger.warn("PlaylistView.loadPlaylist: Unable to xml file " & fd.FileName)
+        End If
     End Sub
 
     Public Sub onDataChanged() Handles Me.dataChanged

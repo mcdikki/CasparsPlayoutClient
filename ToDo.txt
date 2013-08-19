@@ -25,10 +25,10 @@ CORE:
 ---> Still - CD 15/08/13
 
 
-- Implement missing save/load Playlist from xml functions
+- Implement missing save/load Playlist to/from xml functions
 ---> load/save AbstractCasparCGMedia - CD 18/08/13
 ------> Movie, Still, Audio, Color - Done
------- Template - Open
+------> Template - Done
 ---> save AbstractPlaylist - Done CD 18/08/13
 ------> Movie, Still, Audio, Block - Done
 ------> Command - Done

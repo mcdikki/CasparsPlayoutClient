@@ -145,6 +145,7 @@
     <Compile Include="Controls\LibraryViewItem.vb">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="PlaylistFactory.vb" />
     <Compile Include="Playlist\PlaylistAudioItem.vb" />
     <Compile Include="Playlist\PlaylistCommandItem.vb" />
     <Compile Include="Playlist\PlaylistStillItem.vb" />

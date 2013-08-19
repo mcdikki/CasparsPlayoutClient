@@ -182,11 +182,38 @@ Public MustInherit Class AbstractPlaylistItem
     End Function
 
     Public Sub loadXML(ByVal xml As String) Implements IPlaylistItem.loadXML
-        '' ToDo
+        Dim confDoc As New MSXML2.DOMDocument
+        confDoc.loadXML(xml)
+        loadXML(confDoc)
     End Sub
 
     Public Sub loadXML(ByRef xmlDoc As MSXML2.DOMDocument) Implements IPlaylistItem.loadXML
         '' ToDo
+        If Not IsNothing(xmlDoc) AndAlso xmlDoc.parsed Then
+            If Not IsNothing(xmlDoc.firstChild) AndAlso xmlDoc.firstChild.nodeName.Equals("playlist") AndAlso Not IsNothing(xmlDoc.firstChild.selectSingleNode("name")) Then
+                setName(xmlDoc.firstChild.selectSingleNode("name").nodeTypedValue)
+
+                setChannel(xmlDoc.firstChild.selectSingleNode("channel").nodeTypedValue)
+                setLayer(xmlDoc.firstChild.selectSingleNode("layer").nodeTypedValue)
+
+                setLooping(xmlDoc.firstChild.selectSingleNode("loop").nodeTypedValue)
+                setAutoStart(xmlDoc.firstChild.selectSingleNode("autostart").nodeTypedValue)
+                setParallel(xmlDoc.firstChild.selectSingleNode("parallel").nodeTypedValue)
+                setDelay(xmlDoc.firstChild.selectSingleNode("delay").nodeTypedValue)
+                setDuration(xmlDoc.firstChild.selectSingleNode("duration").nodeTypedValue)
+                setClearAfterPlayback(xmlDoc.firstChild.selectSingleNode("clearAfterPlayback").nodeTypedValue)
+
+                For Each child As MSXML2.IXMLDOMElement In xmlDoc.firstChild.selectNodes("playlist")
+                    ' Neue IPlaylist über Factory bekommen und zu dieser hinzufügen
+                    '' ToDO
+                    addItem(PlaylistFactory.getPlaylist(child.xml, getController))
+                Next
+            Else
+                logger.err("AbstractPlaylist.loadXml: Error reading xml. Not valid playlist definition.")
+            End If
+        Else
+            logger.err("AbstractPlaylist.loadXml: Error reading xml. No or empty xml document given.")
+        End If
     End Sub
 
 
