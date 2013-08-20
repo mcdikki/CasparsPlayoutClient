@@ -81,6 +81,7 @@ Public Class MainWindow
         ssLog.AllowMerge = False
         ssLog.CanOverflow = True
         ssLog.LayoutStyle = ToolStripLayoutStyle.VerticalStackWithOverflow
+        ssLog.ShowItemToolTips = True
 
         AddHandler timer.Elapsed, AddressOf updateClock
         AddHandler timer.Elapsed, AddressOf updateDate
@@ -102,14 +103,14 @@ Public Class MainWindow
         End If
         If msg.getLevel < loglevels.debug Then
             Dim item As New TimedStatusLable(7000, msg.getMessage)
-            item.BorderSides = ToolStripStatusLabelBorderSides.All
+            item.BorderSides = ToolStripStatusLabelBorderSides.Top
             item.BorderStyle = Border3DStyle.Flat
             item.TextAlign = ContentAlignment.MiddleLeft
             ssLog.Items.Add(item)
         End If
     End Sub
 
-    Private Sub ssLog_ItemClicked(sender As Object, e As ToolStripItemClickedEventArgs)
+    Private Sub ssLog_ItemClicked(sender As Object, e As ToolStripItemClickedEventArgs) Handles ssLog.ItemClicked
         If ssLog.Items.IndexOf(e.ClickedItem) > 0 Then MsgBox(e.ClickedItem.Text)
     End Sub
 
