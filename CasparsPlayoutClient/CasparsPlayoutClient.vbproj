@@ -145,6 +145,12 @@
     <Compile Include="Controls\LibraryViewItem.vb">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="Controls\TimedStatusLable.Designer.vb">
+      <DependentUpon>TimedStatusLable.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\TimedStatusLable.vb">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="PlaylistFactory.vb" />
     <Compile Include="Playlist\PlaylistAudioItem.vb" />
     <Compile Include="Playlist\PlaylistCommandItem.vb" />

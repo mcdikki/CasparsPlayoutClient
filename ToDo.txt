@@ -106,7 +106,6 @@ Fixed - CD 29/07/13
 GUI:
 ==== 
 
-- BUG: Names of Playlists are not set when not connected.
 
 - Add clear after play checkbox to all playing media
 
@@ -148,7 +147,10 @@ Done - CD 29/07/13
 Seems to be Fixed - CD 02/08/13
  - BUG: Loop at Root Playlist doesn't work as expected
 
- Fixed - CD 16/08/13
+Fixed - CD 19/08/13
+- BUG: Names of Playlists are not set when not connected.
+ 
+Fixed - CD 16/08/13
 - BUG: Sorting Playlist d'n'd: 
 --- If drag from above to the item under -> sorting doesn't change in list, but on screen. 
 --- If drag from bottom to item above -> sort on list and view.

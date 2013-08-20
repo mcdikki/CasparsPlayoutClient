@@ -25,7 +25,12 @@ Partial Class MainWindow
     'Das Bearbeiten mit dem Code-Editor ist nicht möglich.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
+        Me.BottomToolStripPanel = New System.Windows.Forms.ToolStripPanel()
+        Me.TopToolStripPanel = New System.Windows.Forms.ToolStripPanel()
+        Me.ContentPanel = New System.Windows.Forms.ToolStripContentPanel()
         Me.layoutPlaylistSplit = New System.Windows.Forms.SplitContainer()
+        Me.ssLog = New System.Windows.Forms.StatusStrip()
+        Me.logStatusBar = New System.Windows.Forms.ToolStripStatusLabel()
         Me.layoutUpDownSplit = New System.Windows.Forms.SplitContainer()
         Me.layoutCgLib = New System.Windows.Forms.SplitContainer()
         Me.layoutTableMain = New System.Windows.Forms.TableLayoutPanel()
@@ -47,8 +52,10 @@ Partial Class MainWindow
         Me.txtPort = New System.Windows.Forms.TextBox()
         Me.txtAddress = New System.Windows.Forms.TextBox()
         CType(Me.layoutPlaylistSplit, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.layoutPlaylistSplit.Panel1.SuspendLayout()
         Me.layoutPlaylistSplit.Panel2.SuspendLayout()
         Me.layoutPlaylistSplit.SuspendLayout()
+        Me.ssLog.SuspendLayout()
         CType(Me.layoutUpDownSplit, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.layoutUpDownSplit.Panel1.SuspendLayout()
         Me.layoutUpDownSplit.Panel2.SuspendLayout()
@@ -64,12 +71,37 @@ Partial Class MainWindow
         Me.layoutAdressPanel.SuspendLayout()
         Me.SuspendLayout()
         '
+        'BottomToolStripPanel
+        '
+        Me.BottomToolStripPanel.Location = New System.Drawing.Point(0, 0)
+        Me.BottomToolStripPanel.Name = "BottomToolStripPanel"
+        Me.BottomToolStripPanel.Orientation = System.Windows.Forms.Orientation.Horizontal
+        Me.BottomToolStripPanel.RowMargin = New System.Windows.Forms.Padding(3, 0, 0, 0)
+        Me.BottomToolStripPanel.Size = New System.Drawing.Size(0, 0)
+        '
+        'TopToolStripPanel
+        '
+        Me.TopToolStripPanel.Location = New System.Drawing.Point(0, 0)
+        Me.TopToolStripPanel.Name = "TopToolStripPanel"
+        Me.TopToolStripPanel.Orientation = System.Windows.Forms.Orientation.Horizontal
+        Me.TopToolStripPanel.RowMargin = New System.Windows.Forms.Padding(3, 0, 0, 0)
+        Me.TopToolStripPanel.Size = New System.Drawing.Size(0, 0)
+        '
+        'ContentPanel
+        '
+        Me.ContentPanel.AutoScroll = True
+        Me.ContentPanel.Size = New System.Drawing.Size(926, 512)
+        '
         'layoutPlaylistSplit
         '
         Me.layoutPlaylistSplit.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
         Me.layoutPlaylistSplit.Dock = System.Windows.Forms.DockStyle.Fill
         Me.layoutPlaylistSplit.Location = New System.Drawing.Point(0, 0)
         Me.layoutPlaylistSplit.Name = "layoutPlaylistSplit"
+        '
+        'layoutPlaylistSplit.Panel1
+        '
+        Me.layoutPlaylistSplit.Panel1.Controls.Add(Me.ssLog)
         Me.layoutPlaylistSplit.Panel1MinSize = 260
         '
         'layoutPlaylistSplit.Panel2
@@ -78,6 +110,22 @@ Partial Class MainWindow
         Me.layoutPlaylistSplit.Size = New System.Drawing.Size(926, 562)
         Me.layoutPlaylistSplit.SplitterDistance = 305
         Me.layoutPlaylistSplit.TabIndex = 0
+        '
+        'ssLog
+        '
+        Me.ssLog.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.logStatusBar})
+        Me.ssLog.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow
+        Me.ssLog.Location = New System.Drawing.Point(0, 538)
+        Me.ssLog.Name = "ssLog"
+        Me.ssLog.Size = New System.Drawing.Size(303, 22)
+        Me.ssLog.TabIndex = 0
+        '
+        'logStatusBar
+        '
+        Me.logStatusBar.BorderStyle = System.Windows.Forms.Border3DStyle.SunkenInner
+        Me.logStatusBar.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
+        Me.logStatusBar.Name = "logStatusBar"
+        Me.logStatusBar.Size = New System.Drawing.Size(0, 17)
         '
         'layoutUpDownSplit
         '
@@ -97,7 +145,7 @@ Partial Class MainWindow
         Me.layoutUpDownSplit.Panel2.Controls.Add(Me.layoutAdressPanel)
         Me.layoutUpDownSplit.Panel2MinSize = 75
         Me.layoutUpDownSplit.Size = New System.Drawing.Size(617, 562)
-        Me.layoutUpDownSplit.SplitterDistance = 469
+        Me.layoutUpDownSplit.SplitterDistance = 445
         Me.layoutUpDownSplit.TabIndex = 0
         '
         'layoutCgLib
@@ -110,7 +158,7 @@ Partial Class MainWindow
         'layoutCgLib.Panel1
         '
         Me.layoutCgLib.Panel1.Controls.Add(Me.layoutTableMain)
-        Me.layoutCgLib.Size = New System.Drawing.Size(617, 469)
+        Me.layoutCgLib.Size = New System.Drawing.Size(617, 445)
         Me.layoutCgLib.SplitterDistance = 542
         Me.layoutCgLib.TabIndex = 0
         '
@@ -126,7 +174,7 @@ Partial Class MainWindow
         Me.layoutTableMain.RowCount = 2
         Me.layoutTableMain.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 50.0!))
         Me.layoutTableMain.RowStyles.Add(New System.Windows.Forms.RowStyle())
-        Me.layoutTableMain.Size = New System.Drawing.Size(540, 467)
+        Me.layoutTableMain.Size = New System.Drawing.Size(540, 443)
         Me.layoutTableMain.TabIndex = 0
         '
         'layoutInfoPanel
@@ -202,7 +250,7 @@ Partial Class MainWindow
         Me.layoutButtonsPanel.Controls.Add(Me.layoutButtonsFlow)
         Me.layoutButtonsPanel.Location = New System.Drawing.Point(3, 48)
         Me.layoutButtonsPanel.Name = "layoutButtonsPanel"
-        Me.layoutButtonsPanel.Size = New System.Drawing.Size(609, 36)
+        Me.layoutButtonsPanel.Size = New System.Drawing.Size(609, 64)
         Me.layoutButtonsPanel.TabIndex = 2
         '
         'layoutButtonsFlow
@@ -218,7 +266,7 @@ Partial Class MainWindow
         Me.layoutButtonsFlow.Location = New System.Drawing.Point(0, 0)
         Me.layoutButtonsFlow.MinimumSize = New System.Drawing.Size(0, 30)
         Me.layoutButtonsFlow.Name = "layoutButtonsFlow"
-        Me.layoutButtonsFlow.Size = New System.Drawing.Size(609, 36)
+        Me.layoutButtonsFlow.Size = New System.Drawing.Size(609, 64)
         Me.layoutButtonsFlow.TabIndex = 0
         '
         'cmbConnect
@@ -341,9 +389,13 @@ Partial Class MainWindow
         Me.Name = "MainWindow"
         Me.Text = "Caspar's PlayoutClient"
         Me.WindowState = System.Windows.Forms.FormWindowState.Maximized
+        Me.layoutPlaylistSplit.Panel1.ResumeLayout(False)
+        Me.layoutPlaylistSplit.Panel1.PerformLayout()
         Me.layoutPlaylistSplit.Panel2.ResumeLayout(False)
         CType(Me.layoutPlaylistSplit, System.ComponentModel.ISupportInitialize).EndInit()
         Me.layoutPlaylistSplit.ResumeLayout(False)
+        Me.ssLog.ResumeLayout(False)
+        Me.ssLog.PerformLayout()
         Me.layoutUpDownSplit.Panel1.ResumeLayout(False)
         Me.layoutUpDownSplit.Panel2.ResumeLayout(False)
         CType(Me.layoutUpDownSplit, System.ComponentModel.ISupportInitialize).EndInit()
@@ -362,9 +414,6 @@ Partial Class MainWindow
         Me.ResumeLayout(False)
 
     End Sub
-    Friend WithEvents layoutPlaylistSplit As System.Windows.Forms.SplitContainer
-    Friend WithEvents layoutUpDownSplit As System.Windows.Forms.SplitContainer
-    Friend WithEvents layoutCgLib As System.Windows.Forms.SplitContainer
 
     Public Sub New()
 
@@ -374,11 +423,18 @@ Partial Class MainWindow
         ' Fügen Sie Initialisierungen nach dem InitializeComponent()-Aufruf hinzu.
 
     End Sub
+    Friend WithEvents BottomToolStripPanel As System.Windows.Forms.ToolStripPanel
+    Friend WithEvents TopToolStripPanel As System.Windows.Forms.ToolStripPanel
+    Friend WithEvents ContentPanel As System.Windows.Forms.ToolStripContentPanel
+    Friend WithEvents layoutPlaylistSplit As System.Windows.Forms.SplitContainer
+    Friend WithEvents layoutUpDownSplit As System.Windows.Forms.SplitContainer
+    Friend WithEvents layoutCgLib As System.Windows.Forms.SplitContainer
+    Friend WithEvents layoutTableMain As System.Windows.Forms.TableLayoutPanel
+    Friend WithEvents layoutInfoPanel As System.Windows.Forms.Panel
+    Friend WithEvents lblStatus As System.Windows.Forms.Label
+    Friend WithEvents lblDate As System.Windows.Forms.Label
+    Friend WithEvents lblClock As System.Windows.Forms.Label
     Friend WithEvents layoutButtonsPanel As System.Windows.Forms.Panel
-    Friend WithEvents layoutAdressPanel As System.Windows.Forms.Panel
-    Friend WithEvents lblAddress As System.Windows.Forms.Label
-    Friend WithEvents txtPort As System.Windows.Forms.TextBox
-    Friend WithEvents txtAddress As System.Windows.Forms.TextBox
     Friend WithEvents layoutButtonsFlow As System.Windows.Forms.FlowLayoutPanel
     Friend WithEvents cmbConnect As System.Windows.Forms.Button
     Friend WithEvents cmbDisconnect As System.Windows.Forms.Button
@@ -387,9 +443,10 @@ Partial Class MainWindow
     Friend WithEvents cmbClearChannel As System.Windows.Forms.Button
     Friend WithEvents nudLayerClear As System.Windows.Forms.NumericUpDown
     Friend WithEvents cmbClearLayer As System.Windows.Forms.Button
-    Friend WithEvents layoutTableMain As System.Windows.Forms.TableLayoutPanel
-    Friend WithEvents layoutInfoPanel As System.Windows.Forms.Panel
-    Friend WithEvents lblClock As System.Windows.Forms.Label
-    Friend WithEvents lblDate As System.Windows.Forms.Label
-    Friend WithEvents lblStatus As System.Windows.Forms.Label
+    Friend WithEvents layoutAdressPanel As System.Windows.Forms.Panel
+    Friend WithEvents lblAddress As System.Windows.Forms.Label
+    Friend WithEvents txtPort As System.Windows.Forms.TextBox
+    Friend WithEvents txtAddress As System.Windows.Forms.TextBox
+    Friend WithEvents ssLog As System.Windows.Forms.StatusStrip
+    Friend WithEvents logStatusBar As System.Windows.Forms.ToolStripStatusLabel
 End Class

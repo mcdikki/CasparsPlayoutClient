@@ -16,7 +16,6 @@
 
 Imports CasparCGNETConnector
 Imports logger
-Imports System.Threading
 
 Public Class PlaylistBlockItem
     Inherits AbstractPlaylistItem
@@ -130,15 +129,9 @@ Public Class PlaylistBlockItem
                 Dim nextItem As IPlaylistItem = getNextToPlay(lastPlayed)
                 If Not IsNothing(nextItem) AndAlso Not nextItem.isPlaying Then
                     AddHandler nextItem.stopped, AddressOf itemStopped
-                    'AddHandler nextItem.aborted, AddressOf itemStopped
                     AddHandler nextItem.canceled, AddressOf itemCanceled
                     AddHandler nextItem.started, AddressOf itemStarted
                     nextItem.start()
-                    '' check if we can safely load the next item
-                    'Dim itemToLoad As IPlaylistItem = getNextToPlay(nextItem)
-                    'If nextItem.getDelay = 0 AndAlso Not IsNothing(itemToLoad) AndAlso itemToLoad.isPlayable AndAlso nextItem.isPlayable AndAlso nextItem.getChannel = itemToLoad.getChannel AndAlso nextItem.getLayer = itemToLoad.getLayer Then
-                    '    itemToLoad.load()
-                    'End If
                 ElseIf isLooping() Then
                     start()
                 Else : stoppedPlaying()

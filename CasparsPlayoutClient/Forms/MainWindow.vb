@@ -24,6 +24,7 @@ Public Class MainWindow
     Private WithEvents playlistView As PlaylistView
     Private WithEvents libraryView As LibraryView
     Private Delegate Sub updateDelegate()
+    Private Delegate Sub updateStatusDelegate(ByRef message As message)
     Private timer As Timers.Timer
 
     Private Sub MainWindow_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
@@ -65,7 +66,8 @@ Public Class MainWindow
             Else
                 cmbConnect.Enabled = True
                 cmbDisconnect.Enabled = False
-                MsgBox("Error: Could not connect to " & txtAddress.Text & ":" & txtPort.Text, vbCritical + vbOKOnly, "Error - not connected")
+                'logger.warn("Could not connect to " & txtAddress.Text & ":" & txtPort.Text)
+                'MsgBox("Error: Could not connect to " & txtAddress.Text & ":" & txtPort.Text, vbCritical + vbOKOnly, "Error - not connected")
             End If
         Else
             MsgBox("Allready connected")
@@ -75,12 +77,33 @@ Public Class MainWindow
     Private Sub initInfo()
         timer = New Timers.Timer(100)
         timer.Enabled = True
+        ssLog.AllowMerge = False
+        ssLog.CanOverflow = True
+        ssLog.LayoutStyle = ToolStripLayoutStyle.HorizontalStackWithOverflow
+
         AddHandler timer.Elapsed, AddressOf updateClock
         AddHandler timer.Elapsed, AddressOf updateDate
         AddHandler timer.Elapsed, AddressOf updateStatus
+        AddHandler logger.messageReceived, AddressOf updateStatusBar
+        AddHandler ssLog.ItemRemoved, Sub() ssLog.Items.Item(0).Text = "Messages: " & ssLog.Items.Count - 1
+        AddHandler ssLog.ItemAdded, Sub() ssLog.Items.Item(0).Text = "Messages: " & ssLog.Items.Count - 1
         updateClock()
         updateDate()
         updateStatus()
+    End Sub
+
+    Private Sub updateStatusBar(ByRef msg As message)
+        If ssLog.InvokeRequired Then
+            Dim d As New updateStatusDelegate(AddressOf updateStatus)
+            ssLog.Invoke(d, {msg})
+        End If
+        If msg.getLevel <= loglevels.log Then
+            ssLog.Items.Add(New TimedStatusLable(7000, msg.getMessage))
+        End If
+    End Sub
+
+    Private Sub ssLog_ItemClicked(sender As Object, e As ToolStripItemClickedEventArgs) Handles ssLog.ItemClicked
+        If ssLog.Items.IndexOf(e.ClickedItem) > 0 Then MsgBox(e.ClickedItem.Text)
     End Sub
 
     Private Sub updateClock()
@@ -159,6 +182,5 @@ Public Class MainWindow
     Private Sub onTick()
         playlistView.onDataChanged()
     End Sub
-
 
 End Class

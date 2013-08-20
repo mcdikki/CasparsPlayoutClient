@@ -194,6 +194,7 @@ Public Class PlaylistView
                         Me.Parent.Controls.SetChildIndex(child, Me.Parent.Controls.IndexOf(child))
                         Me.Parent.Controls.Remove(Me)
                     End If
+                    logger.log("PlaylistView.loadPlaylist: Successfully loaded " & pl.getName & " from " & fd.FileName)
                     RaiseEvent dataChanged()
                     atResize(Me, Nothing)
                 End If
@@ -221,6 +222,7 @@ Public Class PlaylistView
                     If Not IsNothing(pl) Then
                         playlist.addItem(pl)
                         addChild(pl)
+                        logger.log("PlaylistView.addPlaylist: Successfully added " & pl.getName & " from " & f)
                     End If
                 Else
                     logger.warn("PlaylistView.loadPlaylist: Unable to load playlist from xml file " & fd.FileName & ". Xml definition is not valid.")
@@ -237,7 +239,7 @@ Public Class PlaylistView
             Me.Invoke(d)
         Else
             setData()
-            '' if we have to wait more than a half frame (25fps), we'll drop that update
+            '' if we have to wait more than a half frame (@25fps), we'll drop that update
             If updateItems.WaitOne(20) Then
                 For Each child In childs
                     child.onDataChanged()
@@ -352,10 +354,12 @@ Public Class PlaylistView
                         playlist.playNextItem()
                     End If
                 Else
-                    MsgBox("Error, unknown channel.")
+                    logger.warn("PlaylistView. Start playlist: Error, unknown channel.")
                 End If
             End If
             RaiseEvent changedPlaying()
+        Else
+            logger.warn("Can't start/stop/abort '" & txtName.Text & "'. Not connected to server.")
         End If
     End Sub
 
