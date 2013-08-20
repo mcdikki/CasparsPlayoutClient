@@ -130,7 +130,7 @@ Public Class PlaylistBlockItem
                 Dim nextItem As IPlaylistItem = getNextToPlay(lastPlayed)
                 If Not IsNothing(nextItem) AndAlso Not nextItem.isPlaying Then
                     AddHandler nextItem.stopped, AddressOf itemStopped
-                    AddHandler nextItem.aborted, AddressOf itemStopped
+                    'AddHandler nextItem.aborted, AddressOf itemStopped
                     AddHandler nextItem.canceled, AddressOf itemCanceled
                     AddHandler nextItem.started, AddressOf itemStarted
                     nextItem.start()

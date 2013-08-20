@@ -25,7 +25,6 @@ CORE:
 ---> Still - CD 15/08/13
 
 
-
 - Add config class and functions
 
 
@@ -82,6 +81,9 @@ Done - CD 02/08/13
 
 Done - CD 27/07/13
 - Handle problem duration in mediaLib != real duration when playing
+
+Fixed - CD 20/08/13
+- BUG: abort BlockPlaylist lead to infinity loop in start() when seq. and looping
 
 Fixed - CD 16/08/13
 - BUG: Medias with different types but same names are not supported yet and let the program throw a exception.
