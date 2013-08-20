@@ -13,8 +13,8 @@
 
         ' Fügen Sie Initialisierungen nach dem InitializeComponent()-Aufruf hinzu.
         Me.Text = text
-        Me.Overflow = ToolStripItemOverflow.AsNeeded
-        Me.Spring = True
+        Me.ToolTipText = text
+        Me.AutoToolTip = True
 
         timer = New Timers.Timer(stayTime)
         timer.Enabled = True
@@ -27,7 +27,6 @@
         Else
             If Me.Owner.Items.Contains(Me) Then Me.Owner.Items.Remove(Me)
         End If
-        'Me.Dispose()
     End Sub
 
 End Class

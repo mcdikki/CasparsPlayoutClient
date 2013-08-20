@@ -83,6 +83,7 @@ Public Class LibraryViewItem
 
     Public Sub saveXml()
         MediaItem.toXml.save(MediaItem.getName & "(" & MediaItem.getMediaType.ToString & ").xml")
+        logger.log("LibraryViewItem.saveXml: Media '" & MediaItem.getName & "' successfully saved.")
     End Sub
 
     '' DragDrop verarbeiten

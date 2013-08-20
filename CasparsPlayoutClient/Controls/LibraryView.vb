@@ -61,6 +61,8 @@ Public Class LibraryView
 
         domDoc.appendChild(pnode)
         domDoc.save("MediaLibrary.xml")
+
+        logger.log("LibraryView.saveXmlLib: Media library successfully saved.")
     End Sub
 
     Public Sub loadXml()
@@ -82,6 +84,7 @@ Public Class LibraryView
                         If Not IsNothing(media) Then
                             Library.addItem(media)
                             addMediaItem(media)
+                            logger.log("LibraryView.loadXml: Successfully loaded " & media.getName & " from '" & f & "'.")
                         End If
                     Next
                 ElseIf domDoc.firstChild.nodeName.Equals("media") Then
@@ -90,8 +93,13 @@ Public Class LibraryView
                     If Not IsNothing(media) Then
                         Library.addItem(media)
                         addMediaItem(media)
+                        logger.log("LibraryView.loadXml: Successfully loaded " & media.getName & " from '" & f & "'.")
                     End If
+                Else
+                    logger.warn("LibraryView.loadXml: Unable to load media from '" & f & "'. Not a valid media definition.")
                 End If
+            Else
+                logger.err("LibraryView.loadXml: Unable to parse media file '" & f & "'. Not a valid xml file.")
             End If
         Next
         applyFilter()

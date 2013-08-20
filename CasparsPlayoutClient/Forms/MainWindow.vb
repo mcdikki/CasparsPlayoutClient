@@ -35,6 +35,7 @@ Public Class MainWindow
         AddPlaylist()
         AddLibrary()
         initInfo()
+        layoutUpDownSplit.SplitterDistance = layoutUpDownSplit.Size.Height - layoutUpDownSplit.Panel2MinSize
     End Sub
 
     Private Sub AddLibrary()
@@ -79,7 +80,7 @@ Public Class MainWindow
         timer.Enabled = True
         ssLog.AllowMerge = False
         ssLog.CanOverflow = True
-        ssLog.LayoutStyle = ToolStripLayoutStyle.HorizontalStackWithOverflow
+        ssLog.LayoutStyle = ToolStripLayoutStyle.VerticalStackWithOverflow
 
         AddHandler timer.Elapsed, AddressOf updateClock
         AddHandler timer.Elapsed, AddressOf updateDate
@@ -87,6 +88,8 @@ Public Class MainWindow
         AddHandler logger.messageReceived, AddressOf updateStatusBar
         AddHandler ssLog.ItemRemoved, Sub() ssLog.Items.Item(0).Text = "Messages: " & ssLog.Items.Count - 1
         AddHandler ssLog.ItemAdded, Sub() ssLog.Items.Item(0).Text = "Messages: " & ssLog.Items.Count - 1
+        ssLog.Items.Add("")
+        ssLog.Items.Item(0).TextAlign = ContentAlignment.MiddleLeft
         updateClock()
         updateDate()
         updateStatus()
@@ -97,12 +100,16 @@ Public Class MainWindow
             Dim d As New updateStatusDelegate(AddressOf updateStatus)
             ssLog.Invoke(d, {msg})
         End If
-        If msg.getLevel <= loglevels.log Then
-            ssLog.Items.Add(New TimedStatusLable(7000, msg.getMessage))
+        If msg.getLevel < loglevels.debug Then
+            Dim item As New TimedStatusLable(7000, msg.getMessage)
+            item.BorderSides = ToolStripStatusLabelBorderSides.All
+            item.BorderStyle = Border3DStyle.Flat
+            item.TextAlign = ContentAlignment.MiddleLeft
+            ssLog.Items.Add(item)
         End If
     End Sub
 
-    Private Sub ssLog_ItemClicked(sender As Object, e As ToolStripItemClickedEventArgs) Handles ssLog.ItemClicked
+    Private Sub ssLog_ItemClicked(sender As Object, e As ToolStripItemClickedEventArgs)
         If ssLog.Items.IndexOf(e.ClickedItem) > 0 Then MsgBox(e.ClickedItem.Text)
     End Sub
 

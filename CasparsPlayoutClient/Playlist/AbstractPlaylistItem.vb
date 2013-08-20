@@ -188,7 +188,8 @@ Public MustInherit Class AbstractPlaylistItem
         If Not IsNothing(xmlDoc) AndAlso xmlDoc.parsed Then
             If Not IsNothing(xmlDoc.firstChild) AndAlso xmlDoc.firstChild.nodeName.Equals("playlist") AndAlso Not IsNothing(xmlDoc.firstChild.selectSingleNode("name")) Then
                 ' remove old subplaylists
-                For Each item In items
+                Dim tItems() = items.ToArray
+                For Each item In titems
                     removeChild(item)
                 Next
 
