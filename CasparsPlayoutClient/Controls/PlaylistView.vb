@@ -27,11 +27,14 @@ Public Class PlaylistView
     Private cMenu As ContextMenuStrip
     Private nowarn As Integer = 5000
     Private warn As Integer = 1000
+    Private lastWidth As Integer = 0
+    Private lastHeight As Integer = 0
 
     Private updateItems As New Threading.Semaphore(1, 1)
 
     Private Event changedPlaying()
     Public Event dataChanged()
+    Public Event changedHeight(ByVal heightDif As Integer)
 
     Public Sub New(ByRef playlist As IPlaylistItem, Optional ByVal startCompact As Boolean = False)
         Me.playlist = playlist
@@ -192,6 +195,7 @@ Public Class PlaylistView
                         Me.Parent.Controls.Remove(Me)
                     End If
                     RaiseEvent dataChanged()
+                    atResize(Me, Nothing)
                 End If
             Else
                 logger.warn("PlaylistView.loadPlaylist: Unable to load playlist from xml file " & fd.FileName & ". Xml definition is not valid.")
@@ -287,15 +291,32 @@ Public Class PlaylistView
         updateItems.WaitOne()
         childs.Add(child)
         updateItems.Release()
+        AddHandler child.changedHeight, AddressOf atChildChangedHeight
+        atResize(Me, Nothing)
+    End Sub
+
+    Private Sub atChildChangedHeight(ByVal heightDif As Integer)
+        If Not IsNothing(playlist.getParent) Then
+            Me.layoutChild.Height = Me.layoutChild.Height + heightDif
+            Me.Height = Me.Height + heightDif
+        End If
     End Sub
 
     Friend Sub atResize(ByVal sender As Object, ByVal e As EventArgs) Handles Me.Resize
-        updateItems.WaitOne()
-        For Each child In childs
-            ' Let child use the whole width
-            child.Width = Me.layoutChild.ClientRectangle.Width
-        Next
-        updateItems.Release()
+        If Not Me.Height = lastHeight AndAlso Not IsNothing(playlist.getParent) Then
+            RaiseEvent changedHeight(Me.Height - lastHeight)
+            lastHeight = Me.Height
+        End If
+
+        If Not Me.layoutChild.ClientRectangle.Width = lastWidth Then
+            lastWidth = Me.layoutChild.ClientRectangle.Width
+            updateItems.WaitOne()
+            For Each child In childs
+                ' Let child use the whole width
+                child.Width = Me.layoutChild.ClientRectangle.Width
+            Next
+            updateItems.Release()
+        End If
     End Sub
 
     Private Sub layoutHeaderContentSplit_DoubleClick(ByVal sender As Object, ByVal e As System.EventArgs) Handles lblExpand.Click, layoutHeaderContentSplit.DoubleClick
@@ -304,7 +325,7 @@ Public Class PlaylistView
             If layoutChild.HasChildren Then
                 Me.Height = layoutHeaderContentSplit.Panel1.Height + layoutChild.Height + (2 * layoutHeaderContentSplit.Panel2.Padding.Vertical) + (2 * layoutHeaderContentSplit.Panel2.Margin.Vertical) + 10
             Else
-                Me.Height = layoutHeaderContentSplit.Panel1.Height + layoutHeaderContentSplit.Panel2MinSize + (2 * layoutHeaderContentSplit.Panel2.Padding.Vertical) + (2 * layoutHeaderContentSplit.Panel2.Margin.Vertical) + 10
+                Me.Height = layoutHeaderContentSplit.Panel1.Height + layoutHeaderContentSplit.Panel2MinSize + (2 * layoutHeaderContentSplit.Panel2.Padding.Vertical) + (2 * layoutHeaderContentSplit.Panel2.Margin.Vertical) '+ 10
             End If
         Else
             Me.Height = layoutHeaderContentSplit.Panel1MinSize
@@ -314,35 +335,35 @@ Public Class PlaylistView
     End Sub
 
     Private Sub cmbToggleButton_Click(ByVal sender As System.Object, ByVal e As EventArgs) Handles cmbToggleButton.Click
-        If ModifierKeys = Keys.Control Then
-            logger.debug("GUI PlaylistView: HardStop requested at " & Me.txtName.Text)
-            playlist.abort()
-        ElseIf playlist.isWaiting Then
-            playlist.playNextItem()
-        ElseIf playlist.isPlaying Then
-            playlist.halt()
-        Else
-            ' Damit nicht gewartet wird falls der button manuel betätigt wurde aber auto nicht gesetzt ist
-            If playlist.getController.containsChannel(playlist.getChannel) OrElse Not playlist.isPlayable Then
-                If playlist.isAutoStarting Then
-                    playlist.start()
-                Else
-                    playlist.playNextItem()
-                End If
+        If playlist.getController.isConnected Then
+            If ModifierKeys = Keys.Control Then
+                logger.debug("GUI PlaylistView: HardStop requested at " & Me.txtName.Text)
+                playlist.abort()
+            ElseIf playlist.isWaiting Then
+                playlist.playNextItem()
+            ElseIf playlist.isPlaying Then
+                playlist.halt()
             Else
-                MsgBox("Error, unknown channel.")
+                ' Damit nicht gewartet wird falls der button manuel betätigt wurde aber auto nicht gesetzt ist
+                If playlist.getController.containsChannel(playlist.getChannel) OrElse Not playlist.isPlayable Then
+                    If playlist.isAutoStarting Then
+                        playlist.start()
+                    Else
+                        playlist.playNextItem()
+                    End If
+                Else
+                    MsgBox("Error, unknown channel.")
+                End If
             End If
+            RaiseEvent changedPlaying()
         End If
-        RaiseEvent changedPlaying()
     End Sub
 
     Friend Sub onChangedPlayingState() Handles Me.changedPlaying
         If playlist.isPlaying And Not playlist.isWaiting Then
             txtName.BackColor = Color.Orange
             layoutContentSplit.Panel1.BackColor = Color.Orange
-            'cmbToggleButton.Text = "o"
             cmbToggleButton.ImageIndex = 1
-            'layoutInfos.Enabled = False
             layoutButton.Enabled = False
             nudChannel.Enabled = False
             nudLayer.Enabled = False
@@ -360,9 +381,7 @@ Public Class PlaylistView
         Else
             txtName.BackColor = Color.LightGreen
             layoutContentSplit.Panel1.BackColor = Color.LightGreen
-            'cmbToggleButton.Text = ">"
             cmbToggleButton.ImageIndex = 0
-            'layoutInfos.Enabled = True
             layoutButton.Enabled = True
             nudChannel.Enabled = True
             nudLayer.Enabled = True

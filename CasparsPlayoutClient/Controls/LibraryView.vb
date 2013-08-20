@@ -94,6 +94,7 @@ Public Class LibraryView
                 End If
             End If
         Next
+        applyFilter()
     End Sub
 
 

@@ -10,7 +10,6 @@ Public Class PlaylistFactory
 
     Public Shared Function getPlaylist(ByRef xml As MSXML2.DOMDocument, ByRef controller As ServerController) As IPlaylistItem
         If Not IsNothing(xml) AndAlso xml.hasChildNodes AndAlso xml.firstChild.nodeName.Equals("playlist") Then
-            '' ToDo
             Dim pnode As MSXML2.IXMLDOMElement = xml.firstChild
             Dim playlist As IPlaylistItem
             Dim name As String = pnode.selectSingleNode("name").nodeTypedValue
@@ -23,7 +22,6 @@ Public Class PlaylistFactory
                 Case AbstractPlaylistItem.PlaylistItemTypes.STILL
                     playlist = New PlaylistStillItem(name, controller, CasparCGMediaFactory.createMedia(pnode.selectSingleNode("media").xml))
                 Case AbstractPlaylistItem.PlaylistItemTypes.COMMAND
-                    ' ToDo Command füllen
                     playlist = New PlaylistCommandItem(name, controller, CasparCGCommandFactory.getCommand(pnode.selectSingleNode("command").selectSingleNode("type").nodeTypedValue))
                 Case AbstractPlaylistItem.PlaylistItemTypes.TEMPLATE
                     playlist = New PlaylistTemplateItem(name, controller, CasparCGMediaFactory.createMedia(pnode.selectSingleNode("media").xml))
