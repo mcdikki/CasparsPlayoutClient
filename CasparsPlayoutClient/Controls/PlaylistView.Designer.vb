@@ -23,10 +23,13 @@ Partial Class PlaylistView
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
         Me.layoutContentSplit = New System.Windows.Forms.SplitContainer()
-        Me.layoutButton = New System.Windows.Forms.FlowLayoutPanel()
         Me.layoutChild = New System.Windows.Forms.FlowLayoutPanel()
+        Me.layoutButton = New System.Windows.Forms.FlowLayoutPanel()
+        Me.grpParallel = New System.Windows.Forms.GroupBox()
         Me.ckbParallel = New System.Windows.Forms.CheckBox()
+        Me.grpAuto = New System.Windows.Forms.GroupBox()
         Me.ckbAuto = New System.Windows.Forms.CheckBox()
+        Me.grpLoop = New System.Windows.Forms.GroupBox()
         Me.ckbLoop = New System.Windows.Forms.CheckBox()
         Me.layoutHeaderTable = New System.Windows.Forms.TableLayoutPanel()
         Me.lblExpand = New System.Windows.Forms.Label()
@@ -42,24 +45,27 @@ Partial Class PlaylistView
         Me.txtPosition = New System.Windows.Forms.TextBox()
         Me.grpRemaining = New System.Windows.Forms.GroupBox()
         Me.txtRemaining = New System.Windows.Forms.TextBox()
+        Me.grpClear = New System.Windows.Forms.GroupBox()
+        Me.ckbClear = New System.Windows.Forms.CheckBox()
         Me.layoutName = New System.Windows.Forms.Panel()
         Me.nudLayer = New System.Windows.Forms.NumericUpDown()
         Me.nudChannel = New System.Windows.Forms.NumericUpDown()
         Me.txtName = New System.Windows.Forms.TextBox()
         Me.layoutHeaderContentSplit = New System.Windows.Forms.SplitContainer()
-        Me.grpPar = New System.Windows.Forms.GroupBox()
-        Me.grpAuto = New System.Windows.Forms.GroupBox()
-        Me.grpLoop = New System.Windows.Forms.GroupBox()
         CType(Me.layoutContentSplit, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.layoutContentSplit.Panel2.SuspendLayout()
         Me.layoutContentSplit.SuspendLayout()
         Me.layoutButton.SuspendLayout()
+        Me.grpParallel.SuspendLayout()
+        Me.grpAuto.SuspendLayout()
+        Me.grpLoop.SuspendLayout()
         Me.layoutHeaderTable.SuspendLayout()
         Me.layoutInfos.SuspendLayout()
         Me.grbDelay.SuspendLayout()
         Me.grbDuration.SuspendLayout()
         Me.grpPosition.SuspendLayout()
         Me.grpRemaining.SuspendLayout()
+        Me.grpClear.SuspendLayout()
         Me.layoutName.SuspendLayout()
         CType(Me.nudLayer, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.nudChannel, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -67,9 +73,6 @@ Partial Class PlaylistView
         Me.layoutHeaderContentSplit.Panel1.SuspendLayout()
         Me.layoutHeaderContentSplit.Panel2.SuspendLayout()
         Me.layoutHeaderContentSplit.SuspendLayout()
-        Me.grpPar.SuspendLayout()
-        Me.grpAuto.SuspendLayout()
-        Me.grpLoop.SuspendLayout()
         Me.SuspendLayout()
         '
         'layoutContentSplit
@@ -87,24 +90,11 @@ Partial Class PlaylistView
         Me.layoutContentSplit.Panel2.AutoScroll = True
         Me.layoutContentSplit.Panel2.Controls.Add(Me.layoutChild)
         Me.layoutContentSplit.Panel2MinSize = 0
-        Me.layoutContentSplit.Size = New System.Drawing.Size(371, 81)
-        Me.layoutContentSplit.SplitterDistance = 5
+        Me.layoutContentSplit.Size = New System.Drawing.Size(370, 81)
+        Me.layoutContentSplit.SplitterDistance = 6
         Me.layoutContentSplit.SplitterWidth = 1
         Me.layoutContentSplit.TabIndex = 0
         Me.layoutContentSplit.TabStop = False
-        '
-        'layoutButton
-        '
-        Me.layoutButton.AutoSize = True
-        Me.layoutButton.Controls.Add(Me.grpPar)
-        Me.layoutButton.Controls.Add(Me.grpAuto)
-        Me.layoutButton.Controls.Add(Me.grpLoop)
-        Me.layoutButton.Font = New System.Drawing.Font("Microsoft Sans Serif", 6.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.layoutButton.Location = New System.Drawing.Point(246, 0)
-        Me.layoutButton.Margin = New System.Windows.Forms.Padding(0)
-        Me.layoutButton.Name = "layoutButton"
-        Me.layoutButton.Size = New System.Drawing.Size(75, 36)
-        Me.layoutButton.TabIndex = 6
         '
         'layoutChild
         '
@@ -116,9 +106,38 @@ Partial Class PlaylistView
         Me.layoutChild.Location = New System.Drawing.Point(0, 0)
         Me.layoutChild.Margin = New System.Windows.Forms.Padding(0)
         Me.layoutChild.Name = "layoutChild"
-        Me.layoutChild.Size = New System.Drawing.Size(365, 4)
+        Me.layoutChild.Size = New System.Drawing.Size(363, 4)
         Me.layoutChild.TabIndex = 6
         Me.layoutChild.WrapContents = False
+        '
+        'layoutButton
+        '
+        Me.layoutButton.AutoSize = True
+        Me.layoutButton.Controls.Add(Me.grpParallel)
+        Me.layoutButton.Controls.Add(Me.grpAuto)
+        Me.layoutButton.Controls.Add(Me.grpLoop)
+        Me.layoutButton.Controls.Add(Me.grpClear)
+        Me.layoutButton.Font = New System.Drawing.Font("Microsoft Sans Serif", 6.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.layoutButton.Location = New System.Drawing.Point(246, 0)
+        Me.layoutButton.Margin = New System.Windows.Forms.Padding(0)
+        Me.layoutButton.Name = "layoutButton"
+        Me.layoutButton.Size = New System.Drawing.Size(100, 36)
+        Me.layoutButton.TabIndex = 6
+        '
+        'grpParallel
+        '
+        Me.grpParallel.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.grpParallel.Controls.Add(Me.ckbParallel)
+        Me.grpParallel.Font = New System.Drawing.Font("Microsoft Sans Serif", 6.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.grpParallel.Location = New System.Drawing.Point(0, 0)
+        Me.grpParallel.Margin = New System.Windows.Forms.Padding(0)
+        Me.grpParallel.Name = "grpParallel"
+        Me.grpParallel.Padding = New System.Windows.Forms.Padding(0)
+        Me.grpParallel.Size = New System.Drawing.Size(25, 36)
+        Me.grpParallel.TabIndex = 4
+        Me.grpParallel.TabStop = False
+        Me.grpParallel.Text = "P"
         '
         'ckbParallel
         '
@@ -131,6 +150,21 @@ Partial Class PlaylistView
         Me.ckbParallel.TabIndex = 6
         Me.ckbParallel.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         Me.ckbParallel.UseVisualStyleBackColor = True
+        '
+        'grpAuto
+        '
+        Me.grpAuto.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.grpAuto.Controls.Add(Me.ckbAuto)
+        Me.grpAuto.Font = New System.Drawing.Font("Microsoft Sans Serif", 6.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.grpAuto.Location = New System.Drawing.Point(25, 0)
+        Me.grpAuto.Margin = New System.Windows.Forms.Padding(0)
+        Me.grpAuto.Name = "grpAuto"
+        Me.grpAuto.Padding = New System.Windows.Forms.Padding(0)
+        Me.grpAuto.Size = New System.Drawing.Size(25, 36)
+        Me.grpAuto.TabIndex = 7
+        Me.grpAuto.TabStop = False
+        Me.grpAuto.Text = "A"
         '
         'ckbAuto
         '
@@ -146,6 +180,21 @@ Partial Class PlaylistView
         Me.ckbAuto.TabIndex = 7
         Me.ckbAuto.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
         Me.ckbAuto.UseVisualStyleBackColor = True
+        '
+        'grpLoop
+        '
+        Me.grpLoop.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.grpLoop.Controls.Add(Me.ckbLoop)
+        Me.grpLoop.Font = New System.Drawing.Font("Microsoft Sans Serif", 6.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.grpLoop.Location = New System.Drawing.Point(50, 0)
+        Me.grpLoop.Margin = New System.Windows.Forms.Padding(0)
+        Me.grpLoop.Name = "grpLoop"
+        Me.grpLoop.Padding = New System.Windows.Forms.Padding(0)
+        Me.grpLoop.Size = New System.Drawing.Size(25, 36)
+        Me.grpLoop.TabIndex = 8
+        Me.grpLoop.TabStop = False
+        Me.grpLoop.Text = "L"
         '
         'ckbLoop
         '
@@ -183,7 +232,7 @@ Partial Class PlaylistView
         Me.layoutHeaderTable.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25.0!))
         Me.layoutHeaderTable.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
         Me.layoutHeaderTable.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30.0!))
-        Me.layoutHeaderTable.Size = New System.Drawing.Size(371, 65)
+        Me.layoutHeaderTable.Size = New System.Drawing.Size(370, 65)
         Me.layoutHeaderTable.TabIndex = 1
         '
         'lblExpand
@@ -223,7 +272,7 @@ Partial Class PlaylistView
         Me.pbPlayed.Location = New System.Drawing.Point(24, 25)
         Me.pbPlayed.Margin = New System.Windows.Forms.Padding(0)
         Me.pbPlayed.Name = "pbPlayed"
-        Me.pbPlayed.Size = New System.Drawing.Size(347, 10)
+        Me.pbPlayed.Size = New System.Drawing.Size(346, 10)
         Me.pbPlayed.Style = System.Windows.Forms.ProgressBarStyle.Continuous
         Me.pbPlayed.TabIndex = 11
         '
@@ -240,7 +289,7 @@ Partial Class PlaylistView
         Me.layoutInfos.Location = New System.Drawing.Point(24, 35)
         Me.layoutInfos.Margin = New System.Windows.Forms.Padding(0)
         Me.layoutInfos.Name = "layoutInfos"
-        Me.layoutInfos.Size = New System.Drawing.Size(347, 30)
+        Me.layoutInfos.Size = New System.Drawing.Size(346, 30)
         Me.layoutInfos.TabIndex = 5
         '
         'grbChannelLayer
@@ -374,6 +423,36 @@ Partial Class PlaylistView
         Me.txtRemaining.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
         Me.txtRemaining.WordWrap = False
         '
+        'grpClear
+        '
+        Me.grpClear.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.grpClear.Controls.Add(Me.ckbClear)
+        Me.grpClear.Font = New System.Drawing.Font("Microsoft Sans Serif", 6.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.grpClear.Location = New System.Drawing.Point(75, 0)
+        Me.grpClear.Margin = New System.Windows.Forms.Padding(0)
+        Me.grpClear.Name = "grpClear"
+        Me.grpClear.Padding = New System.Windows.Forms.Padding(0)
+        Me.grpClear.Size = New System.Drawing.Size(25, 36)
+        Me.grpClear.TabIndex = 9
+        Me.grpClear.TabStop = False
+        Me.grpClear.Text = "C"
+        '
+        'ckbClear
+        '
+        Me.ckbClear.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+            Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.ckbClear.AutoSize = True
+        Me.ckbClear.CheckAlign = System.Drawing.ContentAlignment.BottomCenter
+        Me.ckbClear.Location = New System.Drawing.Point(5, 13)
+        Me.ckbClear.Margin = New System.Windows.Forms.Padding(0)
+        Me.ckbClear.Name = "ckbClear"
+        Me.ckbClear.Size = New System.Drawing.Size(15, 14)
+        Me.ckbClear.TabIndex = 9
+        Me.ckbClear.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+        Me.ckbClear.UseVisualStyleBackColor = True
+        '
         'layoutName
         '
         Me.layoutName.AutoSize = True
@@ -386,7 +465,7 @@ Partial Class PlaylistView
         Me.layoutName.Margin = New System.Windows.Forms.Padding(0)
         Me.layoutName.MinimumSize = New System.Drawing.Size(70, 27)
         Me.layoutName.Name = "layoutName"
-        Me.layoutName.Size = New System.Drawing.Size(347, 27)
+        Me.layoutName.Size = New System.Drawing.Size(346, 27)
         Me.layoutName.TabIndex = 4
         '
         'nudLayer
@@ -394,7 +473,7 @@ Partial Class PlaylistView
         Me.nudLayer.Anchor = System.Windows.Forms.AnchorStyles.Right
         Me.nudLayer.AutoSize = True
         Me.nudLayer.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.nudLayer.Location = New System.Drawing.Point(304, 3)
+        Me.nudLayer.Location = New System.Drawing.Point(303, 3)
         Me.nudLayer.Margin = New System.Windows.Forms.Padding(0)
         Me.nudLayer.Maximum = New Decimal(New Integer() {1000, 0, 0, 0})
         Me.nudLayer.Minimum = New Decimal(New Integer() {1, 0, 0, -2147483648})
@@ -407,7 +486,7 @@ Partial Class PlaylistView
         Me.nudChannel.Anchor = System.Windows.Forms.AnchorStyles.Right
         Me.nudChannel.AutoSize = True
         Me.nudChannel.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.nudChannel.Location = New System.Drawing.Point(262, 3)
+        Me.nudChannel.Location = New System.Drawing.Point(261, 3)
         Me.nudChannel.Margin = New System.Windows.Forms.Padding(0)
         Me.nudChannel.Maximum = New Decimal(New Integer() {1000, 0, 0, 0})
         Me.nudChannel.Minimum = New Decimal(New Integer() {1, 0, 0, -2147483648})
@@ -425,7 +504,7 @@ Partial Class PlaylistView
         Me.txtName.Location = New System.Drawing.Point(2, 3)
         Me.txtName.Margin = New System.Windows.Forms.Padding(0)
         Me.txtName.Name = "txtName"
-        Me.txtName.Size = New System.Drawing.Size(259, 20)
+        Me.txtName.Size = New System.Drawing.Size(258, 20)
         Me.txtName.TabIndex = 1
         Me.txtName.Text = "Name"
         '
@@ -449,55 +528,10 @@ Partial Class PlaylistView
         '
         Me.layoutHeaderContentSplit.Panel2.Controls.Add(Me.layoutContentSplit)
         Me.layoutHeaderContentSplit.Panel2MinSize = 0
-        Me.layoutHeaderContentSplit.Size = New System.Drawing.Size(371, 150)
+        Me.layoutHeaderContentSplit.Size = New System.Drawing.Size(370, 150)
         Me.layoutHeaderContentSplit.SplitterDistance = 65
         Me.layoutHeaderContentSplit.TabIndex = 2
         Me.layoutHeaderContentSplit.TabStop = False
-        '
-        'grpPar
-        '
-        Me.grpPar.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.grpPar.Controls.Add(Me.ckbParallel)
-        Me.grpPar.Font = New System.Drawing.Font("Microsoft Sans Serif", 6.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.grpPar.Location = New System.Drawing.Point(0, 0)
-        Me.grpPar.Margin = New System.Windows.Forms.Padding(0)
-        Me.grpPar.Name = "grpPar"
-        Me.grpPar.Padding = New System.Windows.Forms.Padding(0)
-        Me.grpPar.Size = New System.Drawing.Size(25, 36)
-        Me.grpPar.TabIndex = 4
-        Me.grpPar.TabStop = False
-        Me.grpPar.Text = "P"
-        '
-        'grpAuto
-        '
-        Me.grpAuto.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.grpAuto.Controls.Add(Me.ckbAuto)
-        Me.grpAuto.Font = New System.Drawing.Font("Microsoft Sans Serif", 6.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.grpAuto.Location = New System.Drawing.Point(25, 0)
-        Me.grpAuto.Margin = New System.Windows.Forms.Padding(0)
-        Me.grpAuto.Name = "grpAuto"
-        Me.grpAuto.Padding = New System.Windows.Forms.Padding(0)
-        Me.grpAuto.Size = New System.Drawing.Size(25, 36)
-        Me.grpAuto.TabIndex = 7
-        Me.grpAuto.TabStop = False
-        Me.grpAuto.Text = "A"
-        '
-        'grpLoop
-        '
-        Me.grpLoop.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.grpLoop.Controls.Add(Me.ckbLoop)
-        Me.grpLoop.Font = New System.Drawing.Font("Microsoft Sans Serif", 6.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.grpLoop.Location = New System.Drawing.Point(50, 0)
-        Me.grpLoop.Margin = New System.Windows.Forms.Padding(0)
-        Me.grpLoop.Name = "grpLoop"
-        Me.grpLoop.Padding = New System.Windows.Forms.Padding(0)
-        Me.grpLoop.Size = New System.Drawing.Size(25, 36)
-        Me.grpLoop.TabIndex = 8
-        Me.grpLoop.TabStop = False
-        Me.grpLoop.Text = "L"
         '
         'PlaylistView
         '
@@ -507,14 +541,20 @@ Partial Class PlaylistView
         Me.AutoScroll = True
         Me.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
         Me.Controls.Add(Me.layoutHeaderContentSplit)
-        Me.MinimumSize = New System.Drawing.Size(270, 65)
+        Me.MinimumSize = New System.Drawing.Size(370, 65)
         Me.Name = "PlaylistView"
-        Me.Size = New System.Drawing.Size(371, 150)
+        Me.Size = New System.Drawing.Size(370, 150)
         Me.layoutContentSplit.Panel2.ResumeLayout(False)
         Me.layoutContentSplit.Panel2.PerformLayout()
         CType(Me.layoutContentSplit, System.ComponentModel.ISupportInitialize).EndInit()
         Me.layoutContentSplit.ResumeLayout(False)
         Me.layoutButton.ResumeLayout(False)
+        Me.grpParallel.ResumeLayout(False)
+        Me.grpParallel.PerformLayout()
+        Me.grpAuto.ResumeLayout(False)
+        Me.grpAuto.PerformLayout()
+        Me.grpLoop.ResumeLayout(False)
+        Me.grpLoop.PerformLayout()
         Me.layoutHeaderTable.ResumeLayout(False)
         Me.layoutHeaderTable.PerformLayout()
         Me.layoutInfos.ResumeLayout(False)
@@ -527,6 +567,8 @@ Partial Class PlaylistView
         Me.grpPosition.PerformLayout()
         Me.grpRemaining.ResumeLayout(False)
         Me.grpRemaining.PerformLayout()
+        Me.grpClear.ResumeLayout(False)
+        Me.grpClear.PerformLayout()
         Me.layoutName.ResumeLayout(False)
         Me.layoutName.PerformLayout()
         CType(Me.nudLayer, System.ComponentModel.ISupportInitialize).EndInit()
@@ -535,12 +577,6 @@ Partial Class PlaylistView
         Me.layoutHeaderContentSplit.Panel2.ResumeLayout(False)
         CType(Me.layoutHeaderContentSplit, System.ComponentModel.ISupportInitialize).EndInit()
         Me.layoutHeaderContentSplit.ResumeLayout(False)
-        Me.grpPar.ResumeLayout(False)
-        Me.grpPar.PerformLayout()
-        Me.grpAuto.ResumeLayout(False)
-        Me.grpAuto.PerformLayout()
-        Me.grpLoop.ResumeLayout(False)
-        Me.grpLoop.PerformLayout()
         Me.ResumeLayout(False)
 
     End Sub
@@ -569,8 +605,10 @@ Partial Class PlaylistView
     Friend WithEvents layoutHeaderContentSplit As System.Windows.Forms.SplitContainer
     Friend WithEvents grbDelay As System.Windows.Forms.GroupBox
     Friend WithEvents txtDelay As System.Windows.Forms.TextBox
-    Friend WithEvents grpPar As System.Windows.Forms.GroupBox
+    Friend WithEvents grpParallel As System.Windows.Forms.GroupBox
     Friend WithEvents grpAuto As System.Windows.Forms.GroupBox
     Friend WithEvents grpLoop As System.Windows.Forms.GroupBox
+    Friend WithEvents grpClear As System.Windows.Forms.GroupBox
+    Friend WithEvents ckbClear As System.Windows.Forms.CheckBox
 
 End Class

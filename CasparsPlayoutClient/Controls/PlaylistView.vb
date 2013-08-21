@@ -75,7 +75,7 @@ Public Class PlaylistView
                 ' set default behaviour and view
                 lblExpand.ImageIndex = 1
                 ckbAuto.Checked = True
-                ckbParallel.Enabled = False
+                grpParallel.Visible = False
                 AddHandler txtDuration.GotFocus, AddressOf txtDuration_GotFocus
                 AddHandler txtDuration.LostFocus, AddressOf txtDuration_LostFocus
 
@@ -92,13 +92,13 @@ Public Class PlaylistView
                 ' set default behaviour and view
                 lblExpand.ImageIndex = 3
                 ckbAuto.Checked = True
-                ckbParallel.Enabled = False
+                grpParallel.Visible = False
             Case AbstractPlaylistItem.PlaylistItemTypes.STILL
                 ' set default behaviour and view
                 lblExpand.ImageIndex = 2
                 ckbAuto.Checked = True
-                ckbParallel.Enabled = False
-                ckbLoop.Enabled = False
+                grpParallel.Visible = False
+                grpLoop.Visible = False
                 AddHandler txtDuration.GotFocus, AddressOf txtDuration_GotFocus
                 AddHandler txtDuration.LostFocus, AddressOf txtDuration_LostFocus
 
@@ -115,18 +115,23 @@ Public Class PlaylistView
             Case AbstractPlaylistItem.PlaylistItemTypes.TEMPLATE
                 ' set default behaviour and view
                 lblExpand.ImageIndex = 4
+                grpParallel.Visible = False
             Case AbstractPlaylistItem.PlaylistItemTypes.COMMAND
                 ' set default behaviour and view
                 lblExpand.ImageIndex = 5
                 txtDuration.ReadOnly = True
                 txtDuration.BackColor = Color.White
                 txtDuration.TabStop = False
+                grpParallel.Visible = False
+                grpClear.Visible = False
+                grpLoop.Visible = False
             Case AbstractPlaylistItem.PlaylistItemTypes.BLOCK
                 ' set default behaviour and view
                 lblExpand.ImageIndex = 0
                 txtDuration.ReadOnly = True
                 txtDuration.BackColor = Color.White
                 txtDuration.TabStop = False
+                grpClear.Visible = False
 
                 '' BlockItem, schauen ob childs geladen werden können
                 For Each item In playlist.getChildItems(False)
@@ -145,7 +150,6 @@ Public Class PlaylistView
         '' Add ContexMenu
         cMenu = New ContextMenuStrip
 
-
         cMenu.Items.Add(New ToolStripMenuItem("Save Playlist", Nothing, Sub() playlist.toXML.save(playlist.getName & "(PLAYLIST).xml")))
         cMenu.Items.Add(New ToolStripMenuItem("Load Playlist", Nothing, Sub() loadPlaylist()))
         cMenu.Items.Add(New ToolStripSeparator)
@@ -159,8 +163,57 @@ Public Class PlaylistView
         cMenu.Items.Add(sMenu)
         cMenu.Items.Add(New ToolStripSeparator)
         cMenu.Items.Add(New ToolStripMenuItem("Remove item", Nothing, New EventHandler(AddressOf removeItem)))
-
         Me.ContextMenuStrip = cMenu
+
+
+        '' Add toolTips
+        Dim tooltip As New ToolTip
+        tooltip.AutoPopDelay = 20000
+        tooltip.IsBalloon = True
+
+
+        ' Auto
+        tooltip.SetToolTip(grpAuto, "Check AUTO if you want this playlist to start automatically." & vbNewLine & "If auto isn't checked, the playlist will pause and wait for a next click.")
+        tooltip.SetToolTip(ckbAuto, "Check AUTO if you want this playlist to start automatically." & vbNewLine & "If auto isn't checked, the playlist will pause and wait for a next click.")
+
+        ' Loop
+        tooltip.SetToolTip(grpLoop, "Check LOOP if you want this playlist to restart at it's end.")
+        tooltip.SetToolTip(ckbLoop, "Check LOOP if you want this playlist to restart at it's end.")
+
+        ' Par
+        tooltip.SetToolTip(grpParallel, "Check PARALLEL to make this playlist a parallel block that starts all items at once." & vbNewLine & "If not check, each item will be played after each other.")
+        tooltip.SetToolTip(ckbParallel, "Check PARALLEL to make this playlist a parallel block that starts all items at once." & vbNewLine & "If not check, each item will be played after each other.")
+
+        ' Clear
+        tooltip.SetToolTip(grpClear, "Check CLEAR if you want the media to be cleared of the layer after playback." & vbNewLine & "If not checked, the last frame will stay at the layer until a new media is loaded.")
+        tooltip.SetToolTip(grpClear, "Check CLEAR if you want the media to be cleared of the layer after playback." & vbNewLine & "If not checked, the last frame will stay at the layer until a new media is loaded.")
+
+        ' PlayButton
+        tooltip.SetToolTip(cmbToggleButton, "Click here to start/stop/abort the playlist")
+
+        ' Name
+        tooltip.SetToolTip(txtName, "Set the playlists name in here." & vbNewLine & "Setting the name has no effect on the CasparCG Server.")
+
+        ' Duration
+        tooltip.SetToolTip(txtDuration, "Displays the duration of this playlist." & vbNewLine & "If supported, set or override the duration of this playlist in milliseconds.")
+
+        ' Delay
+        tooltip.SetToolTip(txtDelay, "If you want this playlist to start delayed," & vbNewLine & "set the number of milliseconds in here the playlist should wait after a start command to really start." & vbNewLine & "TIPP: You can allways start the playlist earlier by clicking the PlayButton.")
+
+        ' Channel
+        tooltip.SetToolTip(nudChannel, "Set the server channel here." & vbNewLine & "TIPP: Newly added items of Blocks will inherit the channel number." & vbNewLine & "So even if Blocks doesn't need a channel, setting it will save you time.")
+
+        ' Layer
+        tooltip.SetToolTip(nudLayer, "Set the server layer here." & vbNewLine & "TIPP: Newly added items of Blocks will inherit the layer." & vbNewLine & "So even if Blocks doesn't need a layer, setting it will save you time.")
+
+        ' Pos
+        tooltip.SetToolTip(txtPosition, "Shows the current position in the playlist." & vbNewLine & "TIPP: Negativ positions indecates that there is no duration given or the playlist is counting back a delay till it start.")
+
+        ' Remaining
+        tooltip.SetToolTip(txtRemaining, "Shows the remaining time until the playlist reaches the end." & vbNewLine & "TIPP: At the end of the playlist, the color will change to orange and then to red.")
+
+        ' Expand
+        tooltip.SetToolTip(lblExpand, "Click here to expand/colapse the items of this playlist.")
     End Sub
 
     Private Sub loadPlaylist()
@@ -270,6 +323,7 @@ Public Class PlaylistView
             Me.ckbAuto.Checked = .isAutoStarting
             Me.ckbParallel.Checked = .isParallel
             Me.ckbLoop.Checked = .isLooping
+            Me.ckbClear.Checked = .clearAfterPlayback
 
             If playlist.getController.isOpen Then
                 Me.txtPosition.Text = ServerController.getTimeStringOfMS(.getPosition)
@@ -422,6 +476,12 @@ Public Class PlaylistView
     Private Sub ckbLoop_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ckbLoop.CheckedChanged
         If isInit Then
             playlist.setLooping(ckbLoop.Checked)
+        End If
+    End Sub
+
+    Private Sub ckbClear_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ckbClear.CheckedChanged
+        If isInit Then
+            playlist.setClearAfterPlayback(ckbClear.Checked)
         End If
     End Sub
 

@@ -49,6 +49,7 @@ Public Class MainWindow
     Private Sub AddPlaylist()
         playlistView = New PlaylistView(sc.getPlaylistRoot)
         playlistView.Dock = DockStyle.Fill
+        layoutPlaylistSplit.Panel1MinSize = playlistView.MinimumSize.Width
         playlistView.Parent = layoutPlaylistSplit.Panel1
     End Sub
 
