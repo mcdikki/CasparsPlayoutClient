@@ -288,13 +288,17 @@ Public Class PlaylistView
 
     Private Sub addChild(ByRef childList As IPlaylistItem)
         Dim child As New PlaylistView(childList, startCompact)
-        child.Parent = Me.layoutChild
+        layoutChild.Controls.Add(child)
+        child.Width = Me.layoutChild.ClientRectangle.Width
         child.Show()
         updateItems.WaitOne()
         childs.Add(child)
         updateItems.Release()
+        child.layoutHeaderContentSplit_DoubleClick(Me, Nothing)
+        child.layoutHeaderContentSplit_DoubleClick(Me, Nothing)
         AddHandler child.changedHeight, AddressOf atChildChangedHeight
-        atResize(Me, Nothing)
+        layoutHeaderContentSplit_DoubleClick(Me, Nothing)
+        layoutHeaderContentSplit_DoubleClick(Me, Nothing)
     End Sub
 
     Private Sub atChildChangedHeight(ByVal heightDif As Integer)
@@ -304,7 +308,7 @@ Public Class PlaylistView
         End If
     End Sub
 
-    Friend Sub atResize(ByVal sender As Object, ByVal e As EventArgs) Handles Me.Resize
+    Friend Sub atResize(ByVal sender As Object, ByVal e As EventArgs) Handles Me.Layout
         If Not Me.Height = lastHeight AndAlso Not IsNothing(playlist.getParent) Then
             RaiseEvent changedHeight(Me.Height - lastHeight)
             lastHeight = Me.Height

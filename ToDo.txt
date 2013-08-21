@@ -40,7 +40,6 @@ Done - CD 19/08/13
 ------> load AbstractPlaylist - Done
 ---------> load AbstractCommand + CommandParameter - Done
 
-
 Done - CD 18/08/13
 - Add new ACMP commands
 ---> Layer/Channel routing - CD 18/08/13
@@ -106,6 +105,7 @@ Fixed - CD 29/07/13
 GUI:
 ==== 
 
+- BUG: When adding a block, than a media to the block, colapse the block, expand the block, colpase the media --> the whole block disapears.
 
 - Add clear after play checkbox to all playing media
 
@@ -131,7 +131,7 @@ GUI:
  --- Command
  
  
- Done - CD 16/08/13
+Done - CD 16/08/13
  - Channel reset of Items at connect should only appear if channel is not valid
  
 Done - CD 14/08/13
