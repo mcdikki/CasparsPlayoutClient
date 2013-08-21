@@ -136,6 +136,8 @@ Public Class PlaylistView
         layoutHeaderContentSplit_DoubleClick(Nothing, Nothing)
         If startCompact Then layoutHeaderContentSplit_DoubleClick(Nothing, Nothing)
 
+        layoutContentSplit.SplitterDistance = 6
+
         AddHandler playlist.changed, Sub() onDataChanged()
     End Sub
 
@@ -168,9 +170,12 @@ Public Class PlaylistView
         fd.CheckFileExists = True
         fd.Multiselect = False
         fd.ShowDialog()
+        loadPlaylist(fd.FileName)
+    End Sub
 
+    Private Sub loadPlaylist(ByVal fileName As String)
         Dim domDoc As New MSXML2.DOMDocument
-        If domDoc.load(fd.FileName) Then
+        If domDoc.load(fileName) Then
             If domDoc.firstChild.nodeName.Equals("playlist") Then
                 Dim pl = PlaylistFactory.getPlaylist(domDoc, playlist.getController)
                 If Not IsNothing(pl) Then
@@ -194,15 +199,15 @@ Public Class PlaylistView
                         Me.Parent.Controls.SetChildIndex(child, Me.Parent.Controls.IndexOf(child))
                         Me.Parent.Controls.Remove(Me)
                     End If
-                    logger.log("PlaylistView.loadPlaylist: Successfully loaded " & pl.getName & " from " & fd.FileName)
+                    logger.log("PlaylistView.loadPlaylist: Successfully loaded " & pl.getName & " from " & fileName)
                     RaiseEvent dataChanged()
                     atResize(Me, Nothing)
                 End If
             Else
-                logger.warn("PlaylistView.loadPlaylist: Unable to load playlist from xml file " & fd.FileName & ". Xml definition is not valid.")
+                logger.warn("PlaylistView.loadPlaylist: Unable to load playlist from xml file " & fileName & ". Xml definition is not valid.")
             End If
         Else
-            logger.warn("PlaylistView.loadPlaylist: Unable to xml file " & fd.FileName)
+            logger.warn("PlaylistView.loadPlaylist: Unable to xml file " & fileName)
         End If
     End Sub
 
@@ -214,23 +219,27 @@ Public Class PlaylistView
         fd.Multiselect = True
         fd.ShowDialog()
 
-        Dim domDoc As New MSXML2.DOMDocument
         For Each f In fd.FileNames
-            If domDoc.load(f) Then
-                If domDoc.firstChild.nodeName.Equals("playlist") Then
-                    Dim pl = PlaylistFactory.getPlaylist(domDoc, playlist.getController)
-                    If Not IsNothing(pl) Then
-                        playlist.addItem(pl)
-                        addChild(pl)
-                        logger.log("PlaylistView.addPlaylist: Successfully added " & pl.getName & " from " & f)
-                    End If
-                Else
-                    logger.warn("PlaylistView.loadPlaylist: Unable to load playlist from xml file " & fd.FileName & ". Xml definition is not valid.")
+            addPlaylist(f)
+        Next
+    End Sub
+
+    Public Sub addPlaylist(ByVal fileName As String)
+        Dim domDoc As New MSXML2.DOMDocument
+        If domDoc.load(fileName) Then
+            If domDoc.firstChild.nodeName.Equals("playlist") Then
+                Dim pl = PlaylistFactory.getPlaylist(domDoc, playlist.getController)
+                If Not IsNothing(pl) Then
+                    playlist.addItem(pl)
+                    addChild(pl)
+                    logger.log("PlaylistView.addPlaylist: Successfully added " & pl.getName & " from " & fileName)
                 End If
             Else
-                logger.warn("PlaylistView.loadPlaylist: Unable to xml file " & fd.FileName)
+                logger.warn("PlaylistView.loadPlaylist: Unable to load playlist from xml file " & fileName & ". Xml definition is not valid.")
             End If
-        Next
+        Else
+            logger.warn("PlaylistView.loadPlaylist: Unable to xml file " & fileName)
+        End If
     End Sub
 
     Public Sub onDataChanged() Handles Me.dataChanged
@@ -601,6 +610,14 @@ Public Class PlaylistView
                     End If
                 End If
             End If
+        ElseIf e.Data.GetDataPresent("FileName") AndAlso DirectCast(e.Data.GetData("FileName"), String()).Length > 0 AndAlso DirectCast(e.Data.GetData("FileName"), String())(0).ToUpper.EndsWith(".XML") Then
+            If ModifierKeys = Keys.Control Then
+                ' Load playlist
+                loadPlaylist(DirectCast(e.Data.GetData("FileName"), String())(0))
+            Else
+                ' Add to playlist
+                addPlaylist(DirectCast(e.Data.GetData("FileName"), String())(0))
+            End If
         End If
     End Sub
 
@@ -619,9 +636,11 @@ Public Class PlaylistView
             Else
                 e.Effect = DragDropEffects.Move
             End If
+        ElseIf e.Data.GetDataPresent("FileName") AndAlso DirectCast(e.Data.GetData("FileName"), String()).Length > 0 AndAlso DirectCast(e.Data.GetData("FileName"), String())(0).ToUpper.EndsWith(".XML") Then
+            e.Effect = DragDropEffects.Copy
         Else
-            ' Display the no-drop cursor. 
-            e.Effect = DragDropEffects.None
+                ' Display the no-drop cursor. 
+                e.Effect = DragDropEffects.None
         End If
     End Sub
 
@@ -630,7 +649,7 @@ Public Class PlaylistView
         ' Set a flag to show that the mouse is down. 
         MouseIsDown = True
     End Sub
-    Private Sub handleMouseMove(ByVal sender As Object, ByVal e As MouseEventArgs) Handles MyBase.MouseMove, layoutButton.MouseMove, layoutContentSplit.MouseMove, layoutInfos.MouseMove, layoutName.MouseMove, layoutHeaderTable.MouseMove
+    Private Sub handleMouseMove(ByVal sender As Object, ByVal e As MouseEventArgs) Handles MyBase.MouseMove, layoutContentSplit.MouseMove, layoutInfos.MouseMove, layoutName.MouseMove, layoutHeaderTable.MouseMove, layoutButton.MouseMove
         If MouseIsDown Then
             ' Initiate dragging. 
             If ModifierKeys = Keys.Control Then

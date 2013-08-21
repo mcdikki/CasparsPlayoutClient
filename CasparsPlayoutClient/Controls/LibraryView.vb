@@ -52,17 +52,21 @@ Public Class LibraryView
     End Sub
 
     Public Sub saveXmlLib()
-        Dim domDoc As New MSXML2.DOMDocument
-        Dim pnode = domDoc.createElement("library")
+        If Library.getItems.Count > 0 Then
+            Dim domDoc As New MSXML2.DOMDocument
+            Dim pnode = domDoc.createElement("library")
 
-        For Each m In Library.getItems
-            pnode.appendChild(m.toXml.firstChild)
-        Next
+            For Each m In Library.getItems
+                pnode.appendChild(m.toXml.firstChild)
+            Next
 
-        domDoc.appendChild(pnode)
-        domDoc.save("MediaLibrary.xml")
+            domDoc.appendChild(pnode)
+            domDoc.save("MediaLibrary.xml")
 
-        logger.log("LibraryView.saveXmlLib: Media library successfully saved.")
+            logger.log("LibraryView.saveXmlLib: Media library successfully saved.")
+        Else
+            logger.warn("LibraryView.saveXmlLib: Library is empty. Nothing to save.")
+        End If
     End Sub
 
     Public Sub loadXml()
