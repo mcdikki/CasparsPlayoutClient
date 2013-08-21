@@ -81,6 +81,9 @@ Done - CD 02/08/13
 Done - CD 27/07/13
 - Handle problem duration in mediaLib != real duration when playing
 
+Fixed - CD 21/08/13
+- BUG: Duration of videos are not saved or loaded correct
+
 Fixed - CD 20/08/13
 - BUG: abort BlockPlaylist lead to infinity loop in start() when seq. and looping
 

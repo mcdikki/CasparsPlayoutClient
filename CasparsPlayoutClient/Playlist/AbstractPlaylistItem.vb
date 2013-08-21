@@ -149,7 +149,7 @@ Public MustInherit Class AbstractPlaylistItem
         node.nodeTypedValue = getDelay()
         pnode.appendChild(node)
         node = configDoc.createElement("duration")
-        node.nodeTypedValue = getDuration()
+        node.nodeTypedValue = MyClass.getDuration()
         pnode.appendChild(node)
         node = configDoc.createElement("clearAfterPlayback")
         node.nodeTypedValue = ClearAfterPlayback()
@@ -202,9 +202,9 @@ Public MustInherit Class AbstractPlaylistItem
                 setLooping(xmlDoc.firstChild.selectSingleNode("loop").nodeTypedValue)
                 setAutoStart(xmlDoc.firstChild.selectSingleNode("autostart").nodeTypedValue)
                 setParallel(xmlDoc.firstChild.selectSingleNode("parallel").nodeTypedValue)
+                setClearAfterPlayback(xmlDoc.firstChild.selectSingleNode("clearAfterPlayback").nodeTypedValue)
                 setDelay(xmlDoc.firstChild.selectSingleNode("delay").nodeTypedValue)
                 setDuration(xmlDoc.firstChild.selectSingleNode("duration").nodeTypedValue)
-                setClearAfterPlayback(xmlDoc.firstChild.selectSingleNode("clearAfterPlayback").nodeTypedValue)
 
                 ' add subplayliss
                 For Each child As MSXML2.IXMLDOMElement In xmlDoc.firstChild.selectNodes("playlist")

@@ -242,13 +242,6 @@ Public Class PlaylistMovieItem
         End If
     End Sub
 
-    Public Overrides Sub setChannel(ByVal channel As Integer)
-        MyBase.setChannel(channel)
-        If getController.containsChannel(channel) AndAlso Not IsNothing(getMedia) Then
-            setDuration(getController.getMediaDuration(getMedia, channel))
-        End If
-    End Sub
-
 
     '' Methoden die Überschrieben werden müssen weil sie leer sind
     ''-------------------------------------------------------------
