@@ -32,6 +32,7 @@ Partial Class MainWindow
         Me.layoutUpDownSplit = New System.Windows.Forms.SplitContainer()
         Me.layoutCgLib = New System.Windows.Forms.SplitContainer()
         Me.layoutTableMain = New System.Windows.Forms.TableLayoutPanel()
+        Me.ssLog = New System.Windows.Forms.StatusStrip()
         Me.layoutInfoPanel = New System.Windows.Forms.Panel()
         Me.lblStatus = New System.Windows.Forms.Label()
         Me.lblDate = New System.Windows.Forms.Label()
@@ -49,7 +50,6 @@ Partial Class MainWindow
         Me.lblAddress = New System.Windows.Forms.Label()
         Me.txtPort = New System.Windows.Forms.TextBox()
         Me.txtAddress = New System.Windows.Forms.TextBox()
-        Me.ssLog = New System.Windows.Forms.StatusStrip()
         CType(Me.layoutPlaylistSplit, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.layoutPlaylistSplit.Panel2.SuspendLayout()
         Me.layoutPlaylistSplit.SuspendLayout()
@@ -164,6 +164,21 @@ Partial Class MainWindow
         Me.layoutTableMain.Size = New System.Drawing.Size(540, 474)
         Me.layoutTableMain.TabIndex = 0
         '
+        'ssLog
+        '
+        Me.ssLog.AutoSize = False
+        Me.ssLog.BackColor = System.Drawing.Color.Transparent
+        Me.ssLog.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.ssLog.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.VerticalStackWithOverflow
+        Me.ssLog.Location = New System.Drawing.Point(3, 53)
+        Me.ssLog.Margin = New System.Windows.Forms.Padding(3)
+        Me.ssLog.Name = "ssLog"
+        Me.ssLog.ShowItemToolTips = True
+        Me.ssLog.Size = New System.Drawing.Size(534, 418)
+        Me.ssLog.SizingGrip = False
+        Me.ssLog.TabIndex = 1
+        Me.ssLog.Text = "Test"
+        '
         'layoutInfoPanel
         '
         Me.layoutInfoPanel.BackColor = System.Drawing.SystemColors.ControlDarkDark
@@ -271,6 +286,7 @@ Partial Class MainWindow
         'cmbDisconnect
         '
         Me.cmbDisconnect.BackColor = System.Drawing.SystemColors.Control
+        Me.cmbDisconnect.Enabled = False
         Me.cmbDisconnect.ForeColor = System.Drawing.SystemColors.ControlText
         Me.cmbDisconnect.Location = New System.Drawing.Point(84, 3)
         Me.cmbDisconnect.Name = "cmbDisconnect"
@@ -382,21 +398,6 @@ Partial Class MainWindow
         Me.txtAddress.Size = New System.Drawing.Size(544, 20)
         Me.txtAddress.TabIndex = 0
         Me.txtAddress.Text = "localhost"
-        '
-        'ssLog
-        '
-        Me.ssLog.AutoSize = False
-        Me.ssLog.BackColor = System.Drawing.Color.Transparent
-        Me.ssLog.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.ssLog.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.VerticalStackWithOverflow
-        Me.ssLog.Location = New System.Drawing.Point(3, 53)
-        Me.ssLog.Margin = New System.Windows.Forms.Padding(3)
-        Me.ssLog.Name = "ssLog"
-        Me.ssLog.ShowItemToolTips = True
-        Me.ssLog.Size = New System.Drawing.Size(534, 418)
-        Me.ssLog.SizingGrip = False
-        Me.ssLog.TabIndex = 1
-        Me.ssLog.Text = "Test"
         '
         'MainWindow
         '

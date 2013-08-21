@@ -71,14 +71,14 @@ End Class
 Public Class OscMediaUpdater
     Inherits AbstractMediaUpdater
 
-    Private oscPort As Integer = 5103
+    Private oscPort As Integer = 6250
     Private WithEvents oscServer As OscServer
 
     Public Sub New(ByRef updateConnection As CasparCGConnection, ByRef playlist As IPlaylistItem, ByRef controller As ServerController)
         MyBase.New(updateConnection, playlist, controller)
 
         ' OSC Server erstellen
-        oscServer = New OscServer(TransportType.Udp, IPAddress.Loopback, oscPort)
+        oscServer = New OscServer(TransportType.Udp, IPAddress.Any, oscPort)
         oscServer.FilterRegisteredMethods = False
         oscServer.ConsumeParsingExceptions = False
 

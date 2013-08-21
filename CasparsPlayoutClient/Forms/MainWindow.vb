@@ -24,7 +24,7 @@ Public Class MainWindow
     Private WithEvents playlistView As PlaylistView
     Private WithEvents libraryView As LibraryView
     Private Delegate Sub updateDelegate()
-    Private Delegate Sub updateStatusDelegate(ByRef message As message)
+    Private Delegate Sub updateStatusDelegate(ByVal message As message)
     Private timer As Timers.Timer
 
     Private Sub MainWindow_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
@@ -97,17 +97,18 @@ Public Class MainWindow
         updateStatus()
     End Sub
 
-    Private Sub updateStatusBar(ByRef msg As message)
-        If ssLog.InvokeRequired Then
+    Private Sub updateStatusBar(ByVal msg As message)
+        If Me.ssLog.InvokeRequired Then
             Dim d As New updateStatusDelegate(AddressOf updateStatus)
-            ssLog.Invoke(d, {msg})
-        End If
-        If msg.getLevel < loglevels.debug Then
-            Dim item As New TimedStatusLable(7000, msg.getMessage)
-            item.BorderSides = ToolStripStatusLabelBorderSides.Top
-            item.BorderStyle = Border3DStyle.Flat
-            item.TextAlign = ContentAlignment.MiddleLeft
-            ssLog.Items.Add(item)
+            Me.ssLog.Invoke(d, msg)
+        Else
+            If msg.getLevel < loglevels.debug Then
+                Dim item As New TimedStatusLable(7000, msg.getMessage)
+                item.BorderSides = ToolStripStatusLabelBorderSides.Top
+                item.BorderStyle = Border3DStyle.Flat
+                item.TextAlign = ContentAlignment.MiddleLeft
+                ssLog.Items.Add(item)
+            End If
         End If
     End Sub
 
