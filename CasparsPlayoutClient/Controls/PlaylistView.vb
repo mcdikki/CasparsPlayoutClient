@@ -150,7 +150,7 @@ Public Class PlaylistView
         '' Add ContexMenu
         cMenu = New ContextMenuStrip
 
-        cMenu.Items.Add(New ToolStripMenuItem("Save Playlist", Nothing, Sub() playlist.toXML.save(playlist.getName & "(PLAYLIST).xml")))
+        cMenu.Items.Add(New ToolStripMenuItem("Save Playlist", Nothing, Sub() savePlaylist()))
         cMenu.Items.Add(New ToolStripMenuItem("Load Playlist", Nothing, Sub() loadPlaylist()))
         cMenu.Items.Add(New ToolStripSeparator)
         cMenu.Items.Add(New ToolStripMenuItem("Add Playlist(s) from file", Nothing, Sub() addPlaylist()))
@@ -216,7 +216,33 @@ Public Class PlaylistView
         tooltip.SetToolTip(lblExpand, "Click here to expand/colapse the items of this playlist.")
     End Sub
 
-    Private Sub loadPlaylist()
+    Public Sub savePlaylist()
+        Dim fd As New SaveFileDialog()
+        fd.AddExtension = True
+        fd.CheckPathExists = True
+        fd.DefaultExt = "xml"
+        fd.FileName = playlist.getName & "(PLAYLIST).xml"
+        fd.Filter = "Playlist (*.xml)|*.xml"
+        fd.RestoreDirectory = True
+        fd.Title = "Save " & playlist.getName
+
+        If fd.ShowDialog = DialogResult.OK Then
+            savePlaylist(fd.FileName)
+        Else
+            logger.log("PlaylistView.savePlaylist: Save '" & playlist.getName & "' aborted.")
+        End If
+    End Sub
+
+    Public Sub savePlaylist(ByVal fileName As String)
+        If My.Computer.FileSystem.DirectoryExists(My.Computer.FileSystem.GetParentPath(fileName)) Then
+            playlist.toXML.save(fileName)
+            logger.log("PlaylistView.savePlaylist: Successfully saved '" & playlist.getName & "' to " & fileName)
+        Else
+            logger.log("PlaylistView.savePlaylist: Save '" & playlist.getName & "' aborted.")
+        End If
+    End Sub
+
+    Public Sub loadPlaylist()
         Dim fd As New OpenFileDialog()
         fd.DefaultExt = "xml"
         fd.Filter = "Xml Dateien|*.xml"
@@ -226,7 +252,7 @@ Public Class PlaylistView
         loadPlaylist(fd.FileName)
     End Sub
 
-    Private Sub loadPlaylist(ByVal fileName As String)
+    Public Sub loadPlaylist(ByVal fileName As String)
         Dim domDoc As New MSXML2.DOMDocument
         If domDoc.load(fileName) Then
             If domDoc.firstChild.nodeName.Equals("playlist") Then
@@ -260,7 +286,7 @@ Public Class PlaylistView
                 logger.warn("PlaylistView.loadPlaylist: Unable to load playlist from xml file " & fileName & ". Xml definition is not valid.")
             End If
         Else
-            logger.warn("PlaylistView.loadPlaylist: Unable to xml file " & fileName)
+            logger.warn("PlaylistView.loadPlaylist: Unable to parse xml file " & fileName)
         End If
     End Sub
 
