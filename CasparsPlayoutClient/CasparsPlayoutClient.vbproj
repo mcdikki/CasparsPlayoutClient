@@ -197,6 +197,7 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Interfaces\ITrigger.vb" />
+    <Compile Include="Settings.vb" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Controls\LibraryView.resx">
@@ -222,6 +223,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="My Project\app.manifest" />
     <None Include="My Project\Application.myapp">
       <Generator>MyApplicationCodeGenerator</Generator>

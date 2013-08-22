@@ -27,10 +27,10 @@ Public Class ServerController
     Private updateConnection As CasparCGConnection
     Private testConnection As CasparCGConnection
     Private tickThread As Thread
-    Private serverAddress As String = "localhost"
-    Private serverPort As Integer = 5250
+    Private serverAddress As String = My.Settings.defaultAcmpServer
+    Private serverPort As Integer = My.Settings.deafaultAcmpPort
     Private testChannel As Integer = 2
-    Private framesPerTick As Integer = 1
+    Private framesPerTick As Integer = My.Settings.frameTickInterval
     Private channels As Integer
     Private channelFPS() As Integer
     Private opened As Boolean
@@ -59,7 +59,6 @@ Public Class ServerController
         If Not IsNothing(cmdConnection) Then cmdConnection.close()
         If Not IsNothing(updateConnection) Then updateConnection.close()
         If Not IsNothing(testConnection) Then testConnection.close()
-        'If Not IsNothing(tickConnection) Then tickConnection.close()
         channels = 0
         ReDim channelFPS(0)
     End Sub
@@ -81,7 +80,19 @@ Public Class ServerController
         cmdConnection = New CasparCGConnection(serverAddress, serverPort)
         updateConnection = New CasparCGConnection(serverAddress, serverPort)
         testConnection = New CasparCGConnection(serverAddress, serverPort)
-        'tickConnection = New CasparCGConnection(serverAddress, serverPort)
+
+        cmdConnection.timeout = My.Settings.connectionTimeout
+        cmdConnection.reconnectTimeout = My.Settings.reconnectTimout
+        cmdConnection.reconnectTries = My.Settings.reconnectTries
+        cmdConnection.strictVersionControl = My.Settings.strictVersionControl
+        updateConnection.timeout = My.Settings.connectionTimeout
+        updateConnection.reconnectTimeout = My.Settings.reconnectTimout
+        updateConnection.reconnectTries = My.Settings.reconnectTries
+        updateConnection.strictVersionControl = My.Settings.strictVersionControl
+        testConnection.timeout = My.Settings.connectionTimeout
+        testConnection.reconnectTimeout = My.Settings.reconnectTimout
+        testConnection.reconnectTries = My.Settings.reconnectTries
+        testConnection.strictVersionControl = My.Settings.strictVersionControl
 
 
         If testConnection.connect() AndAlso updateConnection.connect() AndAlso cmdConnection.connect() Then
@@ -134,6 +145,14 @@ Public Class ServerController
 
     Public Function getChannels() As Integer
         Return channels
+    End Function
+
+    Public Function getPort() As Integer
+        Return serverPort
+    End Function
+
+    Public Function getServerAddress() As String
+        Return serverAddress
     End Function
 
     ''' <summary>

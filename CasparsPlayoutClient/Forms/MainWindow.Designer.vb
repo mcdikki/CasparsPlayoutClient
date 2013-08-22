@@ -8,6 +8,9 @@ Partial Class MainWindow
         If Not IsNothing(sc.getTicker) Then RemoveHandler sc.getTicker.frameTick, AddressOf onTick
         sc.close()
         logger.close()
+        My.Settings.last_AcmpPort = txtPort.Text
+        My.Settings.last_AcmpServer = txtAddress.Text
+        My.Settings.Save()
         Try
             If disposing AndAlso components IsNot Nothing Then
                 components.Dispose()

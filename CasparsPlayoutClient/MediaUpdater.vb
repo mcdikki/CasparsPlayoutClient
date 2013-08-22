@@ -77,7 +77,8 @@ Public Class OscMediaUpdater
     Public Sub New(ByRef updateConnection As CasparCGConnection, ByRef playlist As IPlaylistItem, ByRef controller As ServerController)
         MyBase.New(updateConnection, playlist, controller)
 
-        ' OSC Server erstellen
+        ' OSC Server erstellen    
+        oscPort = My.Settings.oscPort
         oscServer = New OscServer(TransportType.Udp, IPAddress.Any, oscPort)
         oscServer.FilterRegisteredMethods = False
         oscServer.ConsumeParsingExceptions = False

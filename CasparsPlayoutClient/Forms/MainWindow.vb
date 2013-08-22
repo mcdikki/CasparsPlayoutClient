@@ -26,16 +26,40 @@ Public Class MainWindow
     Private Delegate Sub updateDelegate()
     Private Delegate Sub updateStatusDelegate(ByVal message As message)
     Private timer As Timers.Timer
+    Private logShowTime As Integer = My.Settings.logShowTime
 
     Private Sub MainWindow_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
-        logger.addLogAction(New consoleLogger(3))
-        'logger.addLogAction(New fileLogger(4, "debug.log", True, False))
+        If My.Settings.logToFile Then
+            logger.addLogAction(New consoleLogger(My.Settings.loglevel))
+        End If
+        If My.Settings.logToFile Then
+            logger.addLogAction(New fileLogger(My.Settings.loglevel, My.Settings.logfile, True, False))
+        End If
         sc = New ServerController
+
         mediaLib = New Library(sc)
         AddPlaylist()
         AddLibrary()
         initInfo()
         layoutUpDownSplit.SplitterDistance = layoutUpDownSplit.Size.Height - layoutUpDownSplit.Panel2MinSize
+    End Sub
+
+    Private Sub loadConfig()
+        ' Server and port
+        If My.Settings.last_AcmpServer.Length > 0 Then
+            Me.txtAddress.Text = My.Settings.last_AcmpServer
+        Else
+            Me.txtAddress.Text = sc.getServerAddress
+        End If
+        If My.Settings.last_AcmpPort.Length > 0 Then
+            Me.txtPort.Text = My.Settings.last_AcmpPort
+        Else
+            Me.txtPort.Text = sc.getPort
+        End If
+
+        ' playlist
+
+        ' library
     End Sub
 
     Private Sub AddLibrary()
@@ -103,7 +127,7 @@ Public Class MainWindow
             Me.ssLog.Invoke(d, msg)
         Else
             If msg.getLevel < loglevels.debug Then
-                Dim item As New TimedStatusLable(7000, msg.getMessage)
+                Dim item As New TimedStatusLable(logShowTime, msg.getMessage)
                 item.BorderSides = ToolStripStatusLabelBorderSides.Top
                 item.BorderStyle = Border3DStyle.Flat
                 item.TextAlign = ContentAlignment.MiddleLeft
