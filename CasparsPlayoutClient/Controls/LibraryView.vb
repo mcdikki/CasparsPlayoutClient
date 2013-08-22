@@ -28,6 +28,7 @@ Public Class LibraryView
         cmbRefresh.Image = Image.FromFile("img/refresh-icon.png")
         pbProgress.Image = Image.FromFile("img/refresh-icon-ani.gif")
         initMenu()
+
     End Sub
 
     Public Sub New(ByVal library As Library)
@@ -37,6 +38,11 @@ Public Class LibraryView
         pbProgress.Image = Image.FromFile("img/refresh-icon-ani.gif")
         initMenu()
         refreshList()
+        ' load last lib if pos.
+        If My.Settings.rememberLibrary AndAlso My.Settings.last_Library.Length > 0 Then
+            Dim xmlDoc As New MSXML2.DOMDocument()
+            If xmlDoc.loadXML(My.Settings.last_Library) Then loadXml(xmlDoc)
+        End If
     End Sub
 
     '
@@ -69,6 +75,18 @@ Public Class LibraryView
         End If
     End Sub
 
+    Public Function getXmlLib() As String
+        Dim domDoc As New MSXML2.DOMDocument
+        Dim pnode = domDoc.createElement("library")
+
+        For Each m In Library.getItems
+            pnode.appendChild(m.toXml.firstChild)
+        Next
+
+        domDoc.appendChild(pnode)
+        Return domDoc.xml
+    End Function
+
     Public Sub loadXml()
         Dim fd As New OpenFileDialog()
         fd.DefaultExt = "xml"
@@ -77,35 +95,70 @@ Public Class LibraryView
         fd.Multiselect = True
         fd.ShowDialog()
 
+        For Each f In fd.FileNames
+            loadXml(f)
+        Next
+        applyFilter()
+    End Sub
+
+    Public Sub loadXml(ByVal fileName As String)
         Dim domDoc As New MSXML2.DOMDocument
         Dim media As AbstractCasparCGMedia
-        For Each f In fd.FileNames
-            If domDoc.load(f) Then
-                If domDoc.firstChild.nodeName.Equals("library") Then
-                    ' load whole lib
-                    For Each m As MSXML2.IXMLDOMNode In domDoc.firstChild.selectNodes("media")
-                        media = CasparCGMediaFactory.createMedia(m.xml)
-                        If Not IsNothing(media) Then
-                            Library.addItem(media)
-                            addMediaItem(media)
-                            logger.log("LibraryView.loadXml: Successfully loaded " & media.getName & " from '" & f & "'.")
-                        End If
-                    Next
-                ElseIf domDoc.firstChild.nodeName.Equals("media") Then
-                    ' single media
-                    media = CasparCGMediaFactory.createMedia(domDoc.xml)
+        If domDoc.load(fileName) Then
+            If domDoc.firstChild.nodeName.Equals("library") Then
+                ' load whole lib
+                For Each m As MSXML2.IXMLDOMNode In domDoc.firstChild.selectNodes("media")
+                    media = CasparCGMediaFactory.createMedia(m.xml)
                     If Not IsNothing(media) Then
                         Library.addItem(media)
                         addMediaItem(media)
-                        logger.log("LibraryView.loadXml: Successfully loaded " & media.getName & " from '" & f & "'.")
+                        logger.log("LibraryView.loadXml: Successfully loaded " & media.getName & " from '" & fileName & "'.")
                     End If
-                Else
-                    logger.warn("LibraryView.loadXml: Unable to load media from '" & f & "'. Not a valid media definition.")
+                Next
+            ElseIf domDoc.firstChild.nodeName.Equals("media") Then
+                ' single media
+                media = CasparCGMediaFactory.createMedia(domDoc.xml)
+                If Not IsNothing(media) Then
+                    Library.addItem(media)
+                    addMediaItem(media)
+                    logger.log("LibraryView.loadXml: Successfully loaded " & media.getName & " from '" & fileName & "'.")
                 End If
             Else
-                logger.err("LibraryView.loadXml: Unable to parse media file '" & f & "'. Not a valid xml file.")
+                logger.warn("LibraryView.loadXml: Unable to load media from '" & fileName & "'. Not a valid media definition.")
             End If
-        Next
+        Else
+            logger.err("LibraryView.loadXml: Unable to parse media file '" & fileName & "'. Not a valid xml file.")
+        End If
+        applyFilter()
+    End Sub
+
+    Public Sub loadXml(ByRef xmlDoc As MSXML2.DOMDocument)
+        Dim media As AbstractCasparCGMedia
+        If xmlDoc.hasChildNodes Then
+            If xmlDoc.firstChild.nodeName.Equals("library") Then
+                ' load whole lib
+                For Each m As MSXML2.IXMLDOMNode In xmlDoc.firstChild.selectNodes("media")
+                    media = CasparCGMediaFactory.createMedia(m.xml)
+                    If Not IsNothing(media) Then
+                        Library.addItem(media)
+                        addMediaItem(media)
+                        logger.log("LibraryView.loadXml: Successfully loaded " & media.getName)
+                    End If
+                Next
+            ElseIf xmlDoc.firstChild.nodeName.Equals("media") Then
+                ' single media
+                media = CasparCGMediaFactory.createMedia(xmlDoc.xml)
+                If Not IsNothing(media) Then
+                    Library.addItem(media)
+                    addMediaItem(media)
+                    logger.log("LibraryView.loadXml: Successfully loaded " & media.getName)
+                End If
+            Else
+                logger.warn("LibraryView.loadXml: Unable to load media. Not a valid media definition.")
+            End If
+        Else
+            logger.err("LibraryView.loadXml: Unable to load media. Empty definition.")
+        End If
         applyFilter()
     End Sub
 
@@ -171,6 +224,7 @@ Public Class LibraryView
                     addMediaItem(item)
                 Next
             End If
+            If My.Settings.rememberLibrary AndAlso Library.getItems.Count > 0 Then My.Settings.last_Library = getXmlLib()
             applyFilter()
         End If
     End Sub

@@ -37,6 +37,8 @@ Public Class MainWindow
         End If
         sc = New ServerController
 
+        loadConfig()
+
         mediaLib = New Library(sc)
         AddPlaylist()
         AddLibrary()

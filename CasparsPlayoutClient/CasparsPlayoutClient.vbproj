@@ -197,7 +197,6 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Interfaces\ITrigger.vb" />
-    <Compile Include="Settings.vb" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Controls\LibraryView.resx">

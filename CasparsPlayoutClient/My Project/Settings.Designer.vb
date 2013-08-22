@@ -206,6 +206,54 @@ Namespace My
                 Me("last_AcmpPort") = value
             End Set
         End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("")>  _
+        Public Property last_Library() As String
+            Get
+                Return CType(Me("last_Library"),String)
+            End Get
+            Set
+                Me("last_Library") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("")>  _
+        Public Property last_Playlist() As String
+            Get
+                Return CType(Me("last_Playlist"),String)
+            End Get
+            Set
+                Me("last_Playlist") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("True")>  _
+        Public Property rememberLibrary() As Boolean
+            Get
+                Return CType(Me("rememberLibrary"),Boolean)
+            End Get
+            Set
+                Me("rememberLibrary") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("True")>  _
+        Public Property rememberPlaylist() As Boolean
+            Get
+                Return CType(Me("rememberPlaylist"),Boolean)
+            End Get
+            Set
+                Me("rememberPlaylist") = value
+            End Set
+        End Property
     End Class
 End Namespace
 
