@@ -32,8 +32,9 @@ Public Class MainWindow
         If My.Settings.logToFile Then
             logger.addLogAction(New consoleLogger(My.Settings.loglevel))
         End If
+        If My.Settings.logdir.Length = 0 Then My.Settings.logdir = My.Computer.FileSystem.SpecialDirectories.CurrentUserApplicationData & "\log"
         If My.Settings.logToFile Then
-            logger.addLogAction(New fileLogger(My.Settings.loglevel, My.Settings.logfile, True, False))
+            logger.addLogAction(New fileLogger(My.Settings.loglevel, My.Settings.logdir & "\" & My.Settings.logfile, True, False))
         End If
         sc = New ServerController
 

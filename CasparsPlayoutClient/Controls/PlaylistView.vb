@@ -225,6 +225,7 @@ Public Class PlaylistView
         fd.Filter = "Playlist (*.xml)|*.xml"
         fd.RestoreDirectory = True
         fd.Title = "Save " & playlist.getName
+        fd.InitialDirectory = My.Settings.playlistdir
 
         If fd.ShowDialog = DialogResult.OK Then
             savePlaylist(fd.FileName)
@@ -248,6 +249,7 @@ Public Class PlaylistView
         fd.Filter = "Xml Dateien|*.xml"
         fd.CheckFileExists = True
         fd.Multiselect = False
+        fd.InitialDirectory = My.Settings.playlistdir
         fd.ShowDialog()
         loadPlaylist(fd.FileName)
     End Sub
@@ -296,6 +298,7 @@ Public Class PlaylistView
         fd.Filter = "Xml Dateien|*.xml"
         fd.CheckFileExists = True
         fd.Multiselect = True
+        fd.InitialDirectory = My.Settings.playlistdir
         fd.ShowDialog()
 
         For Each f In fd.FileNames

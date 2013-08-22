@@ -23,7 +23,6 @@ Public Class ServerController
 
     Public readyForUpdate As New Semaphore(1, 1)
     Private cmdConnection As CasparCGConnection
-    'Private tickConnection As CasparCGConnection
     Private updateConnection As CasparCGConnection
     Private testConnection As CasparCGConnection
     Private tickThread As Thread
@@ -39,6 +38,7 @@ Public Class ServerController
     Private playlist As IPlaylistItem ' Die Root Playlist unter die alle anderen kommen
 
     Public Sub New()
+        If My.Settings.playlistdir.Length = 0 Then My.Settings.playlistdir = My.Computer.FileSystem.SpecialDirectories.CurrentUserApplicationData & "\playlist"
         If My.Settings.rememberPlaylist AndAlso My.Settings.last_Playlist.Length > 0 Then
             Dim xmldoc As New MSXML2.DOMDocument
             If xmldoc.loadXML(My.Settings.last_Playlist) Then

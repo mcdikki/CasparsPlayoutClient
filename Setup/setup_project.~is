@@ -2,7 +2,9 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Caspar's Playout Client"
-#define MyAppVersion "0.1.1 Beta"
+#define MyAppVersion "0.1.0.1"
+#define MyAppMainVersion "0.1.0.0"
+#define MyAppCompany "Sublan.tv"
 #define MyAppPublisher "Christopher Diekkamp"
 #define MyAppURL "http://github.com/mcdikki/CasparsPlayoutClient"
 #define MyAppExeName "CasparsPlayoutClient.exe"
@@ -42,7 +44,15 @@ Source: "C:\Daten\Gemeinde\Sublan\Programierung\CasparsPlayoutClient\CasparsPlay
 Source: "C:\Daten\Gemeinde\Sublan\Programierung\CasparsPlayoutClient\CasparsPlayoutClient\bin\Release\Bespoke.Common.Osc.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\Daten\Gemeinde\Sublan\Programierung\CasparsPlayoutClient\CasparsPlayoutClient\bin\Release\CasparCGNETConnector.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\Daten\Gemeinde\Sublan\Programierung\CasparsPlayoutClient\CasparsPlayoutClient\bin\Release\logger.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Daten\Gemeinde\Sublan\Programierung\CasparsPlayoutClient\CasparsPlayoutClient\bin\Release\img\*"; DestDir: "{app}\img\"; Flags: ignoreversion
+Source: "C:\Daten\Gemeinde\Sublan\Programierung\CasparsPlayoutClient\CasparsPlayoutClient\bin\Release\CasparsPlayoutClient.exe.config"; DestDir: "{app}"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
+
+[Dirs]
+; logfolder in users appdata
+Name: "{userappdata}\{#MyAppName}\{#MyAppMainVersion}\{#MyAppCompany}\log"
+Name: "{userappdata}\{#MyAppName}\{#MyAppMainVersion}\{#MyAppCompany}\library"
+Name: "{userappdata}\{#MyAppName}\{#MyAppMainVersion}\{#MyAppCompany}\playlist"
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"

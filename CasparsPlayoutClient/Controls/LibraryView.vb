@@ -28,7 +28,7 @@ Public Class LibraryView
         cmbRefresh.Image = Image.FromFile("img/refresh-icon.png")
         pbProgress.Image = Image.FromFile("img/refresh-icon-ani.gif")
         initMenu()
-
+        If My.Settings.libdir.Length = 0 Then My.Settings.libdir = My.Computer.FileSystem.SpecialDirectories.CurrentUserApplicationData & "\library"
     End Sub
 
     Public Sub New(ByVal library As Library)
@@ -39,6 +39,7 @@ Public Class LibraryView
         initMenu()
         refreshList()
         ' load last lib if pos.
+        If My.Settings.libdir.Length = 0 Then My.Settings.libdir = My.Computer.FileSystem.SpecialDirectories.CurrentUserApplicationData & "\library"
         If My.Settings.rememberLibrary AndAlso My.Settings.last_Library.Length > 0 Then
             Dim xmlDoc As New MSXML2.DOMDocument()
             If xmlDoc.loadXML(My.Settings.last_Library) Then loadXml(xmlDoc)
@@ -67,7 +68,7 @@ Public Class LibraryView
             Next
 
             domDoc.appendChild(pnode)
-            domDoc.save("MediaLibrary.xml")
+            domDoc.save(My.Settings.libdir & "\" & "MediaLibrary.xml")
 
             logger.log("LibraryView.saveXmlLib: Media library successfully saved.")
         Else
@@ -93,6 +94,7 @@ Public Class LibraryView
         fd.Filter = "Xml Dateien|*.xml"
         fd.CheckFileExists = True
         fd.Multiselect = True
+        fd.InitialDirectory = My.Settings.libdir
         fd.ShowDialog()
 
         For Each f In fd.FileNames

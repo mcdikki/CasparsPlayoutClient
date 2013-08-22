@@ -254,6 +254,42 @@ Namespace My
                 Me("rememberPlaylist") = value
             End Set
         End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("")>  _
+        Public Property logdir() As String
+            Get
+                Return CType(Me("logdir"),String)
+            End Get
+            Set
+                Me("logdir") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("")>  _
+        Public Property libdir() As String
+            Get
+                Return CType(Me("libdir"),String)
+            End Get
+            Set
+                Me("libdir") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("")>  _
+        Public Property playlistdir() As String
+            Get
+                Return CType(Me("playlistdir"),String)
+            End Get
+            Set
+                Me("playlistdir") = value
+            End Set
+        End Property
     End Class
 End Namespace
 
