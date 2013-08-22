@@ -39,8 +39,18 @@ Public Class ServerController
     Private playlist As IPlaylistItem ' Die Root Playlist unter die alle anderen kommen
 
     Public Sub New()
-        playlist = New PlaylistBlockItem("Playlist", Me, 1, 0)
-        playlist.setParallel(True)
+        If My.Settings.rememberPlaylist AndAlso My.Settings.last_Playlist.Length > 0 Then
+            Dim xmldoc As New MSXML2.DOMDocument
+            If xmldoc.loadXML(My.Settings.last_Playlist) Then
+                playlist = PlaylistFactory.getPlaylist(xmldoc, Me)
+            Else
+                playlist = New PlaylistBlockItem("Playlist", Me, 1, 0)
+                playlist.setParallel(True)
+            End If
+        Else
+            playlist = New PlaylistBlockItem("Playlist", Me, 1, 0)
+            playlist.setParallel(True)
+        End If
     End Sub
 
     Public Function open() As Boolean

@@ -10,6 +10,7 @@ Partial Class MainWindow
         logger.close()
         My.Settings.last_AcmpPort = txtPort.Text
         My.Settings.last_AcmpServer = txtAddress.Text
+        If My.Settings.rememberPlaylist Then My.Settings.last_Playlist = sc.getPlaylistRoot.toXMLString
         My.Settings.Save()
         Try
             If disposing AndAlso components IsNot Nothing Then
