@@ -25,8 +25,8 @@ Public Class PlaylistView
     Private startCompact As Boolean
     Private Delegate Sub updateDelegate()
     Private cMenu As ContextMenuStrip
-    Private nowarn As Integer = 5000
-    Private warn As Integer = 1000
+    Private nowarn As Integer = My.Settings.noWarnTime
+    Private warn As Integer = My.Settings.warnTime
     Private lastWidth As Integer = 0
     Private lastHeight As Integer = 0
 

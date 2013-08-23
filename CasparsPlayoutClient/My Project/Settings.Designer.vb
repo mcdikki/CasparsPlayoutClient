@@ -287,6 +287,30 @@ Namespace My
                 Me("playlistdir") = value
             End Set
         End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("5000")>  _
+        Public Property noWarnTime() As Integer
+            Get
+                Return CType(Me("noWarnTime"),Integer)
+            End Get
+            Set
+                Me("noWarnTime") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("1000")>  _
+        Public Property warnTime() As Integer
+            Get
+                Return CType(Me("warnTime"),Integer)
+            End Get
+            Set
+                Me("warnTime") = value
+            End Set
+        End Property
     End Class
 End Namespace
 
