@@ -5,7 +5,7 @@
     <Setting Name="oscPort" Type="System.Int32" Scope="Application">
       <Value Profile="(Default)">6250</Value>
     </Setting>
-    <Setting Name="defaultAcmpServer" Type="System.String" Scope="User">
+    <Setting Name="defaultAcmpServer" Type="System.String" Scope="Application">
       <Value Profile="(Default)">localhost</Value>
     </Setting>
     <Setting Name="deafaultAcmpPort" Type="System.Int32" Scope="Application">
@@ -54,10 +54,10 @@
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="rememberLibrary" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
+      <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="rememberPlaylist" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
+      <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="logdir" Type="System.String" Scope="User">
       <Value Profile="(Default)" />

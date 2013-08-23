@@ -63,16 +63,13 @@ Namespace My
             End Get
         End Property
         
-        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+        <Global.System.Configuration.ApplicationScopedSettingAttribute(),  _
          Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.Configuration.DefaultSettingValueAttribute("localhost")>  _
-        Public Property defaultAcmpServer() As String
+        Public ReadOnly Property defaultAcmpServer() As String
             Get
                 Return CType(Me("defaultAcmpServer"),String)
             End Get
-            Set
-                Me("defaultAcmpServer") = value
-            End Set
         End Property
         
         <Global.System.Configuration.ApplicationScopedSettingAttribute(),  _
@@ -233,7 +230,7 @@ Namespace My
         
         <Global.System.Configuration.UserScopedSettingAttribute(),  _
          Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
-         Global.System.Configuration.DefaultSettingValueAttribute("False")>  _
+         Global.System.Configuration.DefaultSettingValueAttribute("True")>  _
         Public Property rememberLibrary() As Boolean
             Get
                 Return CType(Me("rememberLibrary"),Boolean)
@@ -245,7 +242,7 @@ Namespace My
         
         <Global.System.Configuration.UserScopedSettingAttribute(),  _
          Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
-         Global.System.Configuration.DefaultSettingValueAttribute("False")>  _
+         Global.System.Configuration.DefaultSettingValueAttribute("True")>  _
         Public Property rememberPlaylist() As Boolean
             Get
                 Return CType(Me("rememberPlaylist"),Boolean)

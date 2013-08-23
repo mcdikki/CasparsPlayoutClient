@@ -181,8 +181,8 @@ Public Class PlaylistView
         tooltip.SetToolTip(ckbLoop, "Check LOOP if you want this playlist to restart at it's end.")
 
         ' Par
-        tooltip.SetToolTip(grpParallel, "Check PARALLEL to make this playlist a parallel block that starts all items at once." & vbNewLine & "If not check, each item will be played after each other.")
-        tooltip.SetToolTip(ckbParallel, "Check PARALLEL to make this playlist a parallel block that starts all items at once." & vbNewLine & "If not check, each item will be played after each other.")
+        tooltip.SetToolTip(grpParallel, "Check PARALLEL to make this playlist a parallel block that starts all items at once." & vbNewLine & "If not checked, each item will be played after each other.")
+        tooltip.SetToolTip(ckbParallel, "Check PARALLEL to make this playlist a parallel block that starts all items at once." & vbNewLine & "If not checked, each item will be played after each other.")
 
         ' Clear
         tooltip.SetToolTip(grpClear, "Check CLEAR if you want the media to be cleared of the layer after playback." & vbNewLine & "If not checked, the last frame will stay at the layer until a new media is loaded.")
@@ -198,7 +198,7 @@ Public Class PlaylistView
         tooltip.SetToolTip(txtDuration, "Displays the duration of this playlist." & vbNewLine & "If supported, set or override the duration of this playlist in milliseconds.")
 
         ' Delay
-        tooltip.SetToolTip(txtDelay, "If you want this playlist to start delayed," & vbNewLine & "set the number of milliseconds in here the playlist should wait after a start command to really start." & vbNewLine & "TIPP: You can allways start the playlist earlier by clicking the PlayButton.")
+        tooltip.SetToolTip(txtDelay, "If you want this playlist to start delayed," & vbNewLine & "set the number of milliseconds in here that the playlist should wait after a start command until it really starts." & vbNewLine & "TIPP: You can allways start the playlist earlier by clicking the PlayButton.")
 
         ' Channel
         tooltip.SetToolTip(nudChannel, "Set the server channel here." & vbNewLine & "TIPP: Newly added items of Blocks will inherit the channel number." & vbNewLine & "So even if Blocks doesn't need a channel, setting it will save you time.")
@@ -207,7 +207,7 @@ Public Class PlaylistView
         tooltip.SetToolTip(nudLayer, "Set the server layer here." & vbNewLine & "TIPP: Newly added items of Blocks will inherit the layer." & vbNewLine & "So even if Blocks doesn't need a layer, setting it will save you time.")
 
         ' Pos
-        tooltip.SetToolTip(txtPosition, "Shows the current position in the playlist." & vbNewLine & "TIPP: Negativ positions indecates that there is no duration given or the playlist is counting back a delay till it start.")
+        tooltip.SetToolTip(txtPosition, "Shows the current position in the playlist." & vbNewLine & "TIPP: Negativ positions indecates that there is no duration given or the playlist is counting back a delay till it starts.")
 
         ' Remaining
         tooltip.SetToolTip(txtRemaining, "Shows the remaining time until the playlist reaches the end." & vbNewLine & "TIPP: At the end of the playlist, the color will change to orange and then to red.")
@@ -250,8 +250,7 @@ Public Class PlaylistView
         fd.CheckFileExists = True
         fd.Multiselect = False
         fd.InitialDirectory = My.Settings.playlistdir
-        fd.ShowDialog()
-        loadPlaylist(fd.FileName)
+        If fd.ShowDialog().Equals(vbOK) Then loadPlaylist(fd.FileName)
     End Sub
 
     Public Sub loadPlaylist(ByVal fileName As String)

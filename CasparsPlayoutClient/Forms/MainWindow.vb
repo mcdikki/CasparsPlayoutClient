@@ -29,7 +29,7 @@ Public Class MainWindow
     Private logShowTime As Integer = My.Settings.logShowTime
 
     Private Sub MainWindow_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
-        If My.Settings.logToFile Then
+        If My.Settings.logToConsole Then
             logger.addLogAction(New consoleLogger(My.Settings.loglevel))
         End If
         If My.Settings.logdir.Length = 0 Then My.Settings.logdir = My.Computer.FileSystem.SpecialDirectories.CurrentUserApplicationData & "\log"

@@ -25,9 +25,9 @@ CORE:
 ---> Still - CD 15/08/13
 
 
+
+Done - CD 23/08/13
 - Add config class and functions
-
-
 
 Done - CD 19/08/13
 - Implement missing save/load Playlist to/from xml functions
@@ -116,8 +116,6 @@ GUI:
  
  - Add Menu
  
- - Add Settings
- 
  - Add minimalistic kind of TreeView for PlaylistView
 
  - Improve ExpandButton of MediaLibrary (to hard to get clicked)
@@ -129,6 +127,9 @@ GUI:
  --- Template
  --- Command
  
+ 
+Done - CD 23/08/13
+ - Add Settings
  
 Done - CD 21/08/13
 - Add clear after play checkbox to all playing media
