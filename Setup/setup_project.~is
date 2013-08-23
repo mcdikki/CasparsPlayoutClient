@@ -50,9 +50,9 @@ Source: "C:\Daten\Gemeinde\Sublan\Programierung\CasparsPlayoutClient\CasparsPlay
 
 [Dirs]
 ; logfolder in users appdata
-Name: "{userappdata}\{#MyAppName}\{#MyAppMainVersion}\{#MyAppCompany}\log"
-Name: "{userappdata}\{#MyAppName}\{#MyAppMainVersion}\{#MyAppCompany}\library"
-Name: "{userappdata}\{#MyAppName}\{#MyAppMainVersion}\{#MyAppCompany}\playlist"
+Name: "{userappdata}\{#MyAppCompany}\{#MyAppName}\{#MyAppMainVersion}\log"
+Name: "{userappdata}\{#MyAppCompany}\{#MyAppName}\{#MyAppMainVersion}\library"
+Name: "{userappdata}\{#MyAppCompany}\{#MyAppName}\{#MyAppMainVersion}\playlist"
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
