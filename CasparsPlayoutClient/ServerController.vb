@@ -22,9 +22,9 @@ Imports logger
 Public Class ServerController
 
     Public readyForUpdate As New Semaphore(1, 1)
-    Private cmdConnection As CasparCGConnection
-    Private updateConnection As CasparCGConnection
-    Private testConnection As CasparCGConnection
+    Private WithEvents cmdConnection As CasparCGConnection
+    Private WithEvents updateConnection As CasparCGConnection
+    Private WithEvents testConnection As CasparCGConnection
     Private tickThread As Thread
     Private serverAddress As String = My.Settings.defaultAcmpServer
     Private serverPort As Integer = My.Settings.deafaultAcmpPort
@@ -36,6 +36,8 @@ Public Class ServerController
     Private WithEvents ticker As FrameTicker
     Private updater As AbstractMediaUpdater
     Private playlist As IPlaylistItem ' Die Root Playlist unter die alle anderen kommen
+
+    Public Event disconnected()
 
     Public Sub New()
         If My.Settings.playlistdir.Length = 0 Then My.Settings.playlistdir = My.Computer.FileSystem.SpecialDirectories.CurrentUserApplicationData & "\playlist"
@@ -66,11 +68,16 @@ Public Class ServerController
             ticker.stopTicker()
         End If
 
-        If Not IsNothing(cmdConnection) Then cmdConnection.close()
-        If Not IsNothing(updateConnection) Then updateConnection.close()
-        If Not IsNothing(testConnection) Then testConnection.close()
+        If Not IsNothing(cmdConnection) AndAlso cmdConnection.isConnected Then cmdConnection.close()
+        If Not IsNothing(updateConnection) AndAlso updateConnection.isConnected Then updateConnection.close()
+        If Not IsNothing(testConnection) AndAlso testConnection.isConnected Then testConnection.close()
         channels = 0
         ReDim channelFPS(0)
+        RaiseEvent disconnected()
+    End Sub
+
+    Private Sub handleDisconnect(ByRef sender As Object) Handles testConnection.disconnected, updateConnection.disconnected, cmdConnection.disconnected
+        Me.close()
     End Sub
 
     Public Function isOpen() As Boolean
@@ -402,7 +409,7 @@ Public Class ServerController
         Return System.Drawing.Image.FromStream(New System.IO.MemoryStream(Convert.FromBase64String(base64string)))
     End Function
 
-    Public Function getTicker() As FrameTicker
+    Public Function getTicker() As frameTicker
         Return ticker
     End Function
 

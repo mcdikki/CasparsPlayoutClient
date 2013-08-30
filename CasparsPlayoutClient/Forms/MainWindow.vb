@@ -19,7 +19,7 @@ Imports logger
 
 Public Class MainWindow
 
-    Private sc As ServerController
+    Private WithEvents sc As ServerController
     Private mediaLib As Library
     Private WithEvents playlistView As PlaylistView
     Private WithEvents libraryView As LibraryView
@@ -125,11 +125,12 @@ Public Class MainWindow
     End Sub
 
     Private Sub updateStatusBar(ByVal msg As message)
-        If Me.ssLog.InvokeRequired Then
-            Dim d As New updateStatusDelegate(AddressOf updateStatusBar)
-            Me.ssLog.Invoke(d, msg)
-        Else
-            If msg.getLevel < loglevels.debug Then
+        If msg.getLevel < loglevels.debug Then
+            If Me.ssLog.InvokeRequired Then
+                Dim d As New updateStatusDelegate(AddressOf updateStatusBar)
+                Me.ssLog.Invoke(d, msg)
+            Else
+
                 Dim item As New TimedStatusLable(logShowTime, msg.getMessage)
                 item.BorderSides = ToolStripStatusLabelBorderSides.Top
                 item.BorderStyle = Border3DStyle.Flat
@@ -191,6 +192,14 @@ Public Class MainWindow
             playlistView.onDataChanged()
             cmbConnect.Enabled = True
         End If
+    End Sub
+
+    Private Sub disconnected() Handles sc.disconnected
+        cmbDisconnect.Enabled = False
+        RemoveHandler sc.getTicker.frameTick, AddressOf onTick
+        libraryView.Library.refreshLibrary()
+        playlistView.onDataChanged()
+        cmbConnect.Enabled = True
     End Sub
 
     Private Sub clearAll() Handles cmdClearAll.Click
