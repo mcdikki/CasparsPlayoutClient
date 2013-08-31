@@ -3,6 +3,8 @@ ToDo:
 CORE:
 =====
 
+- add image scroller functions to StillPlaylist
+
 
 - implement playlist trigger
 --- alows to trigger the main functions of a playlist like start, stop abort

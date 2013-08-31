@@ -27,6 +27,7 @@ Public Class MainWindow
     Private Delegate Sub updateStatusDelegate(ByVal message As message)
     Private timer As Timers.Timer
     Private logShowTime As Integer = My.Settings.logShowTime
+    Private settings As New SettingsWindow()
 
     Private Sub MainWindow_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
         If My.Settings.logToConsole Then
@@ -39,11 +40,11 @@ Public Class MainWindow
         sc = New ServerController
 
         loadConfig()
-
         mediaLib = New Library(sc)
         AddPlaylist()
         AddLibrary()
         initInfo()
+        initMenu()
         layoutUpDownSplit.SplitterDistance = layoutUpDownSplit.Size.Height - layoutUpDownSplit.Panel2MinSize
     End Sub
 
@@ -101,6 +102,27 @@ Public Class MainWindow
         Else
             MsgBox("Allready connected")
         End If
+    End Sub
+
+    Private Sub initMenu()
+
+        Dim m As New MenuStrip()
+        Dim fm As New ToolStripMenuItem("File")
+        Dim em As New ToolStripMenuItem("Extra")
+
+        fm.DropDownItems.Add("Load playlist", Nothing, New EventHandler(AddressOf playlistView.loadPlaylist))
+        fm.DropDownItems.Add("Save playlist", Nothing, New EventHandler(AddressOf playlistView.savePlaylist))
+        fm.DropDownItems.Add(New ToolStripSeparator)
+        fm.DropDownItems.Add("Exit", Nothing, New EventHandler(AddressOf Me.Close))
+
+        em.DropDownItems.Add("Settings", Nothing, New EventHandler(Sub() settings.Show()))
+
+        m.Items.Add(fm)
+        m.Items.Add(em)
+
+        Me.MainMenuStrip = m
+        Me.Controls.Add(m)
+
     End Sub
 
     Private Sub initInfo()
@@ -196,7 +218,10 @@ Public Class MainWindow
 
     Private Sub disconnected() Handles sc.disconnected
         cmbDisconnect.Enabled = False
-        RemoveHandler sc.getTicker.frameTick, AddressOf onTick
+        Try
+            RemoveHandler sc.getTicker.frameTick, AddressOf onTick
+        Catch e As Exception
+        End Try
         libraryView.Library.refreshLibrary()
         playlistView.onDataChanged()
         cmbConnect.Enabled = True

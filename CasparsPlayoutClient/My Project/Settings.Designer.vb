@@ -54,94 +54,124 @@ Namespace My
             End Get
         End Property
         
-        <Global.System.Configuration.ApplicationScopedSettingAttribute(),  _
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
          Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.Configuration.DefaultSettingValueAttribute("6250")>  _
-        Public ReadOnly Property oscPort() As Integer
+        Public Property oscPort() As Integer
             Get
                 Return CType(Me("oscPort"),Integer)
             End Get
+            Set
+                Me("oscPort") = value
+            End Set
         End Property
         
-        <Global.System.Configuration.ApplicationScopedSettingAttribute(),  _
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
          Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.Configuration.DefaultSettingValueAttribute("localhost")>  _
-        Public ReadOnly Property defaultAcmpServer() As String
+        Public Property defaultAcmpServer() As String
             Get
                 Return CType(Me("defaultAcmpServer"),String)
             End Get
+            Set
+                Me("defaultAcmpServer") = value
+            End Set
         End Property
         
-        <Global.System.Configuration.ApplicationScopedSettingAttribute(),  _
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
          Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.Configuration.DefaultSettingValueAttribute("5250")>  _
-        Public ReadOnly Property deafaultAcmpPort() As Integer
+        Public Property deafaultAcmpPort() As Integer
             Get
                 Return CType(Me("deafaultAcmpPort"),Integer)
             End Get
+            Set
+                Me("deafaultAcmpPort") = value
+            End Set
         End Property
         
-        <Global.System.Configuration.ApplicationScopedSettingAttribute(),  _
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
          Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.Configuration.DefaultSettingValueAttribute("3")>  _
-        Public ReadOnly Property loglevel() As Integer
+        Public Property loglevel() As Integer
             Get
                 Return CType(Me("loglevel"),Integer)
             End Get
+            Set
+                Me("loglevel") = value
+            End Set
         End Property
         
-        <Global.System.Configuration.ApplicationScopedSettingAttribute(),  _
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
          Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.Configuration.DefaultSettingValueAttribute("log.txt")>  _
-        Public ReadOnly Property logfile() As String
+        Public Property logfile() As String
             Get
                 Return CType(Me("logfile"),String)
             End Get
+            Set
+                Me("logfile") = value
+            End Set
         End Property
         
-        <Global.System.Configuration.ApplicationScopedSettingAttribute(),  _
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
          Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.Configuration.DefaultSettingValueAttribute("1")>  _
-        Public ReadOnly Property frameTickInterval() As Integer
+        Public Property frameTickInterval() As Integer
             Get
                 Return CType(Me("frameTickInterval"),Integer)
             End Get
+            Set
+                Me("frameTickInterval") = value
+            End Set
         End Property
         
-        <Global.System.Configuration.ApplicationScopedSettingAttribute(),  _
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
          Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.Configuration.DefaultSettingValueAttribute("300")>  _
-        Public ReadOnly Property connectionTimeout() As Integer
+        Public Property connectionTimeout() As Integer
             Get
                 Return CType(Me("connectionTimeout"),Integer)
             End Get
+            Set
+                Me("connectionTimeout") = value
+            End Set
         End Property
         
-        <Global.System.Configuration.ApplicationScopedSettingAttribute(),  _
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
          Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.Configuration.DefaultSettingValueAttribute("0")>  _
-        Public ReadOnly Property reconnectTries() As Integer
+        Public Property reconnectTries() As Integer
             Get
                 Return CType(Me("reconnectTries"),Integer)
             End Get
+            Set
+                Me("reconnectTries") = value
+            End Set
         End Property
         
-        <Global.System.Configuration.ApplicationScopedSettingAttribute(),  _
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
          Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.Configuration.DefaultSettingValueAttribute("1000")>  _
-        Public ReadOnly Property reconnectTimout() As Integer
+        Public Property reconnectTimout() As Integer
             Get
                 Return CType(Me("reconnectTimout"),Integer)
             End Get
+            Set
+                Me("reconnectTimout") = value
+            End Set
         End Property
         
-        <Global.System.Configuration.ApplicationScopedSettingAttribute(),  _
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
          Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.Configuration.DefaultSettingValueAttribute("True")>  _
-        Public ReadOnly Property strictVersionControl() As Boolean
+        Public Property strictVersionControl() As Boolean
             Get
                 Return CType(Me("strictVersionControl"),Boolean)
             End Get
+            Set
+                Me("strictVersionControl") = value
+            End Set
         End Property
         
         <Global.System.Configuration.UserScopedSettingAttribute(),  _
@@ -309,6 +339,18 @@ Namespace My
             End Get
             Set
                 Me("warnTime") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("True")>  _
+        Public Property rememberConnection() As Boolean
+            Get
+                Return CType(Me("rememberConnection"),Boolean)
+            End Get
+            Set
+                Me("rememberConnection") = value
             End Set
         End Property
     End Class

@@ -8,8 +8,10 @@ Partial Class MainWindow
         If Not IsNothing(sc.getTicker) Then RemoveHandler sc.getTicker.frameTick, AddressOf onTick
         sc.close()
         logger.close()
-        My.Settings.last_AcmpPort = txtPort.Text
-        My.Settings.last_AcmpServer = txtAddress.Text
+        If My.Settings.rememberConnection Then
+            My.Settings.last_AcmpPort = txtPort.Text
+            My.Settings.last_AcmpServer = txtAddress.Text
+        End If
         If My.Settings.rememberPlaylist Then My.Settings.last_Playlist = sc.getPlaylistRoot.toXMLString
         My.Settings.Save()
         Try

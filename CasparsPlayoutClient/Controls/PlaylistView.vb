@@ -250,7 +250,7 @@ Public Class PlaylistView
         fd.CheckFileExists = True
         fd.Multiselect = False
         fd.InitialDirectory = My.Settings.playlistdir
-        If fd.ShowDialog().Equals(vbOK) Then loadPlaylist(fd.FileName)
+        If fd.ShowDialog() = DialogResult.OK Then loadPlaylist(fd.FileName)
     End Sub
 
     Public Sub loadPlaylist(ByVal fileName As String)

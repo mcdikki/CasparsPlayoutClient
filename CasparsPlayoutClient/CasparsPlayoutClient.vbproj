@@ -159,6 +159,12 @@
     <Compile Include="Controls\TimedStatusLable.vb">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Forms\SettingsWindow.Designer.vb">
+      <DependentUpon>SettingsWindow.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\SettingsWindow.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="PlaylistFactory.vb" />
     <Compile Include="Playlist\PlaylistAudioItem.vb" />
     <Compile Include="Playlist\PlaylistCommandItem.vb" />
@@ -205,6 +211,8 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Interfaces\ITrigger.vb" />
+    <Compile Include="Settings.vb" />
+    <Compile Include="Utils\SettingsWapper.vb" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Controls\LibraryView.resx">
@@ -218,6 +226,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\MainWindow.resx">
       <DependentUpon>MainWindow.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\SettingsWindow.resx">
+      <DependentUpon>SettingsWindow.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="My Project\Resources.resx">
       <Generator>VbMyResourcesResXFileCodeGenerator</Generator>
@@ -286,7 +297,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Trigger\" />
-    <Folder Include="Utils\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\Programmieren\NET Logger\logger\logger.vbproj">

@@ -2,34 +2,34 @@
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="My" GeneratedClassName="MySettings" UseMySettingsClassName="true">
   <Profiles />
   <Settings>
-    <Setting Name="oscPort" Type="System.Int32" Scope="Application">
+    <Setting Name="oscPort" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">6250</Value>
     </Setting>
-    <Setting Name="defaultAcmpServer" Type="System.String" Scope="Application">
+    <Setting Name="defaultAcmpServer" Type="System.String" Scope="User">
       <Value Profile="(Default)">localhost</Value>
     </Setting>
-    <Setting Name="deafaultAcmpPort" Type="System.Int32" Scope="Application">
+    <Setting Name="deafaultAcmpPort" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">5250</Value>
     </Setting>
-    <Setting Name="loglevel" Type="System.Int32" Scope="Application">
+    <Setting Name="loglevel" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">3</Value>
     </Setting>
-    <Setting Name="logfile" Type="System.String" Scope="Application">
+    <Setting Name="logfile" Type="System.String" Scope="User">
       <Value Profile="(Default)">log.txt</Value>
     </Setting>
-    <Setting Name="frameTickInterval" Type="System.Int32" Scope="Application">
+    <Setting Name="frameTickInterval" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">1</Value>
     </Setting>
-    <Setting Name="connectionTimeout" Type="System.Int32" Scope="Application">
+    <Setting Name="connectionTimeout" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">300</Value>
     </Setting>
-    <Setting Name="reconnectTries" Type="System.Int32" Scope="Application">
+    <Setting Name="reconnectTries" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">0</Value>
     </Setting>
-    <Setting Name="reconnectTimout" Type="System.Int32" Scope="Application">
+    <Setting Name="reconnectTimout" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">1000</Value>
     </Setting>
-    <Setting Name="strictVersionControl" Type="System.Boolean" Scope="Application">
+    <Setting Name="strictVersionControl" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="logToFile" Type="System.Boolean" Scope="User">
@@ -73,6 +73,9 @@
     </Setting>
     <Setting Name="warnTime" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">1000</Value>
+    </Setting>
+    <Setting Name="rememberConnection" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
     </Setting>
   </Settings>
 </SettingsFile>
