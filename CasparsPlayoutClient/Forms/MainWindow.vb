@@ -107,9 +107,9 @@ Public Class MainWindow
     Private Sub initMenu()
 
         Dim m As New MenuStrip()
-        Dim fm As New ToolStripMenuItem("File")
-        Dim em As New ToolStripMenuItem("Extra")
-        Dim hm As New ToolStripMenuItem("?")
+        Dim fm As New ToolStripMenuItem("&File")
+        Dim em As New ToolStripMenuItem("&Extra")
+        Dim hm As New ToolStripMenuItem("&?")
 
         fm.DropDownItems.Add("Load playlist", Nothing, New EventHandler(AddressOf playlistView.loadPlaylist))
         fm.DropDownItems.Add("Save playlist", Nothing, New EventHandler(AddressOf playlistView.savePlaylist))
