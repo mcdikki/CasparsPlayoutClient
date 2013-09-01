@@ -13,7 +13,7 @@
     Private Sub cmbOk_Click(sender As Object, e As EventArgs) Handles cmbOk.Click
         My.Settings.Save()
         MsgBox("You need to restart the program for the new settings to take effect.", MsgBoxStyle.OkOnly)
-        Me.Hide()
+        Me.Close()
     End Sub
 
     Private Sub cmbLoad_Click(sender As Object, e As EventArgs) Handles cmbLoad.Click
@@ -25,4 +25,5 @@
         My.Settings.Reset()
         propGridSettings.SelectedObject = sw
     End Sub
+
 End Class

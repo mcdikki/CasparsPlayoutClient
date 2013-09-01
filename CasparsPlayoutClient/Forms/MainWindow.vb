@@ -27,7 +27,6 @@ Public Class MainWindow
     Private Delegate Sub updateStatusDelegate(ByVal message As message)
     Private timer As Timers.Timer
     Private logShowTime As Integer = My.Settings.logShowTime
-    Private settings As New SettingsWindow()
 
     Private Sub MainWindow_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
         If My.Settings.logToConsole Then
@@ -116,7 +115,7 @@ Public Class MainWindow
         fm.DropDownItems.Add(New ToolStripSeparator)
         fm.DropDownItems.Add("Exit", Nothing, New EventHandler(AddressOf Me.Close))
 
-        em.DropDownItems.Add("Settings", Nothing, New EventHandler(Sub() settings.Show()))
+        em.DropDownItems.Add("Settings", Nothing, New EventHandler(AddressOf showSettings))
 
         Dim about As String
         With My.Application.Info
@@ -139,6 +138,11 @@ Public Class MainWindow
         Me.MainMenuStrip = m
         Me.Controls.Add(m)
 
+    End Sub
+
+    Private Sub showSettings()
+        Dim settings As New SettingsWindow
+        settings.Show()
     End Sub
 
     Private Sub initInfo()

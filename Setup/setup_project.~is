@@ -6,7 +6,7 @@
 #define MyAppMainVersion "0.1.0.0"
 #define MyAppCompany "Sublan.tv"
 #define MyAppPublisher "Christopher Diekkamp"
-#define MyAppURL "http://github.com/mcdikki/CasparsPlayoutClient"
+#define MyAppURL "http://github.com/SublanTV/CasparsPlayoutClient"
 #define MyAppExeName "CasparsPlayoutClient.exe"
 
 [Setup]
