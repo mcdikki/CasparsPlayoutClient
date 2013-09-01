@@ -1,7 +1,7 @@
-CasparsPlayoutClient
-====================
+Caspar's Playout Client
+=======================
 
-CasparsPlayoutClient is a playoutclient for the [CasparCG Server] [1] with focus on playout over CG.
+Caspar's Playout Client is a playout client program for the [CasparCG Server] [1] with focus on playout over CG.
 
 This project is in an early development state and far away from beeing complete.  
 Never the less, the key functions are ready to go.  
@@ -14,6 +14,9 @@ Table of contents
 * [License](#license)
 * [Features](#features)
 * [Screenshots](#screenshots)
+Commit summary: Extended description: (optional)
+mcdikki mcdikki@web.de
+
 * [Quick Start](#quick-start)
 * [Development](#development)
 
@@ -136,7 +139,7 @@ Development
 CasparsPlayoutClient is still under development and not released yet.  
 But there is a setup project in the repository which will be updated frequentlly.
 Any contributions, no matter if code, bug reports or suggestions, are welcome.  
-I'm sorry, but a lot the comments in the codebase are in German. I'll try to translate them to English. 
+I'm sorry, but a lot of the comments in the codebase are in German. I'll try to translate them to English. 
 The first development phase was under high time pressure, so some parts of the code are not or only hardly documented so far.
 
 [1]: https://github.com/CasparCG/Server "CasparCG Server"
