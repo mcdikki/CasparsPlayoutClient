@@ -3,8 +3,10 @@ CasparsPlayoutClient
 
 CasparsPlayoutClient is a playoutclient for the [CasparCG Server] [1] with focus on playout over CG.
 
-This project is in an early development state and thus has an empty master branch till the first release.
-See the testing branches for code.
+This project is in an early development state and far away from beeing complete.  
+Never the less, the key functions are ready to go.  
+
+Some features are still missing and the GUI is only for testing and not the final one yet.
 
 Table of contents
 -----------------
@@ -32,12 +34,15 @@ Features
 CasparsPlayoutClient offers a hierarchical playlist system allowing 
 * simple parallel rundowns
 * simple sequential rundowns
+* complex blocks of combined playlists
 * looping playlists
 * autostart / manual start of playlists
-* complex blocks of combined playlists
+* delayed start
+* custom duration settings for media playlists
 * feedback for every playlist (duration, position, remaining)
 * single server multi channel support
 * xml import/export of playlists
+* xml import/export of the library allowing offline playlist editing
 * searching in medialibrary
 * drag and drop playlist editing
 * custom playlist and media naming
@@ -91,20 +96,22 @@ The main window is splitted into 4 areas:
 * **Change and modify playlist items**  
 	You can change the name of each item to a propper one. They don't need to be unique nor do they have to match the file name on the [Server][1].
 	Each media file item musst have a valid channel and layer set in order to be playable. To change the channel, use the number picker beside the name box and the most right one for the layer.
-	Block items dont need correct channel and layer settings. But if you set them, newly added subitems will inerhit these values saving you time.  
+	Block items don't need correct channel and layer settings. But if you set them, newly added subitems will inerhit these values saving you time.  
 	There are two types of playlist:
 	* parallel playlists:  
 		each item of the playlist will be started together
 	* sequential playlists:  
 		each item starts after the previous has stopped  
 
-	And there are 3 checkboxes:
-	* par:  
+	And there are the following checkboxes:
+	* P: Parrallel  
 	 	choose parallel playing / sequential playing
-	* auto:  
+	* A: Auto  
 	 	choose auto start / waiting for manual play an the playlist
-	* loop:  
+	* L: Loop  
 	 	choose whether or not, after the whole playlist has been played, it should be started again  
+	* C: Clear  
+	 	choose whether or not, after the media has been played, it should be cleared from the layer 
 
 * **Moving playlist items**  
 	You can move playlist items via drag and drop. Dropping a playlist onto an other let the dropped playlist taking the place of the underlaying.
@@ -126,11 +133,11 @@ The main window is splitted into 4 areas:
 Development
 -----------
 
-CasparsPlayoutClient is still under development and not released yet.
-Please fell free to build it your self for testing.
-Any contributions are welcome.
-I'm sorry, but most comments are in German. I'll try to change them into english. 
-The first development phase was under high time pressure, so some parts of the code are not or only hardly dokumented so far.
+CasparsPlayoutClient is still under development and not released yet.  
+But there is a setup project in the repository which will be updated frequentlly.
+Any contributions, no matter if code, bug reports or suggestions, are welcome.  
+I'm sorry, but a lot the comments in the codebase are in German. I'll try to translate them to English. 
+The first development phase was under high time pressure, so some parts of the code are not or only hardly documented so far.
 
 [1]: https://github.com/CasparCG/Server "CasparCG Server"
 [2]: http://www.gnu.org/licenses/gpl-3.0-standalone.html "Gnu General Public License Version 3"
