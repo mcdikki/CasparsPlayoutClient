@@ -27,6 +27,7 @@ Partial Class SettingsWindow
         Me.cmbOk = New System.Windows.Forms.Button()
         Me.cmbRestoreDefault = New System.Windows.Forms.Button()
         Me.cmbLoad = New System.Windows.Forms.Button()
+        Me.cmbUpgrade = New System.Windows.Forms.Button()
         Me.layoutButtonFlow.SuspendLayout()
         Me.SuspendLayout()
         '
@@ -37,7 +38,7 @@ Partial Class SettingsWindow
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.propGridSettings.Location = New System.Drawing.Point(8, 8)
         Me.propGridSettings.Name = "propGridSettings"
-        Me.propGridSettings.Size = New System.Drawing.Size(642, 316)
+        Me.propGridSettings.Size = New System.Drawing.Size(809, 465)
         Me.propGridSettings.TabIndex = 1
         '
         'layoutButtonFlow
@@ -45,17 +46,18 @@ Partial Class SettingsWindow
         Me.layoutButtonFlow.Controls.Add(Me.cmbOk)
         Me.layoutButtonFlow.Controls.Add(Me.cmbRestoreDefault)
         Me.layoutButtonFlow.Controls.Add(Me.cmbLoad)
+        Me.layoutButtonFlow.Controls.Add(Me.cmbUpgrade)
         Me.layoutButtonFlow.Dock = System.Windows.Forms.DockStyle.Bottom
         Me.layoutButtonFlow.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft
-        Me.layoutButtonFlow.Location = New System.Drawing.Point(0, 327)
+        Me.layoutButtonFlow.Location = New System.Drawing.Point(0, 476)
         Me.layoutButtonFlow.Name = "layoutButtonFlow"
-        Me.layoutButtonFlow.Size = New System.Drawing.Size(656, 28)
+        Me.layoutButtonFlow.Size = New System.Drawing.Size(823, 28)
         Me.layoutButtonFlow.TabIndex = 3
         '
         'cmbOk
         '
         Me.cmbOk.AutoSize = True
-        Me.cmbOk.Location = New System.Drawing.Point(578, 3)
+        Me.cmbOk.Location = New System.Drawing.Point(745, 3)
         Me.cmbOk.Name = "cmbOk"
         Me.cmbOk.Size = New System.Drawing.Size(75, 23)
         Me.cmbOk.TabIndex = 3
@@ -65,7 +67,7 @@ Partial Class SettingsWindow
         'cmbRestoreDefault
         '
         Me.cmbRestoreDefault.AutoSize = True
-        Me.cmbRestoreDefault.Location = New System.Drawing.Point(477, 3)
+        Me.cmbRestoreDefault.Location = New System.Drawing.Point(644, 3)
         Me.cmbRestoreDefault.Name = "cmbRestoreDefault"
         Me.cmbRestoreDefault.Size = New System.Drawing.Size(95, 23)
         Me.cmbRestoreDefault.TabIndex = 4
@@ -75,18 +77,28 @@ Partial Class SettingsWindow
         'cmbLoad
         '
         Me.cmbLoad.AutoSize = True
-        Me.cmbLoad.Location = New System.Drawing.Point(376, 3)
+        Me.cmbLoad.Location = New System.Drawing.Point(543, 3)
         Me.cmbLoad.Name = "cmbLoad"
         Me.cmbLoad.Size = New System.Drawing.Size(95, 23)
         Me.cmbLoad.TabIndex = 5
         Me.cmbLoad.Text = "Load last"
         Me.cmbLoad.UseVisualStyleBackColor = True
         '
+        'cmbUpgrade
+        '
+        Me.cmbUpgrade.AutoSize = True
+        Me.cmbUpgrade.Location = New System.Drawing.Point(388, 3)
+        Me.cmbUpgrade.Name = "cmbUpgrade"
+        Me.cmbUpgrade.Size = New System.Drawing.Size(149, 23)
+        Me.cmbUpgrade.TabIndex = 6
+        Me.cmbUpgrade.Text = "Upgrade from older versions"
+        Me.cmbUpgrade.UseVisualStyleBackColor = True
+        '
         'SettingsWindow
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(656, 355)
+        Me.ClientSize = New System.Drawing.Size(823, 504)
         Me.Controls.Add(Me.layoutButtonFlow)
         Me.Controls.Add(Me.propGridSettings)
         Me.Name = "SettingsWindow"
@@ -101,4 +113,5 @@ Partial Class SettingsWindow
     Friend WithEvents cmbOk As System.Windows.Forms.Button
     Friend WithEvents cmbRestoreDefault As System.Windows.Forms.Button
     Friend WithEvents cmbLoad As System.Windows.Forms.Button
+    Friend WithEvents cmbUpgrade As System.Windows.Forms.Button
 End Class

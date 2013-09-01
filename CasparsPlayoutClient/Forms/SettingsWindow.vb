@@ -26,4 +26,9 @@
         propGridSettings.SelectedObject = sw
     End Sub
 
+    Private Sub cmbUpgrade_Click(sender As Object, e As EventArgs) Handles cmbUpgrade.Click
+        If MsgBox("Do you really want to import settings from a older version of Caspar's Playout Client? This will OVERWRITE all current settings.", MsgBoxStyle.Exclamation + MsgBoxStyle.OkCancel, "Upgrade older settings") = MsgBoxResult.Ok Then
+            My.Settings.Upgrade()
+        End If
+    End Sub
 End Class
