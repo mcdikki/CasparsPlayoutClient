@@ -109,6 +109,7 @@ Public Class MainWindow
         Dim m As New MenuStrip()
         Dim fm As New ToolStripMenuItem("File")
         Dim em As New ToolStripMenuItem("Extra")
+        Dim hm As New ToolStripMenuItem("?")
 
         fm.DropDownItems.Add("Load playlist", Nothing, New EventHandler(AddressOf playlistView.loadPlaylist))
         fm.DropDownItems.Add("Save playlist", Nothing, New EventHandler(AddressOf playlistView.savePlaylist))
@@ -117,8 +118,23 @@ Public Class MainWindow
 
         em.DropDownItems.Add("Settings", Nothing, New EventHandler(Sub() settings.Show()))
 
+        Dim about As String
+        With My.Application.Info
+            about = .ProductName & vbNewLine & _
+                "Version " & .Version.ToString & vbNewLine & vbNewLine & _
+                .Description & vbNewLine & vbNewLine & _
+                "by " & .CompanyName & vbNewLine & _
+                .Copyright & vbNewLine & vbNewLine & _
+                "Loaded assemblys:"
+            For Each assembly In .LoadedAssemblies
+                about = about & vbNewLine & vbTab & assembly.FullName
+            Next
+        End With
+        hm.DropDownItems.Add("About", Nothing, New EventHandler(Sub() MsgBox(about, MsgBoxStyle.Information + MsgBoxStyle.OkOnly, "About " & My.Application.Info.Title)))
+
         m.Items.Add(fm)
         m.Items.Add(em)
+        m.Items.Add(hm)
 
         Me.MainMenuStrip = m
         Me.Controls.Add(m)

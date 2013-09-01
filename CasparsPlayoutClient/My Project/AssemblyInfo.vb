@@ -11,7 +11,7 @@ Imports System.Runtime.InteropServices
 ' Die Werte der Assemblyattribute überprüfen
 
 <Assembly: AssemblyTitle("Caspar's Playout Client")> 
-<Assembly: AssemblyDescription("")> 
+<Assembly: AssemblyDescription("A playout client for CasparCG.")> 
 <Assembly: AssemblyCompany("Sublan.tv")> 
 <Assembly: AssemblyProduct("Caspar's Playout Client")> 
 <Assembly: AssemblyCopyright("Copyright ©  2013")> 
