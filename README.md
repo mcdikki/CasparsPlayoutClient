@@ -32,7 +32,7 @@ This software is licensed under the [Gnu GPL v3] [2].
 Features
 --------
 
-![Screenshot](/screenshots/cpc_playlist_all.jpg "CasparsPlayoutClient mainwindow")
+![Screenshot](/screenshots/cpc_MainWindow_playing.jpg "CasparsPlayoutClient mainwindow")
 
 CasparsPlayoutClient offers a hierarchical playlist system allowing 
 * simple parallel rundowns
@@ -65,6 +65,8 @@ The playlist
   ![A running playlist in collapsed view](/screenshots/cpc_playlist_all_playing_collapsed.jpg "A running playlist in collapsed view")
 * A running playlist with manuel start waiting for start:  
   ![A running playlist with manuel start waiting for start](/screenshots/cpc_playlist_waiting.jpg "A running playlist with manuel start waiting for start")
+* A delayed playlist counting down to start:  
+  ![A delayed playlist counting down to start](/screenshots/cpc_playlist_delayed.jpg "A delayed playlist counting down to start")
 * A running playlist with near end warning active:  
   ![A running playlist with near end warning active](/screenshots/cpc_playlist_nearEndWarn.jpg "A running playlist with near end warning active")
 
@@ -76,6 +78,14 @@ The medialibrary
 * The media library with active filter:  
   ![The media library with active filter](/screenshots/cpc_medialib_filter.jpg "The media library with active filter")
 
+
+Others
+* The info bar:  
+  ![The info bar](/screenshots/cpc_infoBar.jpg "The info bar")
+* Help for most controls:  
+  ![Help tip shown](/screenshots/cpc_tooltip.jpg "Help tip shown")
+* The settings window:  
+  ![Custumize Caspar's Playout Client to your needs!](/screenshots/cpc_Settings.jpg "TCustumize Caspar's Playout Client to your needs!")
 
 Quick Start
 -----------
