@@ -5,15 +5,6 @@ Partial Class MainWindow
     'Das Formular überschreibt den Löschvorgang, um die Komponentenliste zu bereinigen.
     <System.Diagnostics.DebuggerNonUserCode()> _
     Protected Overrides Sub Dispose(ByVal disposing As Boolean)
-        If Not IsNothing(sc.getTicker) Then RemoveHandler sc.getTicker.frameTick, AddressOf onTick
-        sc.close()
-        logger.close()
-        If My.Settings.rememberConnection Then
-            My.Settings.last_AcmpPort = txtPort.Text
-            My.Settings.last_AcmpServer = txtAddress.Text
-        End If
-        If My.Settings.rememberPlaylist Then My.Settings.last_Playlist = sc.getPlaylistRoot.toXMLString
-        My.Settings.Save()
         Try
             If disposing AndAlso components IsNot Nothing Then
                 components.Dispose()
@@ -46,7 +37,6 @@ Partial Class MainWindow
         Me.layoutButtonsPanel = New System.Windows.Forms.Panel()
         Me.layoutButtonsFlow = New System.Windows.Forms.FlowLayoutPanel()
         Me.cmbConnect = New System.Windows.Forms.Button()
-        Me.cmbDisconnect = New System.Windows.Forms.Button()
         Me.cmdClearAll = New System.Windows.Forms.Button()
         Me.cbbClearChannel = New System.Windows.Forms.ComboBox()
         Me.cmbClearChannel = New System.Windows.Forms.Button()
@@ -265,7 +255,6 @@ Partial Class MainWindow
         'layoutButtonsFlow
         '
         Me.layoutButtonsFlow.Controls.Add(Me.cmbConnect)
-        Me.layoutButtonsFlow.Controls.Add(Me.cmbDisconnect)
         Me.layoutButtonsFlow.Controls.Add(Me.cmdClearAll)
         Me.layoutButtonsFlow.Controls.Add(Me.cbbClearChannel)
         Me.layoutButtonsFlow.Controls.Add(Me.cmbClearChannel)
@@ -289,23 +278,11 @@ Partial Class MainWindow
         Me.cmbConnect.Text = "Connect"
         Me.cmbConnect.UseVisualStyleBackColor = False
         '
-        'cmbDisconnect
-        '
-        Me.cmbDisconnect.BackColor = System.Drawing.SystemColors.Control
-        Me.cmbDisconnect.Enabled = False
-        Me.cmbDisconnect.ForeColor = System.Drawing.SystemColors.ControlText
-        Me.cmbDisconnect.Location = New System.Drawing.Point(84, 3)
-        Me.cmbDisconnect.Name = "cmbDisconnect"
-        Me.cmbDisconnect.Size = New System.Drawing.Size(75, 23)
-        Me.cmbDisconnect.TabIndex = 1
-        Me.cmbDisconnect.Text = "Disconnect"
-        Me.cmbDisconnect.UseVisualStyleBackColor = False
-        '
         'cmdClearAll
         '
         Me.cmdClearAll.BackColor = System.Drawing.SystemColors.Control
         Me.cmdClearAll.ForeColor = System.Drawing.SystemColors.ControlText
-        Me.cmdClearAll.Location = New System.Drawing.Point(165, 3)
+        Me.cmdClearAll.Location = New System.Drawing.Point(84, 3)
         Me.cmdClearAll.Name = "cmdClearAll"
         Me.cmdClearAll.Size = New System.Drawing.Size(75, 23)
         Me.cmdClearAll.TabIndex = 2
@@ -317,7 +294,7 @@ Partial Class MainWindow
         Me.cbbClearChannel.BackColor = System.Drawing.SystemColors.Window
         Me.cbbClearChannel.ForeColor = System.Drawing.SystemColors.ControlText
         Me.cbbClearChannel.FormattingEnabled = True
-        Me.cbbClearChannel.Location = New System.Drawing.Point(246, 4)
+        Me.cbbClearChannel.Location = New System.Drawing.Point(165, 4)
         Me.cbbClearChannel.Margin = New System.Windows.Forms.Padding(3, 4, 3, 3)
         Me.cbbClearChannel.Name = "cbbClearChannel"
         Me.cbbClearChannel.Size = New System.Drawing.Size(121, 21)
@@ -327,7 +304,7 @@ Partial Class MainWindow
         '
         Me.cmbClearChannel.BackColor = System.Drawing.SystemColors.Control
         Me.cmbClearChannel.ForeColor = System.Drawing.SystemColors.ControlText
-        Me.cmbClearChannel.Location = New System.Drawing.Point(373, 3)
+        Me.cmbClearChannel.Location = New System.Drawing.Point(292, 3)
         Me.cmbClearChannel.Name = "cmbClearChannel"
         Me.cmbClearChannel.Size = New System.Drawing.Size(75, 23)
         Me.cmbClearChannel.TabIndex = 4
@@ -338,7 +315,7 @@ Partial Class MainWindow
         '
         Me.nudLayerClear.BackColor = System.Drawing.SystemColors.Window
         Me.nudLayerClear.ForeColor = System.Drawing.SystemColors.ControlText
-        Me.nudLayerClear.Location = New System.Drawing.Point(454, 5)
+        Me.nudLayerClear.Location = New System.Drawing.Point(373, 5)
         Me.nudLayerClear.Margin = New System.Windows.Forms.Padding(3, 5, 3, 3)
         Me.nudLayerClear.Maximum = New Decimal(New Integer() {10000, 0, 0, 0})
         Me.nudLayerClear.Name = "nudLayerClear"
@@ -349,7 +326,7 @@ Partial Class MainWindow
         '
         Me.cmbClearLayer.BackColor = System.Drawing.SystemColors.Control
         Me.cmbClearLayer.ForeColor = System.Drawing.SystemColors.ControlText
-        Me.cmbClearLayer.Location = New System.Drawing.Point(496, 3)
+        Me.cmbClearLayer.Location = New System.Drawing.Point(415, 3)
         Me.cmbClearLayer.Name = "cmbClearLayer"
         Me.cmbClearLayer.Size = New System.Drawing.Size(99, 23)
         Me.cmbClearLayer.TabIndex = 6
@@ -461,7 +438,6 @@ Partial Class MainWindow
     Friend WithEvents layoutButtonsPanel As System.Windows.Forms.Panel
     Friend WithEvents layoutButtonsFlow As System.Windows.Forms.FlowLayoutPanel
     Friend WithEvents cmbConnect As System.Windows.Forms.Button
-    Friend WithEvents cmbDisconnect As System.Windows.Forms.Button
     Friend WithEvents cmdClearAll As System.Windows.Forms.Button
     Friend WithEvents cbbClearChannel As System.Windows.Forms.ComboBox
     Friend WithEvents cmbClearChannel As System.Windows.Forms.Button

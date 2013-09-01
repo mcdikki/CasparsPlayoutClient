@@ -47,6 +47,18 @@ Public Class MainWindow
         layoutUpDownSplit.SplitterDistance = layoutUpDownSplit.Size.Height - layoutUpDownSplit.Panel2MinSize
     End Sub
 
+    Private Sub _onClosing() Handles MyClass.FormClosing
+        If Not IsNothing(sc.getTicker) Then RemoveHandler sc.getTicker.frameTick, AddressOf onTick
+        If Not IsNothing(sc) And sc.isConnected Then sc.close()
+        logger.close()
+        If My.Settings.rememberConnection Then
+            My.Settings.last_AcmpPort = txtPort.Text
+            My.Settings.last_AcmpServer = txtAddress.Text
+        End If
+        If My.Settings.rememberPlaylist Then My.Settings.last_Playlist = sc.getPlaylistRoot.toXMLString
+        My.Settings.Save()
+    End Sub
+
     Private Sub loadConfig()
         ' Server and port
         If My.Settings.last_AcmpServer.Length > 0 Then
@@ -80,29 +92,6 @@ Public Class MainWindow
         playlistView.Parent = layoutPlaylistSplit.Panel1
     End Sub
 
-    Private Sub connect() Handles cmbConnect.Click
-        If Not sc.isConnected Then
-            If sc.open(txtAddress.Text, Integer.Parse(txtPort.Text)) Then
-                cmbConnect.Enabled = False
-                For i = sc.getChannels To 1 Step -1
-                    cbbClearChannel.Text = i
-                    cbbClearChannel.Items.Add(i)
-                Next
-                AddHandler sc.getTicker.frameTick, AddressOf onTick
-                sc.startTicker()
-                libraryView.cmbRefresh.PerformClick()
-                cmbDisconnect.Enabled = True
-            Else
-                cmbConnect.Enabled = True
-                cmbDisconnect.Enabled = False
-                'logger.warn("Could not connect to " & txtAddress.Text & ":" & txtPort.Text)
-                'MsgBox("Error: Could not connect to " & txtAddress.Text & ":" & txtPort.Text, vbCritical + vbOKOnly, "Error - not connected")
-            End If
-        Else
-            MsgBox("Allready connected")
-        End If
-    End Sub
-
     Private Sub initMenu()
 
         Dim m As New MenuStrip()
@@ -112,6 +101,8 @@ Public Class MainWindow
 
         fm.DropDownItems.Add("Load playlist", Nothing, New EventHandler(AddressOf playlistView.loadPlaylist))
         fm.DropDownItems.Add("Save playlist", Nothing, New EventHandler(AddressOf playlistView.savePlaylist))
+        fm.DropDownItems.Add(New ToolStripSeparator)
+        fm.DropDownItems.Add("Connect/Disconnect", Nothing, New EventHandler(AddressOf connect))
         fm.DropDownItems.Add(New ToolStripSeparator)
         fm.DropDownItems.Add("Exit", Nothing, New EventHandler(AddressOf Me.Close))
 
@@ -224,27 +215,64 @@ Public Class MainWindow
         End If
     End Sub
 
-    Private Sub disconnect() Handles cmbDisconnect.Click
+    Private Sub connect() Handles cmbConnect.Click
         If sc.isConnected Then
             libraryView.Library.abortUpdate()
-            cmbDisconnect.Enabled = False
-            sc.close()
-            RemoveHandler sc.getTicker.frameTick, AddressOf onTick
-            libraryView.Library.refreshLibrary()
-            playlistView.onDataChanged()
+            Dim t As New Threading.Thread(AddressOf sc.close)
+            t.Start()
+            cmbConnect.Enabled = False
+            cmbConnect.Text = "disconnecting..."
+        Else
+            Dim t As New Threading.Thread(Sub() sc.open(txtAddress.Text, Integer.Parse(txtPort.Text)))
+            t.Start()
+            cmbConnect.Enabled = False
+            cmbConnect.Text = "connecting..."
+        End If
+    End Sub
+
+    Private Sub connected() Handles sc.connected
+        If InvokeRequired Then
+            Dim d As New updateDelegate(AddressOf connected)
+            Invoke(d)
+        Else
+            For i = sc.getChannels To 1 Step -1
+                cbbClearChannel.Text = i
+                cbbClearChannel.Items.Add(i)
+            Next
+            AddHandler sc.getTicker.frameTick, AddressOf onTick
+            sc.startTicker()
+            libraryView.cmbRefresh.PerformClick()
+            cmbConnect.Text = "Disconnect"
             cmbConnect.Enabled = True
         End If
     End Sub
 
+    'Private Sub disconnect() Handles cmbDisconnect.Click
+    '    If sc.isConnected Then
+    '        libraryView.Library.abortUpdate()
+    '        cmbDisconnect.Enabled = False
+    '        sc.close()
+    '        RemoveHandler sc.getTicker.frameTick, AddressOf onTick
+    '        libraryView.Library.refreshLibrary()
+    '        playlistView.onDataChanged()
+    '        cmbConnect.Enabled = True
+    '    End If
+    'End Sub
+
     Private Sub disconnected() Handles sc.disconnected
-        cmbDisconnect.Enabled = False
-        Try
-            RemoveHandler sc.getTicker.frameTick, AddressOf onTick
-        Catch e As Exception
-        End Try
-        libraryView.Library.refreshLibrary()
-        playlistView.onDataChanged()
-        cmbConnect.Enabled = True
+        If InvokeRequired Then
+            Dim d As New updateDelegate(AddressOf disconnected)
+            Invoke(d)
+        Else
+            Try
+                RemoveHandler sc.getTicker.frameTick, AddressOf onTick
+            Catch e As Exception
+            End Try
+            libraryView.Library.refreshLibrary()
+            playlistView.onDataChanged()
+            cmbConnect.Text = "Connect"
+            cmbConnect.Enabled = True
+        End If
     End Sub
 
     Private Sub clearAll() Handles cmdClearAll.Click

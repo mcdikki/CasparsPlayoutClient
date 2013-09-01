@@ -38,6 +38,7 @@ Public Class ServerController
     Private playlist As IPlaylistItem ' Die Root Playlist unter die alle anderen kommen
 
     Public Event disconnected()
+    Public Event connected()
 
     Public Sub New()
         If My.Settings.playlistdir.Length = 0 Then My.Settings.playlistdir = My.Computer.FileSystem.SpecialDirectories.CurrentUserApplicationData & "\playlist"
@@ -132,7 +133,10 @@ Public Class ServerController
             ' updater starten
             updater = MediaUpdaterFactory.getMediaUpdater(updateConnection, playlist, Me)
             updater.startUpdate()
+
+            RaiseEvent connected()
         Else
+            RaiseEvent disconnected()
             opened = False
         End If
         Return opened
