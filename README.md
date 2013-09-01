@@ -14,9 +14,6 @@ Table of contents
 * [License](#license)
 * [Features](#features)
 * [Screenshots](#screenshots)
-Commit summary: Extended description: (optional)
-mcdikki mcdikki@web.de
-
 * [Quick Start](#quick-start)
 * [Development](#development)
 
