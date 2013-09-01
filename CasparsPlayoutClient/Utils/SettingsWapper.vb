@@ -98,6 +98,16 @@ Public Class SettingsWapper
         End Set
     End Property
 
+    <DescriptionAttribute("Sets whether or not, the last window size, position and it's components layout will be restored at startup."), CategoryAttribute("Appeariance")>
+    Public Property rememberLayout As Boolean
+        Get
+            Return My.Settings.rememberLayout
+        End Get
+        Set(value As Boolean)
+            My.Settings.rememberLayout = value
+        End Set
+    End Property
+
     <DescriptionAttribute("Sets whether or not, the library will be saved and loaded at program startup without a server connection."), CategoryAttribute("Appeariance")>
     Public Property rememberLibrary As Boolean
         Get

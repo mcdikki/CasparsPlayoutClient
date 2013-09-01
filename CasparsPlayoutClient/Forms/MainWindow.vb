@@ -76,7 +76,7 @@ Public Class MainWindow
         Else
             Me.txtPort.Text = sc.getPort
         End If
-        restoreLayout()
+        If My.Settings.rememberLayout Then restoreLayout()
     End Sub
 
     Private Sub restoreLayout()
