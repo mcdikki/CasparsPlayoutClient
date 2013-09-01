@@ -368,7 +368,7 @@ Namespace My
         
         <Global.System.Configuration.UserScopedSettingAttribute(),  _
          Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
-         Global.System.Configuration.DefaultSettingValueAttribute("Normal")>  _
+         Global.System.Configuration.DefaultSettingValueAttribute("Maximized")>  _
         Public Property last_WindowState() As Global.System.Windows.Forms.FormWindowState
             Get
                 Return CType(Me("last_WindowState"),Global.System.Windows.Forms.FormWindowState)
@@ -380,7 +380,7 @@ Namespace My
         
         <Global.System.Configuration.UserScopedSettingAttribute(),  _
          Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
-         Global.System.Configuration.DefaultSettingValueAttribute("1024, 768")>  _
+         Global.System.Configuration.DefaultSettingValueAttribute("1024, 600")>  _
         Public Property last_WindowSize() As Global.System.Drawing.Size
             Get
                 Return CType(Me("last_WindowSize"),Global.System.Drawing.Size)
@@ -416,7 +416,7 @@ Namespace My
         
         <Global.System.Configuration.UserScopedSettingAttribute(),  _
          Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
-         Global.System.Configuration.DefaultSettingValueAttribute("500")>  _
+         Global.System.Configuration.DefaultSettingValueAttribute("0")>  _
         Public Property last_CGHeight() As Integer
             Get
                 Return CType(Me("last_CGHeight"),Integer)
