@@ -198,11 +198,11 @@ Partial Class MainWindow
         Me.lblStatus.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
         Me.lblStatus.Font = New System.Drawing.Font("Franklin Gothic Medium", 14.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.lblStatus.ForeColor = System.Drawing.Color.Red
-        Me.lblStatus.Location = New System.Drawing.Point(364, 1)
+        Me.lblStatus.Location = New System.Drawing.Point(346, 1)
         Me.lblStatus.Name = "lblStatus"
-        Me.lblStatus.Size = New System.Drawing.Size(125, 40)
+        Me.lblStatus.Size = New System.Drawing.Size(165, 40)
         Me.lblStatus.TabIndex = 2
-        Me.lblStatus.Text = "Stopped"
+        Me.lblStatus.Text = "Disconnected"
         Me.lblStatus.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
         '
         'lblDate
@@ -215,7 +215,7 @@ Partial Class MainWindow
         Me.lblDate.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
         Me.lblDate.Font = New System.Drawing.Font("Franklin Gothic Medium", 14.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.lblDate.ForeColor = System.Drawing.Color.Lime
-        Me.lblDate.Location = New System.Drawing.Point(39, 1)
+        Me.lblDate.Location = New System.Drawing.Point(21, 1)
         Me.lblDate.Name = "lblDate"
         Me.lblDate.Size = New System.Drawing.Size(125, 40)
         Me.lblDate.TabIndex = 1
@@ -232,7 +232,7 @@ Partial Class MainWindow
         Me.lblClock.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
         Me.lblClock.Font = New System.Drawing.Font("Courier New", 26.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.lblClock.ForeColor = System.Drawing.Color.Lime
-        Me.lblClock.Location = New System.Drawing.Point(164, 1)
+        Me.lblClock.Location = New System.Drawing.Point(146, 1)
         Me.lblClock.Name = "lblClock"
         Me.lblClock.Size = New System.Drawing.Size(200, 40)
         Me.lblClock.TabIndex = 0

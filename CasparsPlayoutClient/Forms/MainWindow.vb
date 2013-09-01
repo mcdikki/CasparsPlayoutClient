@@ -27,6 +27,9 @@ Public Class MainWindow
     Private Delegate Sub updateStatusDelegate(ByVal message As message)
     Private timer As Timers.Timer
     Private logShowTime As Integer = My.Settings.logShowTime
+    Private clock As New ToolStripLabel
+    Private progress As New ToolStripProgressBar
+    Private state As New ToolStripLabel
 
     Private Sub MainWindow_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
         If My.Settings.logToConsole Then
@@ -42,12 +45,13 @@ Public Class MainWindow
         mediaLib = New Library(sc)
         AddPlaylist()
         AddLibrary()
-        initInfo()
         initMenu()
+        initInfo()
         layoutUpDownSplit.SplitterDistance = layoutUpDownSplit.Size.Height - layoutUpDownSplit.Panel2MinSize
     End Sub
 
     Private Sub _onClosing() Handles MyClass.FormClosing
+        timer.Stop()
         If Not IsNothing(sc.getTicker) Then RemoveHandler sc.getTicker.frameTick, AddressOf onTick
         If Not IsNothing(sc) And sc.isConnected Then sc.close()
         logger.close()
@@ -56,6 +60,7 @@ Public Class MainWindow
             My.Settings.last_AcmpServer = txtAddress.Text
         End If
         If My.Settings.rememberPlaylist Then My.Settings.last_Playlist = sc.getPlaylistRoot.toXMLString
+        saveLayout()
         My.Settings.Save()
     End Sub
 
@@ -71,10 +76,30 @@ Public Class MainWindow
         Else
             Me.txtPort.Text = sc.getPort
         End If
+        restoreLayout()
+    End Sub
 
-        ' playlist
+    Private Sub restoreLayout()
+        WindowState = My.Settings.last_WindowState
+        If My.Settings.last_WindowState = FormWindowState.Normal Then
+            Size = My.Settings.last_WindowSize
+            Location = My.Settings.last_WindowLocation
+        End If
+        layoutPlaylistSplit.SplitterDistance = My.Settings.last_PlaylistWidth
+        layoutUpDownSplit.SplitterDistance = My.Settings.last_CGHeight
+        layoutCgLib.SplitterDistance = My.Settings.last_LibraryWidth
+    End Sub
 
-        ' library
+    Private Sub saveLayout()
+        ' MainWindow
+        My.Settings.last_WindowState = WindowState
+        My.Settings.last_WindowSize = Size
+        My.Settings.last_WindowLocation = Location
+
+        'Controls
+        My.Settings.last_PlaylistWidth = layoutPlaylistSplit.SplitterDistance
+        My.Settings.last_CGHeight = layoutUpDownSplit.SplitterDistance
+        My.Settings.last_LibraryWidth = layoutCgLib.SplitterDistance
     End Sub
 
     Private Sub AddLibrary()
@@ -126,6 +151,18 @@ Public Class MainWindow
         m.Items.Add(em)
         m.Items.Add(hm)
 
+
+        clock.Alignment = ToolStripItemAlignment.Right
+        m.Items.Add(clock)
+
+        progress.Alignment = ToolStripItemAlignment.Right
+        progress.Maximum = 100
+        progress.Minimum = 0
+        m.Items.Add(progress)
+
+        state.Alignment = ToolStripItemAlignment.Right
+        m.Items.Add(state)
+
         Me.MainMenuStrip = m
         Me.Controls.Add(m)
 
@@ -147,6 +184,7 @@ Public Class MainWindow
         AddHandler timer.Elapsed, AddressOf updateClock
         AddHandler timer.Elapsed, AddressOf updateDate
         AddHandler timer.Elapsed, AddressOf updateStatus
+        AddHandler timer.Elapsed, AddressOf updateMenu
         AddHandler logger.messageReceived, AddressOf updateStatusBar
         AddHandler ssLog.ItemRemoved, Sub() ssLog.Items.Item(0).Text = "Messages: " & ssLog.Items.Count - 1
         AddHandler ssLog.ItemAdded, Sub() ssLog.Items.Item(0).Text = "Messages: " & ssLog.Items.Count - 1
@@ -155,6 +193,7 @@ Public Class MainWindow
         updateClock()
         updateDate()
         updateStatus()
+        updateMenu()
     End Sub
 
     Private Sub updateStatusBar(ByVal msg As message)
@@ -195,6 +234,28 @@ Public Class MainWindow
         End If
     End Sub
 
+    Private Sub updateMenu()
+        If MainMenuStrip.InvokeRequired Then
+            Dim d = New updateDelegate(AddressOf updateMenu)
+            MainMenuStrip.Invoke(d)
+        Else
+            progress.Value = sc.getPlaylistRoot.getPlayed
+            clock.Text = Now
+            If sc.isConnected Then
+                If sc.getPlaylistRoot.isPlaying OrElse sc.getPlaylistRoot.isWaiting Then
+                    state.Text = "ON AIR - Playing"
+                    state.ForeColor = Color.DarkOrange
+                Else
+                    state.Text = "ON AIR - Stopped"
+                    state.ForeColor = Color.Red
+                End If
+            Else
+                state.Text = "Disconnected"
+                state.ForeColor = Color.Lime
+            End If
+        End If
+    End Sub
+
     Private Sub updateStatus()
         If lblStatus.InvokeRequired Then
             Dim d = New updateDelegate(AddressOf updateStatus)
@@ -203,14 +264,14 @@ Public Class MainWindow
             If sc.isConnected Then
                 If sc.getPlaylistRoot.isPlaying OrElse sc.getPlaylistRoot.isWaiting Then
                     lblStatus.ForeColor = Color.DarkOrange
-                    lblStatus.Text = "Running"
+                    lblStatus.Text = "ON AIR - Playing"
                 Else
-                    lblStatus.ForeColor = Color.Lime
-                    lblStatus.Text = "Idle"
+                    lblStatus.ForeColor = Color.Red
+                    lblStatus.Text = "ON AIR - Stopped"
                 End If
             Else
-                lblStatus.Text = "Stopped"
-                lblStatus.ForeColor = Color.Red
+                lblStatus.Text = "Disconnected"
+                lblStatus.ForeColor = Color.Lime
             End If
         End If
     End Sub
@@ -246,18 +307,6 @@ Public Class MainWindow
             cmbConnect.Enabled = True
         End If
     End Sub
-
-    'Private Sub disconnect() Handles cmbDisconnect.Click
-    '    If sc.isConnected Then
-    '        libraryView.Library.abortUpdate()
-    '        cmbDisconnect.Enabled = False
-    '        sc.close()
-    '        RemoveHandler sc.getTicker.frameTick, AddressOf onTick
-    '        libraryView.Library.refreshLibrary()
-    '        playlistView.onDataChanged()
-    '        cmbConnect.Enabled = True
-    '    End If
-    'End Sub
 
     Private Sub disconnected() Handles sc.disconnected
         If InvokeRequired Then

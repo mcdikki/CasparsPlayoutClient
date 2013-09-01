@@ -353,6 +353,78 @@ Namespace My
                 Me("rememberConnection") = value
             End Set
         End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("0, 0")>  _
+        Public Property last_WindowLocation() As Global.System.Drawing.Point
+            Get
+                Return CType(Me("last_WindowLocation"),Global.System.Drawing.Point)
+            End Get
+            Set
+                Me("last_WindowLocation") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("Normal")>  _
+        Public Property last_WindowState() As Global.System.Windows.Forms.FormWindowState
+            Get
+                Return CType(Me("last_WindowState"),Global.System.Windows.Forms.FormWindowState)
+            End Get
+            Set
+                Me("last_WindowState") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("1024, 768")>  _
+        Public Property last_WindowSize() As Global.System.Drawing.Size
+            Get
+                Return CType(Me("last_WindowSize"),Global.System.Drawing.Size)
+            End Get
+            Set
+                Me("last_WindowSize") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("0")>  _
+        Public Property last_PlaylistWidth() As Integer
+            Get
+                Return CType(Me("last_PlaylistWidth"),Integer)
+            End Get
+            Set
+                Me("last_PlaylistWidth") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("0")>  _
+        Public Property last_LibraryWidth() As Integer
+            Get
+                Return CType(Me("last_LibraryWidth"),Integer)
+            End Get
+            Set
+                Me("last_LibraryWidth") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("500")>  _
+        Public Property last_CGHeight() As Integer
+            Get
+                Return CType(Me("last_CGHeight"),Integer)
+            End Get
+            Set
+                Me("last_CGHeight") = value
+            End Set
+        End Property
     End Class
 End Namespace
 
