@@ -211,9 +211,9 @@ Public Class InfoMediaUpdater
                             '' Zum richtigen Producer navigieren
                             foregroundProducer = layerNode.selectSingleNode("foreground").selectSingleNode("producer")
                             Do Until IsNothing(foregroundProducer) _
-                                OrElse foregroundProducer.selectSingleNode("type").nodeTypedValue.Equals("ffmpeg-producer") _
-                                OrElse foregroundProducer.selectSingleNode("type").nodeTypedValue.Equals("image-producer") _
-                                OrElse foregroundProducer.selectSingleNode("type").nodeTypedValue.Equals("color-producer")
+                                OrElse foregroundProducer.selectSingleNode("type").nodeTypedValue.Equals("ffmpeg-producer")  '_
+                                'OrElse foregroundProducer.selectSingleNode("type").nodeTypedValue.Equals("image-producer") _
+                                'OrElse foregroundProducer.selectSingleNode("type").nodeTypedValue.Equals("color-producer")
 
                                 Select Case foregroundProducer.selectSingleNode("type").nodeTypedValue
                                     Case "transition-producer"
@@ -243,7 +243,9 @@ Public Class InfoMediaUpdater
                                     activeItems(c).Item(layer).Remove(mediaName)
                                 End If
                             End If
-                            If activeItems(c).Item(layer).Count = 0 Then Exit For
+                            ' If there are no more active items on that channel, quit parsing the layer nodes
+                            If activeItems(c).Item(layer).Count = 0 Then activeItems(c).Remove(layer)
+                            If activeItems(c).Count = 0 Then Exit For
                         End If
                     Next
                     ' Alle Items in diesem Channel die jetzt noch in der liste sind, sind nicht mehr auf dem Server gestartet 
@@ -259,7 +261,10 @@ Public Class InfoMediaUpdater
                             '        item.getMedia.setInfo("frame-number", item.getMedia.getInfo("nb-frames"))
                             '    End If
                             'End If
-                            If item.getItemType = AbstractPlaylistItem.PlaylistItemTypes.MOVIE Then item.stoppedPlaying()
+                            If item.getItemType = AbstractPlaylistItem.PlaylistItemTypes.MOVIE Then
+                                logger.debug("InfoMediaUpdater.update: Stopping " & item.getName)
+                                item.stoppedPlaying()
+                            End If
                         Next
                     Next
                     activeItems(c).Clear()
