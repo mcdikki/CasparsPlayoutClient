@@ -85,7 +85,6 @@ Public Class PlaylistMovieItem
             timer.Enabled = False
             stopWatch.Reset()
             waiting = False
-            playing = True
 
             If getController.containsChannel(getChannel) AndAlso getLayer() > -1 Then
                 ' if the clip is allready loaded to bg, just start, else load & start
@@ -102,12 +101,13 @@ Public Class PlaylistMovieItem
                     logger.log("PlaylistMovieItem.playNextItem: Load and start clip " & getMedia.getName)
                 End If
                 If cmd.execute(getController.getCommandConnection).isOK Then
-                    raiseStarted(Me)
                     ' InfoMediaUpdater needs an empty to detect end of file due to BUG: frame-number never reaches nb-frames
-                    If Not getController.getCommandConnection.isOSCSupported() Or ClearAfterPlayback() Then
+                    If Not getController.getCommandConnection.isOSCSupported() OrElse ClearAfterPlayback() Then
                         cmd = New LoadbgCommand(getChannel, getLayer, "empty", True)
                         cmd.execute(getController.getCommandConnection)
                     End If
+                    playing = True
+                    raiseStarted(Me)
                     logger.log("PlaylistMovieItem.playNextItem: " & getChannel() & "-" & getLayer() & ": " & getMedia.getName & " started.")
                 Else
                     playing = False

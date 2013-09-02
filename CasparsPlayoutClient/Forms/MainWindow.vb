@@ -39,6 +39,7 @@ Public Class MainWindow
         If My.Settings.logToFile Then
             logger.addLogAction(New fileLogger(My.Settings.loglevel, My.Settings.logdir & "\" & My.Settings.logfile, True, False))
         End If
+        logger.log("Starting " & My.Application.Info.ProductName & " Version " & My.Application.Info.Version.ToString & vbNewLine & "running on " & My.Computer.Info.OSFullName)
         sc = New ServerController
 
         loadConfig()

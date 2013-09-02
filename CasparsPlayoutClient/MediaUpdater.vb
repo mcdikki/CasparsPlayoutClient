@@ -32,8 +32,10 @@ Imports System.Net
 Public Module MediaUpdaterFactory
     Function getMediaUpdater(ByRef updateConnection As CasparCGConnection, ByRef playlist As IPlaylistItem, ByRef controller As ServerController) As AbstractMediaUpdater
         If updateConnection.isOSCSupported Then
+            logger.debug("MediaUpdaterFactory: OSC is supported, using OscMediaUpdater.")
             Return New OscMediaUpdater(updateConnection, playlist, controller)
         Else
+            logger.debug("MediaUpdaterFactory: OSC is not supported, using InfoMediaUpdater.")
             Return New InfoMediaUpdater(updateConnection, playlist, controller)
         End If
     End Function
@@ -76,13 +78,13 @@ Public Class OscMediaUpdater
 
     Public Sub New(ByRef updateConnection As CasparCGConnection, ByRef playlist As IPlaylistItem, ByRef controller As ServerController)
         MyBase.New(updateConnection, playlist, controller)
-
+        logger.debug("Init OscMediaUpdater...")
         ' OSC Server erstellen    
         oscPort = My.Settings.oscPort
         oscServer = New OscServer(TransportType.Udp, IPAddress.Any, oscPort)
         oscServer.FilterRegisteredMethods = False
         oscServer.ConsumeParsingExceptions = False
-
+        logger.debug("Init OscMediaUpdater...Done!")
     End Sub
 
     Public Overrides Sub startUpdate()
@@ -107,7 +109,7 @@ Public Class OscMediaUpdater
 
             ' Passende Playlist finden
             For Each item In playlist.getPlayingChildItems(True, True)
-                'logger.log("OSC: Checking Item " & item.getChannel & "-" & item.getLayer & item.getMedia.getName)
+                'logger.debug("OSC: Checking Item " & item.getChannel & "-" & item.getLayer & item.getMedia.getName)
                 If item.getChannel = c AndAlso item.getLayer = l Then
                     If item.getItemType = AbstractPlaylistItem.PlaylistItemTypes.MOVIE Then
                         'logger.debug("OSC: ReceiverItem found: " & item.getMedia.getName & " [" & item.getMedia.getInfo("frame-number") & "/" & item.getMedia.getInfo("duration") & "]")
@@ -257,7 +259,7 @@ Public Class InfoMediaUpdater
                             '        item.getMedia.setInfo("frame-number", item.getMedia.getInfo("nb-frames"))
                             '    End If
                             'End If
-                            item.stoppedPlaying()
+                            If item.getItemType = AbstractPlaylistItem.PlaylistItemTypes.MOVIE Then item.stoppedPlaying()
                         Next
                     Next
                     activeItems(c).Clear()
