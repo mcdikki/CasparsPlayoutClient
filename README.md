@@ -124,18 +124,19 @@ The main window is splitted into 4 areas:
 	 	choose whether or not, after the media has been played, it should be cleared from the layer 
 
 * **Moving playlist items**  
-	You can move playlist items via drag and drop. Dropping a playlist onto an other let the dropped playlist taking the place of the underlaying.
-	The underlaying will be moved below the dropped. So dropping the most upper playlist to the one after it has no effect.
+	You can move playlist items via drag and drop. Dropping a playlist onto an other let the dropped playlist take the place of the underlaying.
+	The underlaying will be moved below the dropped.
+	If you want to move a playlist from one list to an other instead of reodering it, press **CTRL** while dragging the playlist.
  
 * **Play / Stop / Abort**  
-	There is only one controll button for start / stop / abort for each playlist.
+	There is only one control button for start / stop / abort for each playlist.
 	Each playlist could be in one of the three states giving the button it's function:
 	* stopped:
-		pressing play will start playback for this playlist and it's items
+		pressing play will start playback this playlist and it's items
 	* playing:
 		pressing stop will stop the playlist and all it's items if they are not waiting
 	* waiting:
-		pressing play will start the waiting playlist to play
+		pressing play will start the waiting playlist
 	* EVER:
 		pressing the play / stop button while holding **CTRL** will abort the playlist no matter in what state it is
 
