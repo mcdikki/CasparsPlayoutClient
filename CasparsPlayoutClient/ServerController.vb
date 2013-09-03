@@ -100,14 +100,17 @@ Public Class ServerController
         testConnection = New CasparCGConnection(serverAddress, serverPort)
 
         cmdConnection.timeout = My.Settings.connectionTimeout
+        cmdConnection.disconnectOnTimeout = My.Settings.disconnectAtTimeout
         cmdConnection.reconnectTimeout = My.Settings.reconnectTimout
         cmdConnection.reconnectTries = My.Settings.reconnectTries
         cmdConnection.strictVersionControl = My.Settings.strictVersionControl
         updateConnection.timeout = My.Settings.connectionTimeout
+        updateConnection.disconnectOnTimeout = My.Settings.disconnectAtTimeout
         updateConnection.reconnectTimeout = My.Settings.reconnectTimout
         updateConnection.reconnectTries = My.Settings.reconnectTries
         updateConnection.strictVersionControl = My.Settings.strictVersionControl
         testConnection.timeout = My.Settings.connectionTimeout
+        testConnection.disconnectOnTimeout = My.Settings.disconnectAtTimeout
         testConnection.reconnectTimeout = My.Settings.reconnectTimout
         testConnection.reconnectTries = My.Settings.reconnectTries
         testConnection.strictVersionControl = My.Settings.strictVersionControl

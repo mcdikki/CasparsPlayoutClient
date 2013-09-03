@@ -437,6 +437,18 @@ Namespace My
                 Me("rememberLayout") = value
             End Set
         End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("True")>  _
+        Public Property disconnectAtTimeout() As Boolean
+            Get
+                Return CType(Me("disconnectAtTimeout"),Boolean)
+            End Get
+            Set
+                Me("disconnectAtTimeout") = value
+            End Set
+        End Property
     End Class
 End Namespace
 

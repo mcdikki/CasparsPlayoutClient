@@ -64,6 +64,16 @@ Public Class SettingsWapper
         End Set
     End Property
 
+    <DescriptionAttribute("Sets whether or not the connection should be disconnected on a timeout event."), CategoryAttribute("Network")>
+    Public Property disconnectAtTimeout As Boolean
+        Get
+            Return My.Settings.disconnectAtTimeout
+        End Get
+        Set(value As Boolean)
+            My.Settings.disconnectAtTimeout = value
+        End Set
+    End Property
+
 
     ''-------------------
     '' Appeariance
