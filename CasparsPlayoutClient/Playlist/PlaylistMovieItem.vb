@@ -217,7 +217,7 @@ Public Class PlaylistMovieItem
         ElseIf getController.isConnected Then
             Return getController.getMediaDuration(getMedia, getChannel)
         Else
-            Return getController.getOriginalMediaDuration(getMedia)
+            Return ServerController.getOriginalMediaDuration(getMedia)
         End If
     End Function
 

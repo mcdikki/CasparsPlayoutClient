@@ -96,13 +96,13 @@ Partial Class MainWindow
         'layoutPlaylistSplit.Panel1
         '
         Me.layoutPlaylistSplit.Panel1.BackColor = System.Drawing.SystemColors.Control
-        Me.layoutPlaylistSplit.Panel1MinSize = 370
+        Me.layoutPlaylistSplit.Panel1MinSize = 375
         '
         'layoutPlaylistSplit.Panel2
         '
         Me.layoutPlaylistSplit.Panel2.Controls.Add(Me.layoutUpDownSplit)
         Me.layoutPlaylistSplit.Size = New System.Drawing.Size(1008, 562)
-        Me.layoutPlaylistSplit.SplitterDistance = 370
+        Me.layoutPlaylistSplit.SplitterDistance = 375
         Me.layoutPlaylistSplit.TabIndex = 0
         '
         'layoutUpDownSplit
@@ -124,7 +124,7 @@ Partial Class MainWindow
         Me.layoutUpDownSplit.Panel2.Controls.Add(Me.layoutButtonsPanel)
         Me.layoutUpDownSplit.Panel2.Controls.Add(Me.layoutAdressPanel)
         Me.layoutUpDownSplit.Panel2MinSize = 75
-        Me.layoutUpDownSplit.Size = New System.Drawing.Size(634, 562)
+        Me.layoutUpDownSplit.Size = New System.Drawing.Size(629, 562)
         Me.layoutUpDownSplit.SplitterDistance = 483
         Me.layoutUpDownSplit.TabIndex = 0
         '
@@ -144,8 +144,8 @@ Partial Class MainWindow
         '
         Me.layoutCgLib.Panel2.BackColor = System.Drawing.SystemColors.Control
         Me.layoutCgLib.Panel2MinSize = 285
-        Me.layoutCgLib.Size = New System.Drawing.Size(634, 483)
-        Me.layoutCgLib.SplitterDistance = 344
+        Me.layoutCgLib.Size = New System.Drawing.Size(629, 483)
+        Me.layoutCgLib.SplitterDistance = 339
         Me.layoutCgLib.TabIndex = 0
         '
         'layoutTableMain
@@ -162,7 +162,7 @@ Partial Class MainWindow
         Me.layoutTableMain.RowCount = 2
         Me.layoutTableMain.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 50.0!))
         Me.layoutTableMain.RowStyles.Add(New System.Windows.Forms.RowStyle())
-        Me.layoutTableMain.Size = New System.Drawing.Size(342, 481)
+        Me.layoutTableMain.Size = New System.Drawing.Size(337, 481)
         Me.layoutTableMain.TabIndex = 0
         '
         'ssLog
@@ -175,7 +175,7 @@ Partial Class MainWindow
         Me.ssLog.Margin = New System.Windows.Forms.Padding(3)
         Me.ssLog.Name = "ssLog"
         Me.ssLog.ShowItemToolTips = True
-        Me.ssLog.Size = New System.Drawing.Size(336, 425)
+        Me.ssLog.Size = New System.Drawing.Size(331, 425)
         Me.ssLog.SizingGrip = False
         Me.ssLog.TabIndex = 1
         Me.ssLog.Text = "Test"
@@ -190,7 +190,7 @@ Partial Class MainWindow
         Me.layoutInfoPanel.Dock = System.Windows.Forms.DockStyle.Fill
         Me.layoutInfoPanel.Location = New System.Drawing.Point(3, 3)
         Me.layoutInfoPanel.Name = "layoutInfoPanel"
-        Me.layoutInfoPanel.Size = New System.Drawing.Size(336, 44)
+        Me.layoutInfoPanel.Size = New System.Drawing.Size(331, 44)
         Me.layoutInfoPanel.TabIndex = 0
         '
         'lblStatus
@@ -203,7 +203,7 @@ Partial Class MainWindow
         Me.lblStatus.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
         Me.lblStatus.Font = New System.Drawing.Font("Franklin Gothic Medium", 14.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.lblStatus.ForeColor = System.Drawing.Color.Red
-        Me.lblStatus.Location = New System.Drawing.Point(247, 1)
+        Me.lblStatus.Location = New System.Drawing.Point(244, 1)
         Me.lblStatus.Name = "lblStatus"
         Me.lblStatus.Size = New System.Drawing.Size(165, 40)
         Me.lblStatus.TabIndex = 2
@@ -220,7 +220,7 @@ Partial Class MainWindow
         Me.lblDate.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
         Me.lblDate.Font = New System.Drawing.Font("Franklin Gothic Medium", 14.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.lblDate.ForeColor = System.Drawing.Color.Lime
-        Me.lblDate.Location = New System.Drawing.Point(-78, 1)
+        Me.lblDate.Location = New System.Drawing.Point(-81, 1)
         Me.lblDate.Name = "lblDate"
         Me.lblDate.Size = New System.Drawing.Size(125, 40)
         Me.lblDate.TabIndex = 1
@@ -237,7 +237,7 @@ Partial Class MainWindow
         Me.lblClock.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
         Me.lblClock.Font = New System.Drawing.Font("Courier New", 26.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.lblClock.ForeColor = System.Drawing.Color.Lime
-        Me.lblClock.Location = New System.Drawing.Point(47, 1)
+        Me.lblClock.Location = New System.Drawing.Point(44, 1)
         Me.lblClock.Name = "lblClock"
         Me.lblClock.Size = New System.Drawing.Size(200, 40)
         Me.lblClock.TabIndex = 0
@@ -254,7 +254,7 @@ Partial Class MainWindow
         Me.layoutButtonsPanel.Location = New System.Drawing.Point(3, 42)
         Me.layoutButtonsPanel.MinimumSize = New System.Drawing.Size(0, 30)
         Me.layoutButtonsPanel.Name = "layoutButtonsPanel"
-        Me.layoutButtonsPanel.Size = New System.Drawing.Size(626, 30)
+        Me.layoutButtonsPanel.Size = New System.Drawing.Size(621, 30)
         Me.layoutButtonsPanel.TabIndex = 2
         '
         'layoutButtonsFlow
@@ -269,7 +269,7 @@ Partial Class MainWindow
         Me.layoutButtonsFlow.Location = New System.Drawing.Point(0, 0)
         Me.layoutButtonsFlow.MinimumSize = New System.Drawing.Size(0, 30)
         Me.layoutButtonsFlow.Name = "layoutButtonsFlow"
-        Me.layoutButtonsFlow.Size = New System.Drawing.Size(626, 30)
+        Me.layoutButtonsFlow.Size = New System.Drawing.Size(621, 30)
         Me.layoutButtonsFlow.TabIndex = 0
         '
         'cmbConnect
@@ -348,7 +348,7 @@ Partial Class MainWindow
         Me.layoutAdressPanel.Location = New System.Drawing.Point(2, 1)
         Me.layoutAdressPanel.MinimumSize = New System.Drawing.Size(0, 40)
         Me.layoutAdressPanel.Name = "layoutAdressPanel"
-        Me.layoutAdressPanel.Size = New System.Drawing.Size(627, 40)
+        Me.layoutAdressPanel.Size = New System.Drawing.Size(622, 40)
         Me.layoutAdressPanel.TabIndex = 1
         '
         'lblAddress
@@ -368,7 +368,7 @@ Partial Class MainWindow
         Me.txtPort.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.txtPort.BackColor = System.Drawing.SystemColors.Window
         Me.txtPort.ForeColor = System.Drawing.SystemColors.ControlText
-        Me.txtPort.Location = New System.Drawing.Point(573, 16)
+        Me.txtPort.Location = New System.Drawing.Point(568, 16)
         Me.txtPort.Name = "txtPort"
         Me.txtPort.Size = New System.Drawing.Size(36, 20)
         Me.txtPort.TabIndex = 1
@@ -383,7 +383,7 @@ Partial Class MainWindow
         Me.txtAddress.ForeColor = System.Drawing.SystemColors.ControlText
         Me.txtAddress.Location = New System.Drawing.Point(6, 16)
         Me.txtAddress.Name = "txtAddress"
-        Me.txtAddress.Size = New System.Drawing.Size(561, 20)
+        Me.txtAddress.Size = New System.Drawing.Size(556, 20)
         Me.txtAddress.TabIndex = 0
         Me.txtAddress.Text = "localhost"
         '

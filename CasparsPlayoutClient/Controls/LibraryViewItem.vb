@@ -39,21 +39,25 @@ Public Class LibraryViewItem
             End If
             lblName.Text = MediaItem.getName
             lblType.Text = MediaItem.getMediaType.ToString
-            If MediaItem.containsInfo("Duration") Then
-                lblDuration.Text = MediaItem.getInfo("Duration")
-            Else
-                lblDuration.Visible = False
-            End If
+            'If MediaItem.containsInfo("Duration") Then
+            '    lblDuration.Text = MediaItem.getInfo("Duration")
+            'Else
+            '    lblDuration.Visible = False
+            'End If
+            lblDuration.Text = ServerController.getTimeStringOfMS(ServerController.getOriginalMediaDuration(MediaItem))
+
 
             'set type icon
             Select Case MediaItem.getMediaType
                 Case AbstractCasparCGMedia.MediaType.MOVIE
                     lblType.Image = Image.FromFile("img/media-button-movie.gif")
                 Case AbstractCasparCGMedia.MediaType.STILL
+                    lblDuration.Visible = False
                     lblType.Image = Image.FromFile("img/media-button-still.gif")
                 Case AbstractCasparCGMedia.MediaType.AUDIO
                     lblType.Image = Image.FromFile("img/media-button-audio.gif")
                 Case AbstractCasparCGMedia.MediaType.TEMPLATE
+                    lblDuration.Visible = False
                     lblType.Image = Image.FromFile("img/media-button-template.gif")
             End Select
         End If

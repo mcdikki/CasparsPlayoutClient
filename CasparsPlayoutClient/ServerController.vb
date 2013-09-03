@@ -182,19 +182,19 @@ Public Class ServerController
     ''' <param name="media"></param>
     ''' <returns></returns>
     ''' <remarks></remarks>
-    Public Function getOriginalMediaDuration(ByRef media As AbstractCasparCGMedia) As Long
+    Public Shared Function getOriginalMediaDuration(ByRef media As AbstractCasparCGMedia) As Long
         Select Case media.getMediaType
             Case AbstractCasparCGMedia.MediaType.COLOR, AbstractCasparCGMedia.MediaType.STILL, AbstractCasparCGMedia.MediaType.TEMPLATE
                 '' These mediatyps doesn't have any durations
                 Return 0
             Case Else
-                If media.getInfos.Count = 0 Then
-                    '' no media info is loaded
-                    '' load it now
-                    If isConnected() Then
-                        media.fillMediaInfo(testConnection, testChannel)
-                    End If
-                End If
+                'If media.getInfos.Count = 0 Then
+                '    '' no media info is loaded
+                '    '' load it now
+                '    If isConnected() Then
+                '        media.fillMediaInfo(testConnection, testChannel)
+                '    End If
+                'End If
                 If media.containsInfo("file-nb-frames") AndAlso media.containsInfo("fps") AndAlso media.containsInfo("progressive") Then
                     Dim fps As Integer = Single.Parse(media.getInfo("fps")) * 100
                     Dim progressive = Boolean.Parse(media.getInfo("progressive"))
