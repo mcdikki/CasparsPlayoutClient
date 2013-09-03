@@ -3,6 +3,9 @@ ToDo:
 CORE:
 =====
 
+- add Try Catch to all command executions
+
+
 - add image scroller functions to StillPlaylist
 
 

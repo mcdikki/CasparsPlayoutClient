@@ -360,7 +360,8 @@ Public Class ServerController
                 For Each line As String In cmd.getResponse.getData.Split(vbCrLf)
                     line = line.Trim()
                     If line <> "" AndAlso line.Split(" ").Length > 2 Then
-                        Dim name = line.Substring(1, line.LastIndexOf("""") - 1).ToUpper
+                        ' removed .toUpper for the name as the server is allways using uppercases and on some special chars like µ this leads to an error.
+                        Dim name = line.Substring(1, line.LastIndexOf("""") - 1)
                         line = line.Remove(0, line.LastIndexOf("""") + 1)
                         line = line.Trim().Replace("""", "").Replace("  ", " ")
                         Dim values() = line.Split(" ")
