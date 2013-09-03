@@ -30,6 +30,7 @@ Public Class MainWindow
     Private clock As New ToolStripLabel
     Private progress As New ToolStripProgressBar
     Private state As New ToolStripLabel
+    Private onAirWatch As New Stopwatch
 
     Private Sub MainWindow_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
         If My.Settings.logToConsole Then
@@ -222,7 +223,18 @@ Public Class MainWindow
             Dim d = New updateDelegate(AddressOf updateClock)
             lblClock.Invoke(d)
         Else
-            lblClock.Text = Now.TimeOfDay.ToString.Substring(0, 8)
+            'lblClock.Text = Now.TimeOfDay.ToString.Substring(0, 8)
+            Select Case sc.getPlaylistRoot.getRemaining
+                Case 0
+                    lblClock.ForeColor = Color.Lime
+                Case Is < My.Settings.warnTime
+                    lblClock.ForeColor = Color.Red
+                Case Is < My.Settings.noWarnTime
+                    lblClock.ForeColor = Color.DarkOrange
+                Case Else
+                    lblClock.ForeColor = Color.Lime
+            End Select
+            lblClock.Text = (ServerController.getTimeStringOfMS(sc.getPlaylistRoot.getRemaining))
         End If
     End Sub
 
@@ -231,7 +243,8 @@ Public Class MainWindow
             Dim d = New updateDelegate(AddressOf updateDate)
             lblDate.Invoke(d)
         Else
-            lblDate.Text = Now.Date.ToShortDateString
+            lblDate.Text = ServerController.getTimeStringOfMS(onAirWatch.ElapsedMilliseconds)
+            'lblDate.Text = Now.Date.ToShortDateString
         End If
     End Sub
 
@@ -303,6 +316,7 @@ Public Class MainWindow
             Next
             AddHandler sc.getTicker.frameTick, AddressOf onTick
             sc.startTicker()
+            onAirWatch.Restart()
             libraryView.cmbRefresh.PerformClick()
             cmbConnect.Text = "Disconnect"
             cmbConnect.Enabled = True
@@ -318,6 +332,7 @@ Public Class MainWindow
                 RemoveHandler sc.getTicker.frameTick, AddressOf onTick
             Catch e As Exception
             End Try
+            onAirWatch.Stop()
             libraryView.Library.refreshLibrary()
             playlistView.onDataChanged()
             cmbConnect.Text = "Connect"

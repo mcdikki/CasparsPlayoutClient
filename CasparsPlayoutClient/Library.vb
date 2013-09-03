@@ -38,7 +38,15 @@ Public Class Library
     End Sub
 
     Public Sub addItem(ByRef item As AbstractCasparCGMedia)
-        If Not media.ContainsKey(item.getUuid) Then media.Add(item.getUuid, item)
+        If Not media.ContainsKey(item.getFullName & "(" & item.getMediaType.ToString & ")") Then media.Add(item.getFullName & "(" & item.getMediaType.ToString & ")", item)
+    End Sub
+
+    Public Sub updateItem(ByRef item As AbstractCasparCGMedia)
+        If media.ContainsKey(item.getFullName & "(" & item.getMediaType.ToString & ")") Then
+            'ToDo: Update the media in the list
+        Else
+            addItem(item)
+        End If
     End Sub
 
     Public Function getItems() As IEnumerable(Of AbstractCasparCGMedia)

@@ -235,7 +235,7 @@ Partial Class MainWindow
         Me.lblClock.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom), System.Windows.Forms.AnchorStyles)
         Me.lblClock.BackColor = System.Drawing.Color.Transparent
         Me.lblClock.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
-        Me.lblClock.Font = New System.Drawing.Font("Courier New", 26.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.lblClock.Font = New System.Drawing.Font("Courier New", 20.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.lblClock.ForeColor = System.Drawing.Color.Lime
         Me.lblClock.Location = New System.Drawing.Point(44, 1)
         Me.lblClock.Name = "lblClock"
@@ -254,7 +254,7 @@ Partial Class MainWindow
         Me.layoutButtonsPanel.Location = New System.Drawing.Point(3, 42)
         Me.layoutButtonsPanel.MinimumSize = New System.Drawing.Size(0, 30)
         Me.layoutButtonsPanel.Name = "layoutButtonsPanel"
-        Me.layoutButtonsPanel.Size = New System.Drawing.Size(621, 30)
+        Me.layoutButtonsPanel.Size = New System.Drawing.Size(365, 30)
         Me.layoutButtonsPanel.TabIndex = 2
         '
         'layoutButtonsFlow
@@ -269,7 +269,7 @@ Partial Class MainWindow
         Me.layoutButtonsFlow.Location = New System.Drawing.Point(0, 0)
         Me.layoutButtonsFlow.MinimumSize = New System.Drawing.Size(0, 30)
         Me.layoutButtonsFlow.Name = "layoutButtonsFlow"
-        Me.layoutButtonsFlow.Size = New System.Drawing.Size(621, 30)
+        Me.layoutButtonsFlow.Size = New System.Drawing.Size(365, 30)
         Me.layoutButtonsFlow.TabIndex = 0
         '
         'cmbConnect
@@ -309,7 +309,7 @@ Partial Class MainWindow
         '
         Me.cmbClearChannel.BackColor = System.Drawing.SystemColors.Control
         Me.cmbClearChannel.ForeColor = System.Drawing.SystemColors.ControlText
-        Me.cmbClearChannel.Location = New System.Drawing.Point(292, 3)
+        Me.cmbClearChannel.Location = New System.Drawing.Point(3, 32)
         Me.cmbClearChannel.Name = "cmbClearChannel"
         Me.cmbClearChannel.Size = New System.Drawing.Size(75, 23)
         Me.cmbClearChannel.TabIndex = 4
@@ -320,7 +320,7 @@ Partial Class MainWindow
         '
         Me.nudLayerClear.BackColor = System.Drawing.SystemColors.Window
         Me.nudLayerClear.ForeColor = System.Drawing.SystemColors.ControlText
-        Me.nudLayerClear.Location = New System.Drawing.Point(373, 5)
+        Me.nudLayerClear.Location = New System.Drawing.Point(84, 34)
         Me.nudLayerClear.Margin = New System.Windows.Forms.Padding(3, 5, 3, 3)
         Me.nudLayerClear.Maximum = New Decimal(New Integer() {10000, 0, 0, 0})
         Me.nudLayerClear.Name = "nudLayerClear"
@@ -331,7 +331,7 @@ Partial Class MainWindow
         '
         Me.cmbClearLayer.BackColor = System.Drawing.SystemColors.Control
         Me.cmbClearLayer.ForeColor = System.Drawing.SystemColors.ControlText
-        Me.cmbClearLayer.Location = New System.Drawing.Point(415, 3)
+        Me.cmbClearLayer.Location = New System.Drawing.Point(126, 32)
         Me.cmbClearLayer.Name = "cmbClearLayer"
         Me.cmbClearLayer.Size = New System.Drawing.Size(99, 23)
         Me.cmbClearLayer.TabIndex = 6
@@ -348,7 +348,7 @@ Partial Class MainWindow
         Me.layoutAdressPanel.Location = New System.Drawing.Point(2, 1)
         Me.layoutAdressPanel.MinimumSize = New System.Drawing.Size(0, 40)
         Me.layoutAdressPanel.Name = "layoutAdressPanel"
-        Me.layoutAdressPanel.Size = New System.Drawing.Size(622, 40)
+        Me.layoutAdressPanel.Size = New System.Drawing.Size(366, 40)
         Me.layoutAdressPanel.TabIndex = 1
         '
         'lblAddress
