@@ -3,6 +3,11 @@ ToDo:
 CORE:
 =====
 
+- change library update to update each item for itself and not all together.
+- change library update so that update a item don't means to overwrite the whole dict, but that the dict will be updated
+--- this needs a new control to clear the lib
+
+
 - add Try Catch to all command executions
 
 
