@@ -12,6 +12,7 @@ Table of contents
 -----------------
 
 * [License](#license)
+* [System requirements](#system-requirements)
 * [Features](#features)
 * [Screenshots](#screenshots)
 * [Quick Start](#quick-start)
@@ -25,6 +26,28 @@ License
 This software is licensed under the [Gnu GPL v3] [2].
 
 
+System requirements
+--------------------
+
+In order to run Caspar's Playout Client you need  
+######REQUIREMENTS
+* Windows XP or higher
+* NET Framework 4 or higher
+* CasparCG 2.* or higher  
+   
+
+######RECOMMENDATIONS
+* Windows 7 or higher
+* NET Framework 4 or higher
+* CasparCG 2.0.4 Beta or higher or any CasparCG version with OSC support  
+   
+
+In addition to the requirements, I recommend
+* that media filenames doesn't contain spaces
+* that media filenames only contain ANSI chars
+* to use a wired network (no WLAN) to connect casparCG with Caspar's Playout Client
+* a screen resolution of at least 1280x720 - the more, the better ;-)
+  
 
 Features
 --------
