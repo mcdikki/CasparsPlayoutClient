@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Caspar's Playout Client"
-#define MyAppVersion "0.1.1.2"
+#define MyAppVersion "0.1.1.3"
 #define MyAppMainVersion "0.1.1.0"
 #define MyAppCompany "Sublan.tv"
 #define MyAppPublisher "Christopher Diekkamp"
