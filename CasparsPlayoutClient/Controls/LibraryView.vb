@@ -21,9 +21,17 @@ Public Class LibraryView
 
     Public WithEvents Library As Library
     Private Delegate Sub updateDelagete()
+    Private Delegate Sub updateItemDelegate(ByRef item As AbstractCasparCGMedia)
     Private cMenu As ContextMenuStrip
+    Private items As Dictionary(Of String, LibraryViewItem)
+    Private updateBrake As New Threading.Semaphore(1, 1)
+    Private Const brakeTime = 5
+    Private WithEvents brakeTimer As New Timers.Timer(brakeTime)
+    Private isBrakeActive As Boolean = False
+    Private itemsLock As New Threading.Semaphore(1, 1)
 
     Public Sub New()
+        items = New Dictionary(Of String, LibraryViewItem)
         InitializeComponent()
         cmbRefresh.Image = Image.FromFile("img/refresh-icon.png")
         pbProgress.Image = Image.FromFile("img/refresh-icon-ani.gif")
@@ -32,6 +40,7 @@ Public Class LibraryView
     End Sub
 
     Public Sub New(ByVal library As Library)
+        items = New Dictionary(Of String, LibraryViewItem)
         Me.Library = library
         InitializeComponent()
         cmbRefresh.Image = Image.FromFile("img/refresh-icon.png")
@@ -55,7 +64,15 @@ Public Class LibraryView
         cMenu = New ContextMenuStrip
         cMenu.Items.Add(New ToolStripMenuItem("Load from XML", Nothing, Sub() loadXml()))
         cMenu.Items.Add(New ToolStripMenuItem("Save library to xml", Nothing, Sub() saveXmlLib()))
+        cMenu.Items.Add(New ToolStripSeparator)
+        cMenu.Items.Add(New ToolStripMenuItem("Clear library", Nothing, AddressOf clearLibrary))
         Me.ContextMenuStrip = cMenu
+    End Sub
+
+    Public Sub clearLibrary()
+        Library.clear()
+        layoutItemsFlow.Controls.Clear()
+        items.Clear()
     End Sub
 
     Public Sub saveXmlLib()
@@ -105,33 +122,11 @@ Public Class LibraryView
 
     Public Sub loadXml(ByVal fileName As String)
         Dim domDoc As New MSXML2.DOMDocument
-        Dim media As AbstractCasparCGMedia
-        If domDoc.load(fileName) Then
-            If domDoc.firstChild.nodeName.Equals("library") Then
-                ' load whole lib
-                For Each m As MSXML2.IXMLDOMNode In domDoc.firstChild.selectNodes("media")
-                    media = CasparCGMediaFactory.createMedia(m.xml)
-                    If Not IsNothing(media) Then
-                        Library.addItem(media)
-                        addMediaItem(media)
-                        logger.log("LibraryView.loadXml: Successfully loaded " & media.getName & " from '" & fileName & "'.")
-                    End If
-                Next
-            ElseIf domDoc.firstChild.nodeName.Equals("media") Then
-                ' single media
-                media = CasparCGMediaFactory.createMedia(domDoc.xml)
-                If Not IsNothing(media) Then
-                    Library.addItem(media)
-                    addMediaItem(media)
-                    logger.log("LibraryView.loadXml: Successfully loaded " & media.getName & " from '" & fileName & "'.")
-                End If
-            Else
-                logger.warn("LibraryView.loadXml: Unable to load media from '" & fileName & "'. Not a valid media definition.")
-            End If
+        If My.Computer.FileSystem.FileExists(fileName) AndAlso domDoc.load(fileName) Then
+            loadXml(domDoc)
         Else
             logger.err("LibraryView.loadXml: Unable to parse media file '" & fileName & "'. Not a valid xml file.")
         End If
-        applyFilter()
     End Sub
 
     Public Sub loadXml(ByRef xmlDoc As MSXML2.DOMDocument)
@@ -143,7 +138,7 @@ Public Class LibraryView
                     media = CasparCGMediaFactory.createMedia(m.xml)
                     If Not IsNothing(media) Then
                         Library.addItem(media)
-                        addMediaItem(media)
+                        updateMediaItem(media)
                         logger.log("LibraryView.loadXml: Successfully loaded " & media.getName)
                     End If
                 Next
@@ -152,7 +147,7 @@ Public Class LibraryView
                 media = CasparCGMediaFactory.createMedia(xmlDoc.xml)
                 If Not IsNothing(media) Then
                     Library.addItem(media)
-                    addMediaItem(media)
+                    updateMediaItem(media)
                     logger.log("LibraryView.loadXml: Successfully loaded " & media.getName)
                 End If
             Else
@@ -166,53 +161,39 @@ Public Class LibraryView
 
 
     Private Sub applyFilter() Handles ckbAudio.CheckedChanged, ckbMovie.CheckedChanged, ckbStill.CheckedChanged, ckbTemplate.CheckedChanged, txtFilter.TextChanged
-        Dim filteredList As New List(Of AbstractCasparCGMedia)
+        layoutTypeFilterFlow.Enabled = False
+        If itemsLock.WaitOne Then
+            Dim targetItems As New List(Of LibraryViewItem)
+            targetItems.AddRange(items.Values)
+            Try
+                itemsLock.Release()
+            Catch ex As Exception
+            End Try
 
-        ' Filter by type
-        If ckbAudio.Checked Then
-            filteredList.AddRange(Library.getItemsOfType(AbstractCasparCGMedia.MediaType.AUDIO))
-        End If
-        If ckbMovie.Checked Then
-            filteredList.AddRange(Library.getItemsOfType(AbstractCasparCGMedia.MediaType.MOVIE))
-        End If
-        If ckbStill.Checked Then
-            filteredList.AddRange(Library.getItemsOfType(AbstractCasparCGMedia.MediaType.STILL))
-        End If
-        If ckbTemplate.Checked Then
-            filteredList.AddRange(Library.getItemsOfType(AbstractCasparCGMedia.MediaType.TEMPLATE))
-        End If
-
-        ' Filter by name
-        If txtFilter.Text.Length > 0 Then
-            For Each item In filteredList
-
-                '' ist das item im Filterergebnis?
-                If item.getFullName.ToUpper Like txtFilter.Text.ToUpper & "*" OrElse item.getName.ToUpper Like txtFilter.Text.ToUpper & "*" Then
-                    ' Gibt es schon ein entsprechendes control?
-                    If layoutItemsFlow.Controls.ContainsKey(item.getFullName) Then
-                        ' Also sichtbar machen
-                        layoutItemsFlow.Controls.Item(layoutItemsFlow.Controls.IndexOfKey(item.getFullName)).Visible = True
-                    Else
-                        ' Noch kein Control da, also hinzufügen (Sollte eigentlich nicht vorkommen)
-                        addMediaItem(item)
-                    End If
-                Else
-                    ' Das item ist nicht im ergebnis, wenn es ein entsprechendes Control gibt wird es unsichtbar gemacht.
-                    If layoutItemsFlow.Controls.ContainsKey(item.getFullName) Then
-                        layoutItemsFlow.Controls.Item(layoutItemsFlow.Controls.IndexOfKey(item.getFullName)).Visible = False
-                    End If
-                End If
+            layoutItemsFlow.SuspendLayout()
+            For Each item In targetItems
+                Application.DoEvents()
+                applyFilterToItem(item)
             Next
-        Else
-            For Each item As LibraryViewItem In layoutItemsFlow.Controls
-                If filteredList.Contains(item.MediaItem) Then
-                    ' Also sichtbar machen
-                    item.Visible = True
-                Else
-                    ' Noch kein Control da, also hinzufügen (Sollte eigentlich nicht vorkommen)
-                    item.Visible = False
-                End If
-            Next
+            layoutItemsFlow.ResumeLayout()
+        End If
+        layoutTypeFilterFlow.Enabled = True
+    End Sub
+
+    Private Sub applyFilterToItem(ByRef item As LibraryViewItem)
+        Select Case item.MediaItem.getMediaType
+            Case AbstractCasparCGMedia.MediaType.AUDIO
+                item.Visible = ckbAudio.Checked
+            Case AbstractCasparCGMedia.MediaType.MOVIE
+                item.Visible = ckbMovie.Checked
+            Case AbstractCasparCGMedia.MediaType.STILL
+                item.Visible = ckbStill.Checked
+            Case AbstractCasparCGMedia.MediaType.TEMPLATE
+                item.Visible = ckbTemplate.Checked
+        End Select
+
+        If Not (txtFilter.Text.Length > 0 AndAlso item.MediaItem.getFullName.ToUpper Like txtFilter.Text.ToUpper & "*" OrElse item.MediaItem.getName.ToUpper Like txtFilter.Text.ToUpper & "*") Then
+            item.Visible = False
         End If
     End Sub
 
@@ -220,14 +201,7 @@ Public Class LibraryView
         If InvokeRequired Then
             Invoke(New updateDelagete(AddressOf refreshList))
         Else
-            layoutItemsFlow.Controls.Clear()
-            If Not IsNothing(Library) Then
-                For Each item In Library.getItems
-                    addMediaItem(item)
-                Next
-            End If
             If My.Settings.rememberLibrary AndAlso Library.getItems.Count > 0 Then My.Settings.last_Library = getXmlLib()
-            applyFilter()
         End If
     End Sub
 
@@ -237,10 +211,70 @@ Public Class LibraryView
     ''' <param name="mediaItem"></param>
     ''' <remarks></remarks>
     Private Sub addMediaItem(ByRef mediaItem As AbstractCasparCGMedia)
-        Dim libItem As New LibraryViewItem(mediaItem)
-        layoutItemsFlow.Controls.Add(libItem)
-        libItem.Width = libItem.Parent.ClientRectangle.Width - libItem.Parent.Margin.Horizontal
+        If Not items.ContainsKey(mediaItem.getUuid) Then
+            Dim libItem As New LibraryViewItem(mediaItem)
+            libItem.Name = mediaItem.getUuid
+            applyFilterToItem(libItem)
+            Application.DoEvents()
+            If itemsLock.WaitOne() Then
+                items.Add(mediaItem.getUuid, libItem)
+                Try
+                    itemsLock.Release()
+                Catch ex As Exception
+                End Try
+            End If
+            Application.DoEvents()
+            If layoutItemsFlow.Controls.Count < 300 Then
+                layoutItemsFlow.Controls.Add(libItem)
+                libItem.Width = libItem.Parent.ClientRectangle.Width - libItem.Parent.Margin.Horizontal
+            Else
+                logger.warn("LibraryView.addMediaItem: Can't add more MediaItems.")
+            End If
+        End If
     End Sub
+
+    Private Sub updateMediaItem(ByRef mediaItem As AbstractCasparCGMedia) Handles Library.itemUpdated
+        If InvokeRequired Then
+            Application.DoEvents()
+            If updateBrake.WaitOne() Then
+                Invoke(New updateItemDelegate(AddressOf updateMediaItem), {mediaItem})
+                Try
+                    updateBrake.Release()
+                Catch e As Exception
+                End Try
+            End If
+        Else
+            Application.DoEvents()
+            If items.ContainsKey(mediaItem.getUuid) Then
+                'update or add item
+                items.Item(mediaItem.getUuid).refreshData()
+                applyFilterToItem(items.Item(mediaItem.getUuid))
+            Else
+                addMediaItem(mediaItem)
+            End If
+        End If
+    End Sub
+
+    Private Sub updateBrakePause() Handles brakeTimer.Elapsed
+        If Not isBrakeActive AndAlso updateBrake.WaitOne(brakeTime) Then
+        Else
+            Try
+                updateBrake.Release()
+            Catch e As Exception
+            End Try
+            isBrakeActive = False
+        End If
+    End Sub
+
+    Private Sub startBrake()
+        brakeTimer.Start()
+    End Sub
+
+    Private Sub stopBrake()
+        brakeTimer.Stop()
+        If isBrakeActive Then updateBrakePause()
+    End Sub
+
 
     '
     '' Ereignis verarbeitung
@@ -250,6 +284,13 @@ Public Class LibraryView
             cmbRefresh.Visible = False
             pbProgress.Visible = True
             Library.refreshLibrary()
+            'startBrake()
+        End If
+    End Sub
+
+    Private Sub pbProgress_click(ByVal sender As Object, ByVal e As EventArgs) Handles pbProgress.Click
+        If Not IsNothing(Library) Then
+            Library.abortUpdate()
         End If
     End Sub
 
@@ -265,6 +306,7 @@ Public Class LibraryView
         Else
             pbProgress.Visible = False
             cmbRefresh.Visible = True
+            'stopBrake()
         End If
     End Sub
 

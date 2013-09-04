@@ -41,7 +41,8 @@ Public Class Dialog
         lblText.Text = Message
         'lblText.Image = Image
         Me.Image.Image = Image
-        Me.Image.SizeMode = PictureBoxSizeMode.Zoom
+        Me.Image.SizeMode = PictureBoxSizeMode.AutoSize
+        Me.Size = New Size(Math.Max(Me.Header.Width, Me.FlowLayoutPanel1.Width), Me.Height)
     End Sub
 
     Private Sub OK_Button_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles OK_Button.Click
@@ -52,4 +53,5 @@ Public Class Dialog
     Private Sub lblText_resized(sender As Object, e As EventArgs) Handles lblText.SizeChanged
         Me.Size = New Size(Me.MinimumSize.Width + lblText.Size.Width, Me.MinimumSize.Height + lblText.Height - OK_Button.Height)
     End Sub
+
 End Class

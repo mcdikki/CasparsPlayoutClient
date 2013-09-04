@@ -21,6 +21,7 @@ Public Class LibraryViewItem
 
     Public Property MediaItem As AbstractCasparCGMedia
     Private cMenu As ContextMenuStrip
+    Private Delegate Sub refreshDataDelegate()
 
     Public Sub New(ByVal mediaItem As AbstractCasparCGMedia)
         Me.MediaItem = mediaItem
@@ -88,6 +89,20 @@ Public Class LibraryViewItem
     Public Sub saveXml()
         MediaItem.toXml.save(MediaItem.getName & "(" & MediaItem.getMediaType.ToString & ").xml")
         logger.log("LibraryViewItem.saveXml: Media '" & MediaItem.getName & "' successfully saved.")
+    End Sub
+
+    Public Sub refreshData()
+        If InvokeRequired Then
+            Invoke(New refreshDataDelegate(AddressOf refreshData))
+        Else
+            If Not IsNothing(MediaItem) Then
+                If MediaItem.getBase64Thumb.Length > 0 Then
+                    picThumb.Image = ServerController.getBase64ToImage(MediaItem.getBase64Thumb)
+                End If
+
+                lblDuration.Text = ServerController.getTimeStringOfMS(ServerController.getOriginalMediaDuration(MediaItem))
+            End If
+        End If
     End Sub
 
     '' DragDrop verarbeiten

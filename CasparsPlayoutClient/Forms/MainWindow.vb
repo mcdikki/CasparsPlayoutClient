@@ -39,7 +39,7 @@ Public Class MainWindow
         If My.Settings.logToFile Then
             logger.addLogAction(New fileLogger(My.Settings.loglevel, My.Settings.logdir & "\" & My.Settings.logfile, True, False))
         End If
-        logger.log("Starting " & My.Application.Info.ProductName & " Version " & My.Application.Info.Version.ToString & vbNewLine & "running on " & My.Computer.Info.OSFullName)
+        logger.log("Starting " & My.Application.Info.ProductName & " Version " & My.Application.Info.Version.ToString & " on " & My.Computer.Info.OSFullName)
         sc = New ServerController
 
         loadConfig()
@@ -279,7 +279,7 @@ Public Class MainWindow
 
     Private Sub connect() Handles cmbConnect.Click
         If sc.isConnected Then
-            libraryView.Library.abortUpdate()
+            mediaLib.abortUpdate()
             Dim t As New Threading.Thread(AddressOf sc.close)
             t.Start()
             cmbConnect.Enabled = False
@@ -318,7 +318,7 @@ Public Class MainWindow
                 RemoveHandler sc.getTicker.frameTick, AddressOf onTick
             Catch e As Exception
             End Try
-            libraryView.Library.refreshLibrary()
+            'libraryView.Library.refreshLibrary()
             playlistView.onDataChanged()
             cmbConnect.Text = "Connect"
             cmbConnect.Enabled = True

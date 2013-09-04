@@ -19,6 +19,7 @@ CORE:
 ---> Moved Version Controll to CasparCGServerConnection - CD 04/08/13
 ---> Moved Channel query to connection - CD 06/08/13
 ---> Moved getMediaInfo to CasparCGMedia - CD 08/08/13
+---> Moved getMediaList functions to Library - CD 03/09/13
 
 
 - Implement missing Playlist Types

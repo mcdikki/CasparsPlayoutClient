@@ -191,15 +191,8 @@ Public Class ServerController
                 '' These mediatyps doesn't have any durations
                 Return 0
             Case Else
-                'If media.getInfos.Count = 0 Then
-                '    '' no media info is loaded
-                '    '' load it now
-                '    If isConnected() Then
-                '        media.fillMediaInfo(testConnection, testChannel)
-                '    End If
-                'End If
                 If media.containsInfo("file-nb-frames") AndAlso media.containsInfo("fps") AndAlso media.containsInfo("progressive") Then
-                    Dim fps As Integer = Single.Parse(media.getInfo("fps")) * 100
+                    Dim fps As Integer = Single.Parse(media.getInfo("fps").Trim.Substring(0, Math.Min(4, media.getInfo("fps").Trim.Length))) * 100
                     Dim progressive = Boolean.Parse(media.getInfo("progressive"))
                     'If Not progressive Then
                     '    fps = fps / 2
@@ -346,71 +339,71 @@ Public Class ServerController
         Return -1
     End Function
 
-    ''' <summary>
-    ''' Returns a Dictionary of all media and templates on the server key by their names.
-    ''' If withMediaInfo is true, all mediaItems will have filled mediaInfo which is default but need more time.
-    ''' </summary>
-    ''' <returns></returns>
-    ''' <remarks></remarks>
-    Public Function getMediaList() As Dictionary(Of String, AbstractCasparCGMedia)
-        Dim media As New Dictionary(Of String, AbstractCasparCGMedia)
-        Dim cmd As ICommand
-        '' Catch the media list and create the media objects
-        If isConnected() Then
-            Dim newMedia As AbstractCasparCGMedia = Nothing
-            cmd = New ClsCommand()
-            If cmd.execute(testConnection).isOK Then
-                For Each line As String In cmd.getResponse.getData.Split(vbCrLf)
-                    line = line.Trim()
-                    If line <> "" AndAlso line.Split(" ").Length > 2 Then
-                        ' removed .toUpper for the name as the server is allways using uppercases and on some special chars like µ this leads to an error.
-                        Dim name = line.Substring(1, line.LastIndexOf("""") - 1)
-                        line = line.Remove(0, line.LastIndexOf("""") + 1)
-                        line = line.Trim().Replace("""", "").Replace("  ", " ")
-                        Dim values() = line.Split(" ")
-                        Select Case values(0)
-                            Case "MOVIE"
-                                newMedia = New CasparCGMovie(name)
-                                'newMedia.setInfo("duration", getTimeStringOfMS(getOriginalMediaDuration(newMedia)))
-                                ' get Thumbnail
-                                cmd = New ThumbnailRetrieveCommand(name)
-                                If cmd.isCompatible(testConnection) AndAlso cmd.execute(testConnection).isOK Then
-                                    newMedia.setBase64Thumb(cmd.getResponse.getData)
-                                End If
-                                media.Add(newMedia.getUuid, newMedia)
-                            Case "AUDIO"
-                                newMedia = New CasparCGAudio(name)
-                                media.Add(newMedia.getUuid, newMedia)
-                            Case "STILL"
-                                newMedia = New CasparCGStill(name)
-                                ' get Thumbnail
-                                cmd = New ThumbnailRetrieveCommand(name)
-                                If cmd.isCompatible(testConnection) AndAlso cmd.execute(testConnection).isOK Then
-                                    newMedia.setBase64Thumb(cmd.getResponse.getData)
-                                End If
-                                media.Add(newMedia.getUuid, newMedia)
-                        End Select
-                        If Not IsNothing(newMedia) Then newMedia.fillMediaInfo(getTestConnection, testChannel)
-                    End If
-                Next
-            End If
+    ' ''' <summary>
+    ' ''' Returns a Dictionary of all media and templates on the server key by their names.
+    ' ''' If withMediaInfo is true, all mediaItems will have filled mediaInfo which is default but need more time.
+    ' ''' </summary>
+    ' ''' <returns></returns>
+    ' ''' <remarks></remarks>
+    'Public Function getMediaList() As Dictionary(Of String, AbstractCasparCGMedia)
+    '    Dim media As New Dictionary(Of String, AbstractCasparCGMedia)
+    '    Dim cmd As ICommand
+    '    '' Catch the media list and create the media objects
+    '    If isConnected() Then
+    '        Dim newMedia As AbstractCasparCGMedia = Nothing
+    '        cmd = New ClsCommand()
+    '        If cmd.execute(testConnection).isOK Then
+    '            For Each line As String In cmd.getResponse.getData.Split(vbCrLf)
+    '                line = line.Trim()
+    '                If line <> "" AndAlso line.Split(" ").Length > 2 Then
+    '                    ' removed .toUpper for the name as the server is allways using uppercases and on some special chars like µ this leads to an error.
+    '                    Dim name = line.Substring(1, line.LastIndexOf("""") - 1)
+    '                    line = line.Remove(0, line.LastIndexOf("""") + 1)
+    '                    line = line.Trim().Replace("""", "").Replace("  ", " ")
+    '                    Dim values() = line.Split(" ")
+    '                    Select Case values(0)
+    '                        Case "MOVIE"
+    '                            newMedia = New CasparCGMovie(name)
+    '                            'newMedia.setInfo("duration", getTimeStringOfMS(getOriginalMediaDuration(newMedia)))
+    '                            ' get Thumbnail
+    '                            cmd = New ThumbnailRetrieveCommand(name)
+    '                            If cmd.isCompatible(testConnection) AndAlso cmd.execute(testConnection).isOK Then
+    '                                newMedia.setBase64Thumb(cmd.getResponse.getData)
+    '                            End If
+    '                            media.Add(newMedia.getUuid, newMedia)
+    '                        Case "AUDIO"
+    '                            newMedia = New CasparCGAudio(name)
+    '                            media.Add(newMedia.getUuid, newMedia)
+    '                        Case "STILL"
+    '                            newMedia = New CasparCGStill(name)
+    '                            ' get Thumbnail
+    '                            cmd = New ThumbnailRetrieveCommand(name)
+    '                            If cmd.isCompatible(testConnection) AndAlso cmd.execute(testConnection).isOK Then
+    '                                newMedia.setBase64Thumb(cmd.getResponse.getData)
+    '                            End If
+    '                            media.Add(newMedia.getUuid, newMedia)
+    '                    End Select
+    '                    If Not IsNothing(newMedia) Then newMedia.fillMediaInfo(getTestConnection, testChannel)
+    '                End If
+    '            Next
+    '        End If
 
-            '' Catch the template list and create the template objects
-            cmd = New TlsCommand()
-            If cmd.execute(testConnection).isOK Then
-                For Each line As String In cmd.getResponse.getData.Split(vbCrLf)
-                    line = line.Trim.Replace(vbCr, "").Replace(vbLf, "")
-                    If line <> "" AndAlso line.Split(" ").Length > 2 Then
-                        Dim name = line.Substring(1, line.LastIndexOf("""") - 1).ToUpper
-                        newMedia = New CasparCGTemplate(name)
-                        newMedia.fillMediaInfo(testConnection, testChannel)
-                        media.Add(newMedia.getUuid, newMedia)
-                    End If
-                Next
-            End If
-        End If
-        Return media
-    End Function
+    '        '' Catch the template list and create the template objects
+    '        cmd = New TlsCommand()
+    '        If cmd.execute(testConnection).isOK Then
+    '            For Each line As String In cmd.getResponse.getData.Split(vbCrLf)
+    '                line = line.Trim.Replace(vbCr, "").Replace(vbLf, "")
+    '                If line <> "" AndAlso line.Split(" ").Length > 2 Then
+    '                    Dim name = line.Substring(1, line.LastIndexOf("""") - 1).ToUpper
+    '                    newMedia = New CasparCGTemplate(name)
+    '                    newMedia.fillMediaInfo(testConnection, testChannel)
+    '                    media.Add(newMedia.getUuid, newMedia)
+    '                End If
+    '            Next
+    '        End If
+    '    End If
+    '    Return media
+    'End Function
 
     Public Shared Function getBase64ToImage(ByVal base64string As String) As System.Drawing.Image
         'Converts the base64 encoded msg to image data
