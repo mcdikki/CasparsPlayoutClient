@@ -121,6 +121,7 @@ Public Class PlaylistBlockItem
             If isParallel() Then
                 'Stat all subitems
                 For Each item In getChildItems()
+                    Application.DoEvents()
                     AddHandler item.stopped, AddressOf itemStopped
                     item.start()
                 Next

@@ -3,6 +3,12 @@ ToDo:
 CORE:
 =====
 
+- BUG: Crashes when timeout at update
+
+
+- add a startAllWaiting command for playlist so that all waiting subplaylist start playing.
+
+
 - add Try Catch to all command executions
 
 

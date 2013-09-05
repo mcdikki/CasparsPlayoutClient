@@ -21,7 +21,7 @@
       <Value Profile="(Default)">1</Value>
     </Setting>
     <Setting Name="connectionTimeout" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">300</Value>
+      <Value Profile="(Default)">3000</Value>
     </Setting>
     <Setting Name="reconnectTries" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">0</Value>

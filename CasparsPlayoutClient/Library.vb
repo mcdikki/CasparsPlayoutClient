@@ -30,6 +30,7 @@ Public Class Library
     Private _abortUpdate As Boolean = False
 
     Public Event itemUpdated(ByRef item As AbstractCasparCGMedia)
+    Public Event itemUpdateComplete(ByRef item As AbstractCasparCGMedia)
     Public Event updated(ByRef sender As Object)
     Public Event updatedAborted(ByRef sender As Object)
 
@@ -57,9 +58,15 @@ Public Class Library
             End If
 
             ' update thumbnail
-            If item.getBase64Thumb.Length > 0 Then dest.setBase64Thumb(item.getBase64Thumb)
+            If item.getBase64Thumb.Length > 0 Then
+                dest.setBase64Thumb(item.getBase64Thumb)
+            End If
+            Application.DoEvents()
+            RaiseEvent itemUpdateComplete(dest)
         Else
             addItem(item)
+            Application.DoEvents()
+            RaiseEvent itemUpdateComplete(item)
         End If
     End Sub
 

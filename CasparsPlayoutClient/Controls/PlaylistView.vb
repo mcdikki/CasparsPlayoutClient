@@ -301,6 +301,7 @@ Public Class PlaylistView
         fd.ShowDialog()
 
         For Each f In fd.FileNames
+            Application.DoEvents()
             addPlaylist(f)
         Next
     End Sub

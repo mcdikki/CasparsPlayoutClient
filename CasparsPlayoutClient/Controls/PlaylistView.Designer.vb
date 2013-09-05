@@ -31,6 +31,8 @@ Partial Class PlaylistView
         Me.ckbAuto = New System.Windows.Forms.CheckBox()
         Me.grpLoop = New System.Windows.Forms.GroupBox()
         Me.ckbLoop = New System.Windows.Forms.CheckBox()
+        Me.grpClear = New System.Windows.Forms.GroupBox()
+        Me.ckbClear = New System.Windows.Forms.CheckBox()
         Me.layoutHeaderTable = New System.Windows.Forms.TableLayoutPanel()
         Me.lblExpand = New System.Windows.Forms.Label()
         Me.cmbToggleButton = New System.Windows.Forms.Button()
@@ -45,8 +47,6 @@ Partial Class PlaylistView
         Me.txtPosition = New System.Windows.Forms.TextBox()
         Me.grpRemaining = New System.Windows.Forms.GroupBox()
         Me.txtRemaining = New System.Windows.Forms.TextBox()
-        Me.grpClear = New System.Windows.Forms.GroupBox()
-        Me.ckbClear = New System.Windows.Forms.CheckBox()
         Me.layoutName = New System.Windows.Forms.Panel()
         Me.nudLayer = New System.Windows.Forms.NumericUpDown()
         Me.nudChannel = New System.Windows.Forms.NumericUpDown()
@@ -59,13 +59,13 @@ Partial Class PlaylistView
         Me.grpParallel.SuspendLayout()
         Me.grpAuto.SuspendLayout()
         Me.grpLoop.SuspendLayout()
+        Me.grpClear.SuspendLayout()
         Me.layoutHeaderTable.SuspendLayout()
         Me.layoutInfos.SuspendLayout()
         Me.grbDelay.SuspendLayout()
         Me.grbDuration.SuspendLayout()
         Me.grpPosition.SuspendLayout()
         Me.grpRemaining.SuspendLayout()
-        Me.grpClear.SuspendLayout()
         Me.layoutName.SuspendLayout()
         CType(Me.nudLayer, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.nudChannel, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -91,7 +91,7 @@ Partial Class PlaylistView
         Me.layoutContentSplit.Panel2.Controls.Add(Me.layoutChild)
         Me.layoutContentSplit.Panel2MinSize = 0
         Me.layoutContentSplit.Size = New System.Drawing.Size(370, 81)
-        Me.layoutContentSplit.SplitterDistance = 6
+        Me.layoutContentSplit.SplitterDistance = 25
         Me.layoutContentSplit.SplitterWidth = 1
         Me.layoutContentSplit.TabIndex = 0
         Me.layoutContentSplit.TabStop = False
@@ -106,7 +106,7 @@ Partial Class PlaylistView
         Me.layoutChild.Location = New System.Drawing.Point(0, 0)
         Me.layoutChild.Margin = New System.Windows.Forms.Padding(0)
         Me.layoutChild.Name = "layoutChild"
-        Me.layoutChild.Size = New System.Drawing.Size(363, 4)
+        Me.layoutChild.Size = New System.Drawing.Size(344, 4)
         Me.layoutChild.TabIndex = 6
         Me.layoutChild.WrapContents = False
         '
@@ -210,6 +210,36 @@ Partial Class PlaylistView
         Me.ckbLoop.TabIndex = 8
         Me.ckbLoop.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
         Me.ckbLoop.UseVisualStyleBackColor = True
+        '
+        'grpClear
+        '
+        Me.grpClear.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.grpClear.Controls.Add(Me.ckbClear)
+        Me.grpClear.Font = New System.Drawing.Font("Microsoft Sans Serif", 6.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.grpClear.Location = New System.Drawing.Point(75, 0)
+        Me.grpClear.Margin = New System.Windows.Forms.Padding(0)
+        Me.grpClear.Name = "grpClear"
+        Me.grpClear.Padding = New System.Windows.Forms.Padding(0)
+        Me.grpClear.Size = New System.Drawing.Size(25, 36)
+        Me.grpClear.TabIndex = 9
+        Me.grpClear.TabStop = False
+        Me.grpClear.Text = "C"
+        '
+        'ckbClear
+        '
+        Me.ckbClear.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+            Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.ckbClear.AutoSize = True
+        Me.ckbClear.CheckAlign = System.Drawing.ContentAlignment.BottomCenter
+        Me.ckbClear.Location = New System.Drawing.Point(5, 13)
+        Me.ckbClear.Margin = New System.Windows.Forms.Padding(0)
+        Me.ckbClear.Name = "ckbClear"
+        Me.ckbClear.Size = New System.Drawing.Size(15, 14)
+        Me.ckbClear.TabIndex = 9
+        Me.ckbClear.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+        Me.ckbClear.UseVisualStyleBackColor = True
         '
         'layoutHeaderTable
         '
@@ -423,36 +453,6 @@ Partial Class PlaylistView
         Me.txtRemaining.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
         Me.txtRemaining.WordWrap = False
         '
-        'grpClear
-        '
-        Me.grpClear.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.grpClear.Controls.Add(Me.ckbClear)
-        Me.grpClear.Font = New System.Drawing.Font("Microsoft Sans Serif", 6.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.grpClear.Location = New System.Drawing.Point(75, 0)
-        Me.grpClear.Margin = New System.Windows.Forms.Padding(0)
-        Me.grpClear.Name = "grpClear"
-        Me.grpClear.Padding = New System.Windows.Forms.Padding(0)
-        Me.grpClear.Size = New System.Drawing.Size(25, 36)
-        Me.grpClear.TabIndex = 9
-        Me.grpClear.TabStop = False
-        Me.grpClear.Text = "C"
-        '
-        'ckbClear
-        '
-        Me.ckbClear.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-            Or System.Windows.Forms.AnchorStyles.Left) _
-            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.ckbClear.AutoSize = True
-        Me.ckbClear.CheckAlign = System.Drawing.ContentAlignment.BottomCenter
-        Me.ckbClear.Location = New System.Drawing.Point(5, 13)
-        Me.ckbClear.Margin = New System.Windows.Forms.Padding(0)
-        Me.ckbClear.Name = "ckbClear"
-        Me.ckbClear.Size = New System.Drawing.Size(15, 14)
-        Me.ckbClear.TabIndex = 9
-        Me.ckbClear.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
-        Me.ckbClear.UseVisualStyleBackColor = True
-        '
         'layoutName
         '
         Me.layoutName.AutoSize = True
@@ -555,6 +555,8 @@ Partial Class PlaylistView
         Me.grpAuto.PerformLayout()
         Me.grpLoop.ResumeLayout(False)
         Me.grpLoop.PerformLayout()
+        Me.grpClear.ResumeLayout(False)
+        Me.grpClear.PerformLayout()
         Me.layoutHeaderTable.ResumeLayout(False)
         Me.layoutHeaderTable.PerformLayout()
         Me.layoutInfos.ResumeLayout(False)
@@ -567,8 +569,6 @@ Partial Class PlaylistView
         Me.grpPosition.PerformLayout()
         Me.grpRemaining.ResumeLayout(False)
         Me.grpRemaining.PerformLayout()
-        Me.grpClear.ResumeLayout(False)
-        Me.grpClear.PerformLayout()
         Me.layoutName.ResumeLayout(False)
         Me.layoutName.PerformLayout()
         CType(Me.nudLayer, System.ComponentModel.ISupportInitialize).EndInit()

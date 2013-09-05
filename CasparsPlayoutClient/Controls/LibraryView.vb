@@ -181,20 +181,19 @@ Public Class LibraryView
     End Sub
 
     Private Sub applyFilterToItem(ByRef item As LibraryViewItem)
+        Dim vis As Boolean
         Select Case item.MediaItem.getMediaType
             Case AbstractCasparCGMedia.MediaType.AUDIO
-                item.Visible = ckbAudio.Checked
+                vis = ckbAudio.Checked
             Case AbstractCasparCGMedia.MediaType.MOVIE
-                item.Visible = ckbMovie.Checked
+                vis = ckbMovie.Checked
             Case AbstractCasparCGMedia.MediaType.STILL
-                item.Visible = ckbStill.Checked
+                vis = ckbStill.Checked
             Case AbstractCasparCGMedia.MediaType.TEMPLATE
-                item.Visible = ckbTemplate.Checked
+                vis = ckbTemplate.Checked
         End Select
 
-        If Not (txtFilter.Text.Length > 0 AndAlso item.MediaItem.getFullName.ToUpper Like txtFilter.Text.ToUpper & "*" OrElse item.MediaItem.getName.ToUpper Like txtFilter.Text.ToUpper & "*") Then
-            item.Visible = False
-        End If
+        item.Visible = vis AndAlso (txtFilter.Text.Length = 0 OrElse item.MediaItem.getFullName.ToUpper Like txtFilter.Text.ToUpper & "*" OrElse item.MediaItem.getName.ToUpper Like txtFilter.Text.ToUpper & "*")
     End Sub
 
     Private Sub refreshList() Handles Library.updated
@@ -233,7 +232,7 @@ Public Class LibraryView
         End If
     End Sub
 
-    Private Sub updateMediaItem(ByRef mediaItem As AbstractCasparCGMedia) Handles Library.itemUpdated
+    Private Sub updateMediaItem(ByRef mediaItem As AbstractCasparCGMedia) Handles Library.itemUpdateComplete
         If InvokeRequired Then
             Application.DoEvents()
             If updateBrake.WaitOne() Then

@@ -53,6 +53,7 @@ Public Class MainWindow
 
     Private Sub _onClosing() Handles MyClass.FormClosing
         timer.Stop()
+        mediaLib.abortUpdate()
         If Not IsNothing(sc.getTicker) Then RemoveHandler sc.getTicker.frameTick, AddressOf onTick
         If Not IsNothing(sc) And sc.isConnected Then sc.close()
         logger.close()

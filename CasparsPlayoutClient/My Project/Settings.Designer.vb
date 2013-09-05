@@ -128,7 +128,7 @@ Namespace My
         
         <Global.System.Configuration.UserScopedSettingAttribute(),  _
          Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
-         Global.System.Configuration.DefaultSettingValueAttribute("300")>  _
+         Global.System.Configuration.DefaultSettingValueAttribute("3000")>  _
         Public Property connectionTimeout() As Integer
             Get
                 Return CType(Me("connectionTimeout"),Integer)
