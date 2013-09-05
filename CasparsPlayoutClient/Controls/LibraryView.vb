@@ -29,7 +29,7 @@ Public Class LibraryView
     Private WithEvents brakeTimer As New Timers.Timer(brakeTime)
     Private isBrakeActive As Boolean = False
     Private itemsLock As New Threading.Semaphore(1, 1)
-    Private cancelFilter As Boolean = False
+    Private filterWaitLock As New Threading.Semaphore(2, 2)
     Private filterLock As New Threading.Mutex
 
     Public Sub New()
@@ -163,33 +163,31 @@ Public Class LibraryView
 
 
     Private Sub applyFilter() Handles ckbAudio.CheckedChanged, ckbMovie.CheckedChanged, ckbStill.CheckedChanged, ckbTemplate.CheckedChanged, txtFilter.TextChanged
-        'Threading.Thread.VolatileWrite(cancelFilter, True)
-        If filterLock.WaitOne Then
-            'Threading.Thread.VolatileWrite(cancelFilter, False)
-            layoutTypeFilterFlow.Enabled = False
-            If itemsLock.WaitOne Then
-                Dim targetItems As New List(Of LibraryViewItem)
-                targetItems.AddRange(items.Values)
-                Try
-                    itemsLock.Release()
-                Catch ex As Exception
-                End Try
+        ' Only two filters in the pipeline are sensible:
+        ' One will finish its task with old and new criterias and the other will work with the most recent criterias
+        ' so every new filter would do the same.
+        If filterWaitLock.WaitOne(1) Then
+            If filterLock.WaitOne Then
+                layoutTypeFilterFlow.Enabled = False
+                If itemsLock.WaitOne Then
+                    Dim targetItems As New List(Of LibraryViewItem)
+                    targetItems.AddRange(items.Values)
+                    Try
+                        itemsLock.Release()
+                    Catch ex As Exception
+                    End Try
 
-                layoutItemsFlow.SuspendLayout()
-                For Each item In targetItems
-                    Application.DoEvents()
-                    'Threading.Thread.VolatileRead(cancelFilter)
-                    'If cancelFilter Then
-                    '    logger.log("cancel filter")
-                    '    Exit For
-                    'End If
-                    applyFilterToItem(item)
-                Next
-                layoutItemsFlow.ResumeLayout()
+                    layoutItemsFlow.SuspendLayout()
+                    For Each item In targetItems
+                        Application.DoEvents()
+                        applyFilterToItem(item)
+                    Next
+                    layoutItemsFlow.ResumeLayout()
+                End If
+                layoutTypeFilterFlow.Enabled = True
+                filterLock.ReleaseMutex()
             End If
-            layoutTypeFilterFlow.Enabled = True
-            'Threading.Thread.VolatileWrite(cancelFilter, False)
-            filterLock.ReleaseMutex()
+            filterWaitLock.Release()
         End If
     End Sub
 
