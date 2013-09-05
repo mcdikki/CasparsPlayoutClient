@@ -120,6 +120,8 @@ Fixed - CD 29/07/13
 GUI:
 ==== 
 
+- overwork Library to use a database with only a view controls in Memory
+
  - Overwork scaling issues of sub PLItems
  
  - Overwork CommandBar

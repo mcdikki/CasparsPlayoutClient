@@ -449,6 +449,42 @@ Namespace My
                 Me("disconnectAtTimeout") = value
             End Set
         End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("False")>  _
+        Public Property fillMediaInfoAtRefresh() As Boolean
+            Get
+                Return CType(Me("fillMediaInfoAtRefresh"),Boolean)
+            End Get
+            Set
+                Me("fillMediaInfoAtRefresh") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("False")>  _
+        Public Property fillThumbnailAtRefresh() As Boolean
+            Get
+                Return CType(Me("fillThumbnailAtRefresh"),Boolean)
+            End Get
+            Set
+                Me("fillThumbnailAtRefresh") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("300")>  _
+        Public Property maxLibraryViewItems() As Integer
+            Get
+                Return CType(Me("maxLibraryViewItems"),Integer)
+            End Get
+            Set
+                Me("maxLibraryViewItems") = value
+            End Set
+        End Property
     End Class
 End Namespace
 

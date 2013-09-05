@@ -29,6 +29,8 @@ Public Class LibraryView
     Private WithEvents brakeTimer As New Timers.Timer(brakeTime)
     Private isBrakeActive As Boolean = False
     Private itemsLock As New Threading.Semaphore(1, 1)
+    Private cancelFilter As Boolean = False
+    Private filterLock As New Threading.Mutex
 
     Public Sub New()
         items = New Dictionary(Of String, LibraryViewItem)
@@ -161,23 +163,34 @@ Public Class LibraryView
 
 
     Private Sub applyFilter() Handles ckbAudio.CheckedChanged, ckbMovie.CheckedChanged, ckbStill.CheckedChanged, ckbTemplate.CheckedChanged, txtFilter.TextChanged
-        layoutTypeFilterFlow.Enabled = False
-        If itemsLock.WaitOne Then
-            Dim targetItems As New List(Of LibraryViewItem)
-            targetItems.AddRange(items.Values)
-            Try
-                itemsLock.Release()
-            Catch ex As Exception
-            End Try
+        'Threading.Thread.VolatileWrite(cancelFilter, True)
+        If filterLock.WaitOne Then
+            'Threading.Thread.VolatileWrite(cancelFilter, False)
+            layoutTypeFilterFlow.Enabled = False
+            If itemsLock.WaitOne Then
+                Dim targetItems As New List(Of LibraryViewItem)
+                targetItems.AddRange(items.Values)
+                Try
+                    itemsLock.Release()
+                Catch ex As Exception
+                End Try
 
-            layoutItemsFlow.SuspendLayout()
-            For Each item In targetItems
-                Application.DoEvents()
-                applyFilterToItem(item)
-            Next
-            layoutItemsFlow.ResumeLayout()
+                layoutItemsFlow.SuspendLayout()
+                For Each item In targetItems
+                    Application.DoEvents()
+                    'Threading.Thread.VolatileRead(cancelFilter)
+                    'If cancelFilter Then
+                    '    logger.log("cancel filter")
+                    '    Exit For
+                    'End If
+                    applyFilterToItem(item)
+                Next
+                layoutItemsFlow.ResumeLayout()
+            End If
+            layoutTypeFilterFlow.Enabled = True
+            'Threading.Thread.VolatileWrite(cancelFilter, False)
+            filterLock.ReleaseMutex()
         End If
-        layoutTypeFilterFlow.Enabled = True
     End Sub
 
     Private Sub applyFilterToItem(ByRef item As LibraryViewItem)
@@ -223,7 +236,7 @@ Public Class LibraryView
                 End Try
             End If
             Application.DoEvents()
-            If layoutItemsFlow.Controls.Count < 300 Then
+            If layoutItemsFlow.Controls.Count < My.Settings.maxLibraryViewItems Then
                 layoutItemsFlow.Controls.Add(libItem)
                 libItem.Width = libItem.Parent.ClientRectangle.Width - libItem.Parent.Margin.Horizontal
             Else
@@ -282,7 +295,7 @@ Public Class LibraryView
         If Not IsNothing(Library) Then
             cmbRefresh.Visible = False
             pbProgress.Visible = True
-            Library.refreshLibrary()
+            Library.refreshLibrary(My.Settings.fillMediaInfoAtRefresh, My.Settings.fillThumbnailAtRefresh)
             'startBrake()
         End If
     End Sub

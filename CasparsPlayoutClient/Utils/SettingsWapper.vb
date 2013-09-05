@@ -148,6 +148,26 @@ Public Class SettingsWapper
         End Set
     End Property
 
+    <DescriptionAttribute("Sets whether or not media metadata like duration will be loaded with the library refresh. This will add serverload and processing time for the refresh."), CategoryAttribute("Appeariance")>
+    Public Property loadMediaInfoOnRefresh As Boolean
+        Get
+            Return My.Settings.fillMediaInfoAtRefresh
+        End Get
+        Set(value As Boolean)
+            My.Settings.fillMediaInfoAtRefresh = value
+        End Set
+    End Property
+
+    <DescriptionAttribute("Sets whether or not the thumbnail image will be loaded with the library refresh. This will add serverload and processing time for the refresh."), CategoryAttribute("Appeariance")>
+    Public Property loadThumbnailOnRefresh As Boolean
+        Get
+            Return My.Settings.fillThumbnailAtRefresh
+        End Get
+        Set(value As Boolean)
+            My.Settings.fillThumbnailAtRefresh = value
+        End Set
+    End Property
+
 
     ''-------------------
     '' Logging
@@ -248,6 +268,16 @@ Public Class SettingsWapper
         End Get
         Set(value As Boolean)
             My.Settings.strictVersionControl = value
+        End Set
+    End Property
+
+    <DescriptionAttribute("Sets the maximum number of libraryViewItems shown. Only change this if you realy know what you're doing."), CategoryAttribute("Core")>
+    Public Property maxLibraryViewItems As Integer
+        Get
+            Return My.Settings.maxLibraryViewItems
+        End Get
+        Set(value As Integer)
+            My.Settings.maxLibraryViewItems = value
         End Set
     End Property
 

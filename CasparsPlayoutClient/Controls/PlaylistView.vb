@@ -629,6 +629,8 @@ Public Class PlaylistView
             '' Neue MediaItems einfügen
             ''
             Dim media As AbstractCasparCGMedia = e.Data.GetData("CasparCGNETConnector.CasparCGMovie")
+            If media.getInfos.Count = 0 Then media.fillMediaInfo(playlist.getController.getTestConnection)
+            If media.getBase64Thumb.Length = 0 Then media.fillThumbnail(playlist.getController.getTestConnection)
             Dim child As IPlaylistItem
             child = New PlaylistMovieItem(media.getFullName, playlist.getController, media.clone)
             playlist.addItem(child)
@@ -638,6 +640,9 @@ Public Class PlaylistView
             '' Neue MediaItems einfügen
             ''
             Dim media As AbstractCasparCGMedia = e.Data.GetData("CasparCGNETConnector.CasparCGTemplate")
+            If media.getInfos.Count = 0 Then
+                media.fillMediaInfo(playlist.getController.getTestConnection)
+            End If
             Dim child As IPlaylistItem
             child = New PlaylistTemplateItem(media.getFullName, playlist.getController, media.clone)
             'child = New PlaylistBlockItem("not implemented yet", playlist.getController)
@@ -647,6 +652,9 @@ Public Class PlaylistView
             '' Neue MediaItems einfügen
             ''
             Dim media As AbstractCasparCGMedia = e.Data.GetData("CasparCGNETConnector.CasparCGStill")
+            If media.getInfos.Count = 0 Then media.fillMediaInfo(playlist.getController.getTestConnection)
+            If media.getBase64Thumb.Length = 0 Then media.fillThumbnail(playlist.getController.getTestConnection)
+
             Dim child As IPlaylistItem
             child = New PlaylistStillItem(media.getFullName, playlist.getController, media.clone)
             playlist.addItem(child)
@@ -656,6 +664,9 @@ Public Class PlaylistView
             '' Neue MediaItems einfügen
             ''
             Dim media As AbstractCasparCGMedia = e.Data.GetData("CasparCGNETConnector.CasparCGAudio")
+            If media.getInfos.Count = 0 Then
+                media.fillMediaInfo(playlist.getController.getTestConnection)
+            End If
             Dim child As IPlaylistItem
             child = New PlaylistAudioItem(media.getFullName, playlist.getController, media.clone)
             'child = New PlaylistBlockItem("not implemented yet", playlist.getController)

@@ -47,6 +47,8 @@ Public Class Library
 
     Public Sub addItem(ByRef item As AbstractCasparCGMedia)
         If Not media.ContainsKey(item.getUuid) Then media.Add(item.getUuid, item)
+        AddHandler item.mediaFilled, AddressOf updateItem
+        AddHandler item.thumbnailFilled, AddressOf updateItem
     End Sub
 
     Public Sub updateItem(ByRef item As AbstractCasparCGMedia) Handles Me.itemUpdated
@@ -95,9 +97,9 @@ Public Class Library
     ''' Rereads the Server List of Mediafiles and refreshs the Library.
     ''' </summary>
     ''' <remarks></remarks>
-    Public Sub refreshLibrary()
+    Public Sub refreshLibrary(Optional ByVal loadInfo As Boolean = False, Optional ByVal loadThumbnail As Boolean = False)
         If controller.isConnected Then
-            updateThread = New Threading.Thread(AddressOf update)
+            updateThread = New Threading.Thread(Sub() update(loadInfo, loadThumbnail))
             updateThread.Start()
         Else
             RaiseEvent updatedAborted(Me)
@@ -110,8 +112,6 @@ Public Class Library
 
     Public Sub abortUpdate()
         If isUpdating() Then
-            'updateThread.Abort()
-            'RaiseEvent updatedAborted(Me)
             _abortUpdate = True
         End If
     End Sub
@@ -123,7 +123,7 @@ Public Class Library
         End If
     End Sub
 
-    Private Sub update()
+    Private Sub update(ByVal loadInfo As Boolean, ByVal loadThumbnail As Boolean)
 
         ' Get a list of known media
         Dim mediaItems As New List(Of AbstractCasparCGMedia)
@@ -144,7 +144,6 @@ Public Class Library
                 If line <> "" AndAlso line.Split(" ").Length > 2 Then
                     Dim name = line.Substring(1, line.LastIndexOf("""") - 1).ToUpper
                     newMedia = New CasparCGTemplate(name)
-                    'newMedia.fillMediaInfo(controller.getTestConnection, controller.getTestChannel)
                     mediaItems.Add(newMedia)
                     RaiseEvent itemUpdated(newMedia)
                 End If
@@ -190,32 +189,35 @@ Public Class Library
             End If
         End If
 
+        If loadInfo Then
+            ' retrieve info for each media and update this media
+            For Each item In mediaItems
+                Application.DoEvents()
+                If _abortUpdate Then
+                    RaiseEvent updatedAborted(Me)
+                    Exit Sub
+                End If
 
-        ' retrieve info for each media and update this media
-        For Each item In mediaItems
-            Application.DoEvents()
-            If _abortUpdate Then
-                RaiseEvent updatedAborted(Me)
-                Exit Sub
-            End If
-
-            item.fillMediaInfo(controller.getTestConnection)
-            RaiseEvent itemUpdated(item)
-        Next
-
-        ' retrive thumbnails for each media
-        For Each item In mediaItems
-            Application.DoEvents()
-            If _abortUpdate Then
-                RaiseEvent updatedAborted(Me)
-                Exit Sub
-            End If
-
-            If item.getMediaType = AbstractCasparCGMedia.MediaType.MOVIE OrElse item.getMediaType = AbstractCasparCGMedia.MediaType.STILL Then
-                item.fillThumbnail(controller.getTestConnection)
+                item.fillMediaInfo(controller.getTestConnection)
                 RaiseEvent itemUpdated(item)
-            End If
-        Next
+            Next
+        End If
+
+        If loadThumbnail Then
+            ' retrive thumbnails for each media
+            For Each item In mediaItems
+                Application.DoEvents()
+                If _abortUpdate Then
+                    RaiseEvent updatedAborted(Me)
+                    Exit Sub
+                End If
+
+                If item.getMediaType = AbstractCasparCGMedia.MediaType.MOVIE OrElse item.getMediaType = AbstractCasparCGMedia.MediaType.STILL Then
+                    item.fillThumbnail(controller.getTestConnection)
+                    RaiseEvent itemUpdated(item)
+                End If
+            Next
+        End If
         RaiseEvent updated(Me)
     End Sub
 End Class
