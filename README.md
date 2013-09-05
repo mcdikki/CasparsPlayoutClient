@@ -45,8 +45,10 @@ In order to run Caspar's Playout Client you need
 In addition to the requirements, I recommend
 * that media filenames doesn't contain spaces
 * that media filenames only contain ANSI chars
+* to keep the number of files in your casparCG media folders as low as possible. The client accepts not more than 300 items.
 * to use a wired network (no WLAN) to connect casparCG with Caspar's Playout Client
 * a screen resolution of at least 1280x720 - the more, the better ;-)
+* to run the server and the client on different computers
   
 
 Features
