@@ -87,6 +87,9 @@ Public Class MainWindow
             Size = My.Settings.last_WindowSize
             Location = My.Settings.last_WindowLocation
         End If
+        'layoutPlaylistSplit.SplitterDistance = Math.Max(My.Settings.last_PlaylistWidth, layoutPlaylistSplit.Panel1MinSize)
+        'layoutUpDownSplit.SplitterDistance = Math.Max(My.Settings.last_CGHeight, layoutUpDownSplit.Panel1MinSize)
+        'layoutCgLib.SplitterDistance = Math.Max(My.Settings.last_LibraryWidth, layoutCgLib.Panel1MinSize)
         layoutPlaylistSplit.SplitterDistance = My.Settings.last_PlaylistWidth
         layoutUpDownSplit.SplitterDistance = My.Settings.last_CGHeight
         layoutCgLib.SplitterDistance = My.Settings.last_LibraryWidth

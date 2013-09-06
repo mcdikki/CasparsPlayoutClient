@@ -29,12 +29,20 @@ Public Class PlaylistView
     Private warn As Integer = My.Settings.warnTime
     Private lastWidth As Integer = 0
     Private lastHeight As Integer = 0
+    Private menuItemLockMatrix As New Dictionary(Of ToolStripMenuItem, lockType)
 
     Private updateItems As New Threading.Semaphore(1, 1)
 
     Private Event changedPlaying()
     Public Event dataChanged()
     Public Event changedHeight(ByVal heightDif As Integer)
+
+    Private Enum lockType
+        lockOnAll = 3
+        LockOnParallel = 1
+        LockOnSequential = 2
+        LockNever = 0
+    End Enum
 
     Public Sub New(ByRef playlist As IPlaylistItem, Optional ByVal startCompact As Boolean = False)
         Me.playlist = playlist
@@ -149,20 +157,35 @@ Public Class PlaylistView
     Private Sub initMenu()
         '' Add ContexMenu
         cMenu = New ContextMenuStrip
+        Dim item As ToolStripMenuItem
 
-        cMenu.Items.Add(New ToolStripMenuItem("Save Playlist", Nothing, Sub() savePlaylist()))
-        cMenu.Items.Add(New ToolStripMenuItem("Load Playlist", Nothing, Sub() loadPlaylist()))
+        item = New ToolStripMenuItem("Save Playlist", Nothing, Sub() savePlaylist())
+        menuItemLockMatrix.Add(item, lockType.LockNever)
+        cMenu.Items.Add(item)
+        item = New ToolStripMenuItem("Load Playlist", Nothing, Sub() loadPlaylist())
+        menuItemLockMatrix.Add(item, lockType.lockOnAll)
+        cMenu.Items.Add(item)
         cMenu.Items.Add(New ToolStripSeparator)
-        cMenu.Items.Add(New ToolStripMenuItem("Add Playlist(s) from file", Nothing, Sub() addPlaylist()))
-        cMenu.Items.Add(New ToolStripMenuItem("Add Block", Nothing, New EventHandler(AddressOf addBlockItem)))
+        item = New ToolStripMenuItem("Add Playlist(s) from file", Nothing, Sub() addPlaylist())
+        menuItemLockMatrix.Add(item, lockType.LockOnParallel)
+        cMenu.Items.Add(item)
+        item = New ToolStripMenuItem("Add Block", Nothing, New EventHandler(AddressOf addBlockItem))
+        menuItemLockMatrix.Add(item, lockType.LockOnParallel)
+        cMenu.Items.Add(item)
         Dim sMenu = New ToolStripMenuItem("Add Command")
         sMenu.Name = "Add Command Menu"
         sMenu.Text = "Add Command"
-        sMenu.DropDownItems.Add(New ToolStripMenuItem("Add ClearCommand", Nothing, New EventHandler(Sub() addCommandItem(CasparCGCommandFactory.Command.ClearCommand))))
-        sMenu.DropDownItems.Add(New ToolStripMenuItem("Add StopCommand", Nothing, New EventHandler(Sub() addCommandItem(CasparCGCommandFactory.Command.StopCommand))))
+        item = New ToolStripMenuItem("Add ClearCommand", Nothing, New EventHandler(Sub() addCommandItem(CasparCGCommandFactory.Command.ClearCommand)))
+        menuItemLockMatrix.Add(item, lockType.LockOnParallel)
+        sMenu.DropDownItems.Add(item)
+        item = New ToolStripMenuItem("Add StopCommand", Nothing, New EventHandler(Sub() addCommandItem(CasparCGCommandFactory.Command.StopCommand)))
+        menuItemLockMatrix.Add(item, lockType.LockOnParallel)
+        sMenu.DropDownItems.Add(item)
         cMenu.Items.Add(sMenu)
         cMenu.Items.Add(New ToolStripSeparator)
-        cMenu.Items.Add(New ToolStripMenuItem("Remove item", Nothing, New EventHandler(AddressOf removeItem)))
+        item = New ToolStripMenuItem("Remove item", Nothing, New EventHandler(AddressOf removeItem))
+        menuItemLockMatrix.Add(item, lockType.lockOnAll)
+        cMenu.Items.Add(item)
         Me.ContextMenuStrip = cMenu
 
 
@@ -468,7 +491,18 @@ Public Class PlaylistView
             nudChannel.Enabled = False
             nudLayer.Enabled = False
             txtName.ReadOnly = True
-            If Not IsNothing(Me.ContextMenuStrip) Then Me.ContextMenuStrip.Enabled = False
+            For Each item In menuItemLockMatrix.Keys
+                Select Case menuItemLockMatrix.Item(item)
+                    Case lockType.LockNever
+                        item.Enabled = True
+                    Case lockType.lockOnAll
+                        item.Enabled = False
+                    Case lockType.LockOnParallel
+                        item.Enabled = Not (playlist.isParallel)
+                    Case lockType.LockOnSequential
+                        item.Enabled = playlist.isParallel
+                End Select
+            Next
         ElseIf playlist.isWaiting Then
             txtName.BackColor = Color.LightBlue
             layoutContentSplit.Panel1.BackColor = Color.LightBlue
@@ -477,7 +511,18 @@ Public Class PlaylistView
             nudChannel.Enabled = False
             nudLayer.Enabled = False
             txtName.ReadOnly = True
-            If Not IsNothing(Me.ContextMenuStrip) Then Me.ContextMenuStrip.Enabled = False
+            For Each item In menuItemLockMatrix.Keys
+                Select Case menuItemLockMatrix.Item(item)
+                    Case lockType.LockNever
+                        item.Enabled = True
+                    Case lockType.lockOnAll
+                        item.Enabled = False
+                    Case lockType.LockOnParallel
+                        item.Enabled = True
+                    Case lockType.LockOnSequential
+                        item.Enabled = True
+                End Select
+            Next
         Else
             txtName.BackColor = Color.LightGreen
             layoutContentSplit.Panel1.BackColor = Color.LightGreen
@@ -486,7 +531,9 @@ Public Class PlaylistView
             nudChannel.Enabled = True
             nudLayer.Enabled = True
             txtName.ReadOnly = False
-            If Not IsNothing(Me.ContextMenuStrip) Then Me.ContextMenuStrip.Enabled = True
+            For Each item In menuItemLockMatrix.Keys
+                item.Enabled = True
+            Next
         End If
     End Sub
 

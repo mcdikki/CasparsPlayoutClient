@@ -3,9 +3,6 @@ ToDo:
 CORE:
 =====
 
-- BUG: Crashes when timeout at update
-
-
 - add a startAllWaiting command for playlist so that all waiting subplaylist start playing.
 
 
@@ -32,6 +29,9 @@ CORE:
 --- Template
 --- Color
 --- audio
+--- ImageScroller
+--- LiveFeed
+--- Mixer
 ---> Movie - CD 03/13
 ---> Command - CD 12/08/13
 ---> Still - CD 15/08/13
@@ -93,6 +93,9 @@ Done - CD 02/08/13
 Done - CD 27/07/13
 - Handle problem duration in mediaLib != real duration when playing
 
+Fixed - CD 05/09/13
+- BUG: Crashes when timeout at update
+
 Fixed - CD 21/08/13
 - BUG: Duration of videos are not saved or loaded correct
 
@@ -127,9 +130,7 @@ GUI:
  - Overwork CommandBar
  
  - Implement Info and CG Controll
- 
- - Add Menu
- 
+
  - Add minimalistic kind of TreeView for PlaylistView
 
  - Improve ExpandButton of MediaLibrary (to hard to get clicked)
@@ -141,6 +142,9 @@ GUI:
  --- Template
  --- Command
  
+  
+Done - CD 31/08/13
+ - Add Menu
  
 Done - CD 23/08/13
  - Add Settings
