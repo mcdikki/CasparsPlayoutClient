@@ -307,7 +307,7 @@ Public Class MainWindow
             Next
             AddHandler sc.getTicker.frameTick, AddressOf onTick
             sc.startTicker()
-            libraryView.cmbRefresh.PerformClick()
+            'libraryView.cmbRefresh.PerformClick()
             cmbConnect.Text = "Disconnect"
             cmbConnect.Enabled = True
         End If

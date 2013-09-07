@@ -64,6 +64,10 @@ Public Class ServerController
         logger.debug("ServerController.close: Close servercontroller...")
         opened = False
 
+        RemoveHandler testConnection.disconnected, AddressOf Me.handleDisconnect
+        RemoveHandler updateConnection.disconnected, AddressOf Me.handleDisconnect
+        RemoveHandler cmdConnection.disconnected, AddressOf Me.handleDisconnect
+
         If Not IsNothing(updater) Then updater.stopUpdate()
         If Not IsNothing(ticker) Then
             ticker.stopTicker()
@@ -77,8 +81,15 @@ Public Class ServerController
         RaiseEvent disconnected()
     End Sub
 
-    Private Sub handleDisconnect(ByRef sender As Object) Handles testConnection.disconnected, updateConnection.disconnected, cmdConnection.disconnected
-        Me.close()
+    Private Sub handleDisconnect(ByRef sender As Object)
+        If isOpen() Then
+            Me.close()
+            If My.Settings.autoReconnect Then
+                While Not open()
+                    Thread.Sleep(300)
+                End While
+            End If
+        End If
     End Sub
 
     Public Function isOpen() As Boolean
@@ -115,6 +126,9 @@ Public Class ServerController
         testConnection.reconnectTries = My.Settings.reconnectTries
         testConnection.strictVersionControl = My.Settings.strictVersionControl
 
+        AddHandler testConnection.disconnected, AddressOf Me.handleDisconnect
+        AddHandler updateConnection.disconnected, AddressOf Me.handleDisconnect
+        AddHandler cmdConnection.disconnected, AddressOf Me.handleDisconnect
 
         If testConnection.connect() AndAlso updateConnection.connect() AndAlso cmdConnection.connect() Then
             opened = True
