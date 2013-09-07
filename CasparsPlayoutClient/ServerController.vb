@@ -36,6 +36,7 @@ Public Class ServerController
     Private WithEvents ticker As FrameTicker
     Private updater As AbstractMediaUpdater
     Private playlist As IPlaylistItem ' Die Root Playlist unter die alle anderen kommen
+    Private openLock As New Mutex
 
     Public Event disconnected()
     Public Event connected()
@@ -68,7 +69,10 @@ Public Class ServerController
         RemoveHandler updateConnection.disconnected, AddressOf Me.handleDisconnect
         RemoveHandler cmdConnection.disconnected, AddressOf Me.handleDisconnect
 
-        If Not IsNothing(updater) Then updater.stopUpdate()
+        If Not IsNothing(updater) Then
+            updater.stopUpdate()
+            updater = Nothing
+        End If
         If Not IsNothing(ticker) Then
             ticker.stopTicker()
         End If
@@ -84,10 +88,11 @@ Public Class ServerController
     Private Sub handleDisconnect(ByRef sender As Object)
         If isOpen() Then
             Me.close()
-            If My.Settings.autoReconnect Then
+            If My.Settings.autoReconnect AndAlso openLock.WaitOne(5) Then
                 While Not open()
-                    Thread.Sleep(300)
+                    Thread.Sleep(My.Settings.checkConnectionInterval)
                 End While
+                openLock.ReleaseMutex()
             End If
         End If
     End Sub
@@ -114,16 +119,19 @@ Public Class ServerController
         cmdConnection.disconnectOnTimeout = My.Settings.disconnectAtTimeout
         cmdConnection.reconnectTimeout = My.Settings.reconnectTimout
         cmdConnection.reconnectTries = My.Settings.reconnectTries
+        cmdConnection.checkInterval = My.Settings.checkConnectionInterval
         cmdConnection.strictVersionControl = My.Settings.strictVersionControl
         updateConnection.timeout = My.Settings.connectionTimeout
         updateConnection.disconnectOnTimeout = My.Settings.disconnectAtTimeout
         updateConnection.reconnectTimeout = My.Settings.reconnectTimout
         updateConnection.reconnectTries = My.Settings.reconnectTries
+        updateConnection.checkInterval = My.Settings.checkConnectionInterval
         updateConnection.strictVersionControl = My.Settings.strictVersionControl
         testConnection.timeout = My.Settings.connectionTimeout
         testConnection.disconnectOnTimeout = My.Settings.disconnectAtTimeout
         testConnection.reconnectTimeout = My.Settings.reconnectTimout
         testConnection.reconnectTries = My.Settings.reconnectTries
+        testConnection.checkInterval = My.Settings.checkConnectionInterval
         testConnection.strictVersionControl = My.Settings.strictVersionControl
 
         AddHandler testConnection.disconnected, AddressOf Me.handleDisconnect
@@ -138,7 +146,7 @@ Public Class ServerController
             If channels > 1 Then
                 channels = channels - 1
             End If
-            '' Test: removed -1 because the number should be the length, not the upper bound of the array
+
             ReDim channelFPS(channels)
             For c As Integer = 0 To channels - 1
                 channelFPS(c) = getChannelFPS(c + 1)

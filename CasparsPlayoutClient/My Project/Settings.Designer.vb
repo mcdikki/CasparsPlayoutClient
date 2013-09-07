@@ -497,6 +497,18 @@ Namespace My
                 Me("autoReconnect") = value
             End Set
         End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("500")>  _
+        Public Property checkConnectionInterval() As Integer
+            Get
+                Return CType(Me("checkConnectionInterval"),Integer)
+            End Get
+            Set
+                Me("checkConnectionInterval") = value
+            End Set
+        End Property
     End Class
 End Namespace
 

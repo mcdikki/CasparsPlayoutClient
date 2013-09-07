@@ -94,7 +94,7 @@ Public Class OscMediaUpdater
 
     Public Overrides Sub stopUpdate()
         logger.debug("OscMediaUpdater: Stopped OSC Server")
-        oscServer.Stop()
+        oscServer.Stop() 
     End Sub
 
     Public Sub update(ByVal sender As Object, ByVal e As OscMessageReceivedEventArgs) Handles oscServer.MessageReceived

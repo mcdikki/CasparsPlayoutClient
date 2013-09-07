@@ -74,6 +74,16 @@ Public Class SettingsWapper
         End Set
     End Property
 
+    <DescriptionAttribute("The interval in milliseconds in which the connection will be checked."), CategoryAttribute("Network")>
+    Public Property checkConnectionInterval As Integer
+        Get
+            Return My.Settings.checkConnectionInterval
+        End Get
+        Set(value As Integer)
+            My.Settings.checkConnectionInterval = value
+        End Set
+    End Property
+
 
     ''-------------------
     '' Appeariance
