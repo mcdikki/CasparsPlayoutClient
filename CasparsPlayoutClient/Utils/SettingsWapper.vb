@@ -84,6 +84,16 @@ Public Class SettingsWapper
         End Set
     End Property
 
+    <DescriptionAttribute("Sets whether or not it should be tried to reestablish an unexpectedly dropped connection."), CategoryAttribute("Network")>
+    Public Property autoReconnect As Boolean
+        Get
+            Return My.Settings.autoReconnect
+        End Get
+        Set(value As Boolean)
+            My.Settings.autoReconnect = value
+        End Set
+    End Property
+
 
     ''-------------------
     '' Appeariance
@@ -261,7 +271,7 @@ Public Class SettingsWapper
     ''----------------------
     '' Core
     ''----------------------
-    <DescriptionAttribute("Sets the number of frames between status updates. Default is every frame (1)"), CategoryAttribute("Core")>
+    <DescriptionAttribute("Sets the number of frames between status updates. Default is every frame (1)"), CategoryAttribute("Core (DANGEROUS)")>
     Public Property FramePerTick As Integer
         Get
             Return My.Settings.frameTickInterval
@@ -271,7 +281,7 @@ Public Class SettingsWapper
         End Set
     End Property
 
-    <DescriptionAttribute("Sets whether or not strict version control is enabled. Only commands and parameter supported by the connected server will be applied. Unsupported commands will interrupt the program."), CategoryAttribute("Core")>
+    <DescriptionAttribute("Sets whether or not strict version control is enabled. Only commands and parameter supported by the connected server will be applied. Unsupported commands will interrupt the program."), CategoryAttribute("Core (DANGEROUS)")>
     Public Property StrictVersionControl As Boolean
         Get
             Return My.Settings.strictVersionControl
@@ -281,7 +291,7 @@ Public Class SettingsWapper
         End Set
     End Property
 
-    <DescriptionAttribute("Sets the maximum number of libraryViewItems shown. Only change this if you realy know what you're doing."), CategoryAttribute("Core")>
+    <DescriptionAttribute("Sets the maximum number of libraryViewItems shown. Only change this if you realy know what you're doing."), CategoryAttribute("Core (DANGEROUS)")>
     Public Property maxLibraryViewItems As Integer
         Get
             Return My.Settings.maxLibraryViewItems
