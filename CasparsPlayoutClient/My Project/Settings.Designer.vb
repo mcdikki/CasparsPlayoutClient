@@ -509,6 +509,18 @@ Namespace My
                 Me("checkConnectionInterval") = value
             End Set
         End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(), _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(), _
+         Global.System.Configuration.DefaultSettingValueAttribute("False")> _
+        Public Property defaultPlaylistCollapsed() As Boolean
+            Get
+                Return CType(Me("defaultPlaylistCollapsed"), Boolean)
+            End Get
+            Set(value As Boolean)
+                Me("defaultPlaylistCollapsed") = value
+            End Set
+        End Property
     End Class
 End Namespace
 

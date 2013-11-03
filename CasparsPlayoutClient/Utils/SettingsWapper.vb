@@ -188,6 +188,16 @@ Public Class SettingsWapper
         End Set
     End Property
 
+    <DescriptionAttribute("Sets whether or not the will be loaded collapsed. This means only the rootplaylist will be visible. Default is FALSE."), CategoryAttribute("Appeariance")>
+    Public Property defaultPlaylistCollapsed As Boolean
+        Get
+            Return My.Settings.defaultPlaylistCollapsed
+        End Get
+        Set(value As Boolean)
+            My.Settings.defaultPlaylistCollapsed = value
+        End Set
+    End Property
+
 
     ''-------------------
     '' Logging

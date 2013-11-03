@@ -22,7 +22,7 @@ Public Class PlaylistView
     Private isInit As Boolean = False
     Private playlist As IPlaylistItem
     Private childs As List(Of PlaylistView)
-    Private startCompact As Boolean
+    Private startCompact As Boolean = True
     Private Delegate Sub updateDelegate()
     Private cMenu As ContextMenuStrip
     Private nowarn As Integer = My.Settings.noWarnTime
@@ -56,7 +56,7 @@ Public Class PlaylistView
         imgList.Images.Add(Image.FromFile("img/Play-Green-Button-icon.png"))
         imgList.Images.Add(Image.FromFile("img/Stop-Red-Button-icon.png"))
         imgList.Images.Add(Image.FromFile("img/Play-Blue-Button-icon.png"))
-        cmbToggleButton.ImageList = imgList  
+        cmbToggleButton.ImageList = imgList
 
         imgList = New ImageList
         imgList.ImageSize = New Size(13, 12)

@@ -97,9 +97,19 @@ Public Class OscMediaUpdater
         oscServer.Stop() 
     End Sub
 
-    Public Sub update(ByVal sender As Object, ByVal e As OscMessageReceivedEventArgs) Handles oscServer.MessageReceived
+    Public Sub updateByBundle(ByVal sender As Object, ByVal e As OscBundleReceivedEventArgs) Handles oscServer.BundleReceived
+        logger.debug("OscMediaUpdater: Bundle received")
+        For Each m In e.Bundle.Messages
+            proceedMessage(m)
+        Next
+    End Sub
 
-        Dim msg As OscMessage = e.Message
+    Public Sub update(ByVal sender As Object, ByVal e As OscMessageReceivedEventArgs) Handles oscServer.MessageReceived
+        logger.debug("OscMediaUpdater: Message received")
+        proceedMessage(e.Message)
+    End Sub
+
+    Private Sub proceedMessage(ByRef msg As OscMessage)
         ' Erst mal filtern
         Dim addressParts() As String = msg.Address.Split("/")
 
