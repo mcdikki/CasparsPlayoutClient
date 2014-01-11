@@ -16,6 +16,7 @@ Table of contents
 * [Features](#features)
 * [Screenshots](#screenshots)
 * [Quick Start](#quick-start)
+* [FAQ](#faq)
 * [Development](#development)
 
 
@@ -33,7 +34,8 @@ In order to run Caspar's Playout Client you need
 ######REQUIREMENTS
 * Windows XP or higher
 * NET Framework 4 or higher
-* CasparCG 2.* or higher  
+* CasparCG 2.* or higher 
+* An extra channel without any consumers configured at your [CasparCG Server] [1] as the highest channel. This is not needed in 1 channel configurations.
    
 
 ######RECOMMENDATIONS
@@ -165,6 +167,19 @@ The main window is splitted into 4 areas:
 	* EVER:
 		pressing the play / stop button while holding **CTRL** will abort the playlist no matter in what state it is
 
+
+FAQ
+---
+
+`I have more than one channel, but the client doesn't show all of them?`  
+
+The client needs an extra channel to probe the media and retrieve it's information. If you have more than one channel, it supposes the last channel as the probing channel.
+Just add an extra channel at the end. You don't need to specifiy any consumers here.  
+
+`I have some media in a parallel block, but only one of them is playing and beeing updated in the client?`  
+
+Make sure to use different channels/layers if you're working with parallel playlists. Also make sure that no other client stops media that you have started with Caspar's Playout Client.
+Don't use the clear command to stop media, always use the Start/Stop button of the client.
 
 Development
 -----------
