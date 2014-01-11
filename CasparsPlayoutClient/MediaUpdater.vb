@@ -213,7 +213,7 @@ Public Class InfoMediaUpdater
             For c = 0 To channels - 1
                 ' Check if we have items on this channel and if so, request infos from the server
                 If activeItems(c).Count > 0 Then
-                    DirectCast(info.getParameter("channel"), CommandParameter(Of Integer)).setValue(c + 1)
+                    DirectCast(info.getCommandParameter("channel"), CommandParameter(Of Integer)).setValue(c + 1)
                     If infoDoc.loadXML(info.execute(updateConnection).getXMLData) Then
 
                         '' iterate over all layers

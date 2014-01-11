@@ -24,10 +24,10 @@ Public Class PlaylistCommandItem
     Private timer As System.Timers.Timer
     Private stopWatch As New Stopwatch()
 
-    Private command As ICommand
+    Private command As AbstractCommand
 
 
-    Public Sub New(ByVal name As String, ByRef controller As ServerController, ByVal command As ICommand, Optional ByVal channel As Integer = -1, Optional ByVal layer As Integer = -1)
+    Public Sub New(ByVal name As String, ByRef controller As ServerController, ByVal command As AbstractCommand, Optional ByVal channel As Integer = -1, Optional ByVal layer As Integer = -1)
         MyBase.New(name, PlaylistItemTypes.COMMAND, controller, channel, layer)
         Me.command = command
         setChannel(channel)
@@ -37,7 +37,7 @@ Public Class PlaylistCommandItem
         AddHandler timer.Elapsed, Sub() playNextItem()
     End Sub
 
-    Public Function getCommand() As ICommand
+    Public Function getCommand() As AbstractCommand
         Return command
     End Function
 
@@ -101,8 +101,8 @@ Public Class PlaylistCommandItem
         MyBase.setChannel(channel)
         If Not IsNothing(getCommand) Then
             Dim p As CommandParameter(Of Integer)
-            If getCommand.getParameterNames.Contains("channel") AndAlso getChannel() > 0 Then
-                p = DirectCast(getCommand.getParameter("channel"), CommandParameter(Of Integer))
+            If getCommand.getCommandParameterNames.Contains("channel") AndAlso getChannel() > 0 Then
+                p = DirectCast(getCommand.getCommandParameter("channel"), CommandParameter(Of Integer))
                 p.setValue(getChannel)
             End If
         End If
@@ -112,8 +112,8 @@ Public Class PlaylistCommandItem
         MyBase.setLayer(layer)
         If Not IsNothing(getCommand) Then
             Dim p As CommandParameter(Of Integer)
-            If getCommand.getParameterNames.Contains("layer") AndAlso getLayer() > -1 Then
-                p = DirectCast(getCommand.getParameter("layer"), CommandParameter(Of Integer))
+            If getCommand.getCommandParameterNames.Contains("layer") AndAlso getLayer() > -1 Then
+                p = DirectCast(getCommand.getCommandParameter("layer"), CommandParameter(Of Integer))
                 p.setValue(getLayer)
             End If
         End If

@@ -117,9 +117,13 @@ Public Class PlaylistBlockItem
             waiting = False
             playing = True
 
-            waiting = False
             If isParallel() Then
                 'Stat all subitems
+
+                For Each item In getChildItems()
+                    Application.DoEvents()
+                    item.load()
+                Next
                 For Each item In getChildItems()
                     Application.DoEvents()
                     AddHandler item.stopped, AddressOf itemStopped

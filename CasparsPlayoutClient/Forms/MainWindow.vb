@@ -331,7 +331,7 @@ Public Class MainWindow
 
     Private Sub clearAll() Handles cmdClearAll.Click
         Dim cmd As New ClearCommand()
-        Dim p = CTypeDynamic(cmd.getParameter("channel"), cmd.getParameter("channel").getGenericParameterType)
+        Dim p = CTypeDynamic(cmd.getCommandParameter("channel"), cmd.getCommandParameter("channel").getGenericParameterType)
         For i = 1 To sc.getChannels
             p.setValue(i)
             cmd.execute(sc.getCommandConnection)

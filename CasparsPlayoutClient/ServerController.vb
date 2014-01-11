@@ -369,7 +369,7 @@ Public Class ServerController
     ' ''' <remarks></remarks>
     'Public Function getMediaList() As Dictionary(Of String, AbstractCasparCGMedia)
     '    Dim media As New Dictionary(Of String, AbstractCasparCGMedia)
-    '    Dim cmd As ICommand
+    '    Dim cmd As AbstractCommand
     '    '' Catch the media list and create the media objects
     '    If isConnected() Then
     '        Dim newMedia As AbstractCasparCGMedia = Nothing

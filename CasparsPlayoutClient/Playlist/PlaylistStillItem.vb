@@ -71,7 +71,7 @@ Public Class PlaylistStillItem
 
             If getController.containsChannel(getChannel) AndAlso getLayer() > -1 Then
                 ' if the clip is allready loaded to bg, just start, else load & start
-                Dim cmd As ICommand
+                Dim cmd As AbstractCommand
                 If isLoaded() Then
                     cmd = New PlayCommand(getChannel, getLayer)
                     loaded = False

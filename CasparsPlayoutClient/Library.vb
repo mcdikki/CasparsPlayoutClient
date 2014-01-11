@@ -127,7 +127,7 @@ Public Class Library
 
         ' Get a list of known media
         Dim mediaItems As New List(Of AbstractCasparCGMedia)
-        Dim cmd As ICommand
+        Dim cmd As AbstractCommand
         Dim newMedia As AbstractCasparCGMedia = Nothing
 
         ' Templates first
