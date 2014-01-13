@@ -241,9 +241,16 @@ Public Class PlaylistBlockItem
         Return duration
     End Function
 
-
-    '' Blocks can't be loaded or paused
     Public Overrides Sub load()
+        If isParallel() Then
+            'load all subitems
+            For Each item In getChildItems()
+                Application.DoEvents()
+                item.load()
+            Next
+        Else
+            getNextToPlay(Nothing).load()
+        End If
     End Sub
 
     Public Overrides Sub pause(frames As Long)
