@@ -39,7 +39,7 @@ Public MustInherit Class AbstractPlaylistItem
     Private remaining As Long ' noch zu spielende Frames
     Private itemType As AbstractPlaylistItem.PlaylistItemTypes ' Typ des Item
     Protected playing As Boolean
-    Private _paused As Boolean
+    Protected _paused As Boolean
     Protected waiting As Boolean = False
     Private _clearAfterPlayback As Boolean = False
 
@@ -50,6 +50,7 @@ Public MustInherit Class AbstractPlaylistItem
     Public Event canceled(ByRef sender As IPlaylistItem) Implements IPlaylistItem.canceled
     Public Event changed(ByRef sender As IPlaylistItem) Implements IPlaylistItem.changed
     Public Event paused(ByRef sender As IPlaylistItem) Implements IPlaylistItem.paused
+    Public Event unpaused(ByRef sender As IPlaylistItem) Implements IPlaylistItem.unpaused
     Public Event started(ByRef sender As IPlaylistItem) Implements IPlaylistItem.started
     Public Event stopped(ByRef sender As IPlaylistItem) Implements IPlaylistItem.stopped
 
@@ -96,7 +97,7 @@ Public MustInherit Class AbstractPlaylistItem
 
     Public MustOverride Sub show() Implements IPlaylistItem.show
 
-    Public MustOverride Sub pause(ByVal frames As Long) Implements IPlaylistItem.pause
+    Public MustOverride Sub pause() Implements IPlaylistItem.pause
 
     Public MustOverride Sub unPause() Implements IPlaylistItem.unPause
 
@@ -575,6 +576,10 @@ Public MustInherit Class AbstractPlaylistItem
 
     Protected Sub raisePaused(ByRef sender As IPlaylistItem)
         RaiseEvent paused(sender)
+    End Sub
+
+    Protected Sub raiseUnpaused(ByRef sender As IPlaylistItem)
+        RaiseEvent unpaused(sender)
     End Sub
 
     Protected Sub raiseChanged(ByRef sender As IPlaylistItem)

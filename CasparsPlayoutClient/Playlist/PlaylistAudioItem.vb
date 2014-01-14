@@ -43,7 +43,7 @@ Public Class PlaylistAudioItem
 
     End Sub
 
-    Public Overrides Sub pause(frames As Long)
+    Public Overrides Sub pause()
 
     End Sub
 

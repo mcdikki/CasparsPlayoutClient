@@ -148,7 +148,7 @@ Public Class PlaylistCommandItem
     Public Overrides Sub show()
     End Sub
 
-    Public Overrides Sub pause(frames As Long)
+    Public Overrides Sub pause()
     End Sub
 
     Public Overrides Sub unPause()

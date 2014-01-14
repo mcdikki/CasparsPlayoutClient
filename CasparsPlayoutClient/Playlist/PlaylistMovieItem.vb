@@ -104,6 +104,7 @@ Public Class PlaylistMovieItem
                     Dim d As Long = getMedia.getInfo("nb-frames")
                     If getDuration() < getController.getMediaDuration(getMedia, getChannel) Then d = ServerController.getMsToFrames(getDuration, getFPS)
                     getMedia.setInfo("duration", d)
+
                     cmd = New PlayCommand(getChannel, getLayer, getMedia, isLooping, , d)
                     logger.log("PlaylistMovieItem.playNextItem: Load and start clip " & getMedia.getName)
                 End If
@@ -134,6 +135,7 @@ Public Class PlaylistMovieItem
         setPosition(0)
         waiting = False
         playing = False
+        _paused = False
         loaded = False
         timer.Enabled = False
         stopWatch.Stop()
@@ -155,17 +157,21 @@ Public Class PlaylistMovieItem
         timer.Enabled = False
         stopWatch.Stop()
         playing = False
+        _paused = False
         setPosition(0)
         raiseStopped(Me)
         logger.log("PlaylistMovieItem.stoppedPlaying: " & getChannel() & "-" & getLayer() & ": " & getMedia.getName & " stopped playing.")
     End Sub
 
-    Public Overrides Sub pause(ByVal frames As Long)
+    Public Overrides Sub pause()
         '' cmd an ServerController schicken
-        Dim cmd As New PauseCommand(getChannel, getLayer)
-        cmd.execute(getController.getCommandConnection)
-        raisePaused(Me)
-        logger.log("PlaylistMovieItem.pause: " & getChannel() & "-" & getLayer() & ": " & getMedia.getName & " paused.")
+        If isPlaying() And Not isPaused() Then
+            Dim cmd As New PauseCommand(getChannel, getLayer)
+            cmd.execute(getController.getCommandConnection)
+            _paused = True
+            raisePaused(Me)
+            logger.log("PlaylistMovieItem.pause: " & getChannel() & "-" & getLayer() & ": " & getMedia.getName & " paused.")
+        End If
     End Sub
 
     Public Overrides Sub unPause()
@@ -173,10 +179,27 @@ Public Class PlaylistMovieItem
 
         ' check if a media is loaded to bg, than we need to play me with seek!!
         ' because otherwise it would start the bg clip
-        Dim cmd As New PlayCommand(getChannel(), getLayer())
-        cmd.execute(getController.getCommandConnection)
-        raiseStarted(Me)
-        logger.log("PlaylistMovieItem.unPause: " & getChannel() & "-" & getLayer() & ": " & getMedia.getName & " restarted.")
+        If isPaused() Then
+            If getController.getCommandConnection.isLayerFree(getLayer, getChannel, False, True) Then
+                ' The background is free, so just start will do the job
+                Dim cmd As New PlayCommand(getChannel, getLayer)
+                cmd.execute(getController.getCommandConnection)
+            Else
+                ' The background is not free, so start would start the next clip, not the paused one actual showing
+                ' We need to seek to the clip ourself
+                Dim d As Long = getMedia.getInfo("nb-frames")
+                If getDuration() < getController.getMediaDuration(getMedia, getChannel) Then d = ServerController.getMsToFrames(getDuration, getFPS)
+                getMedia.setInfo("duration", d)
+
+                logger.log("PlaylistMovieItem.unPause: Start playback from frame " + getMedia.getInfo("frame-number"))
+                Dim cmd As New PlayCommand(getChannel(), getLayer(), getMedia, isLooping, getMedia.getInfo("frame-number"), d - Long.Parse(getMedia.getInfo("frame-number")))
+                cmd.execute(getController.getCommandConnection)
+            End If
+
+            _paused = False
+            raiseUnpaused(Me)
+            logger.log("PlaylistMovieItem.unPause: " & getChannel() & "-" & getLayer() & ": " & getMedia.getName & " restarted.")
+        End If
     End Sub
 
     Public Overrides Sub load()

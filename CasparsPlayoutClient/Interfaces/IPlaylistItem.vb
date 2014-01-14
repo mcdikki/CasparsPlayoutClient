@@ -81,13 +81,14 @@ Public Interface IPlaylistItem
     Sub abort() ' bricht ausführung ab
     Sub halt()  'stopt item (ACMP stop)
     Sub stoppedPlaying() ' informs item that it has stopped playing
-    Sub pause(ByVal frames As Long) ' pausiert das Spielen des Items for frames Frames oder bis zum manuellen start bei 0 (ACMP pause)
+    Sub pause() ' pausiert das Spielen des Items for frames Frames oder bis zum manuellen start bei 0 (ACMP pause)
     Sub unPause()
 
     Event waitForNext(ByRef sender As IPlaylistItem)
     Event stopped(ByRef sender As IPlaylistItem)
     Event started(ByRef sender As IPlaylistItem)
     Event paused(ByRef sender As IPlaylistItem)
+    Event unpaused(ByRef sender As IPlaylistItem)
     Event aborted(ByRef sender As IPlaylistItem)
     Event changed(ByRef sender As IPlaylistItem)
     Event canceled(ByRef sender As IPlaylistItem)

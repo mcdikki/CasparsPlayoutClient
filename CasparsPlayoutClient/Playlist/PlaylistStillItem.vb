@@ -122,12 +122,14 @@ Public Class PlaylistStillItem
         timer = New Timers.Timer()
         stopWatch.Reset()
         playing = False
+        _paused = False
         raiseStopped(Me)
         logger.log("PlaylistStillItem.stoppedPlaying: " & getChannel() & "-" & getLayer() & ": " & getMedia.getName & " stopped playing.")
     End Sub
 
     Public Overrides Sub abort()
         playing = False
+        _paused = False
         waiting = False
         timer.Enabled = False
         timer.Dispose()
@@ -214,9 +216,24 @@ Public Class PlaylistStillItem
     End Function
 
     Public Overrides Sub unPause()
+        If isPaused() Then
+            If getDuration() > 0 Then
+                timer.Interval = getDuration() - getPosition()
+                timer.Enabled = True
+            End If
+            stopWatch.Start()
+            _paused = False
+            raiseUnpaused(Me)
+        End If
     End Sub
 
-    Public Overrides Sub pause(frames As Long)
+    Public Overrides Sub pause()
+        If isPlaying() Then
+            If timer.Enabled Then timer.Enabled = False
+            stopWatch.Stop()
+            _paused = True
+            raisePaused(Me)
+        End If
     End Sub
 
 End Class
