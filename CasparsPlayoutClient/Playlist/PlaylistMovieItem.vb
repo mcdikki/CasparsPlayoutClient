@@ -98,6 +98,7 @@ Public Class PlaylistMovieItem
                 If isLoaded() Or isShowing() Then
                     cmd = New PlayCommand(getChannel, getLayer)
                     loaded = False
+                    showing = False
                     logger.log("PlaylistMovieItem.playNextItem: Start allready loaded clip " & getMedia.getName)
                 Else
                     Dim d As Long = getMedia.getInfo("nb-frames")
@@ -203,11 +204,6 @@ Public Class PlaylistMovieItem
 
     Public Overrides Sub show()
         If Not isShowing() Then
-            If isLoaded() Then
-                ' Clear background if we are loaded there allready
-                Dim clear As New ClearCommand(getChannel, getLayer)
-                clear.execute(getController.getCommandConnection)
-            End If
             Dim d As Long = getMedia.getInfo("nb-frames")
             If getDuration() < getController.getMediaDuration(getMedia, getChannel) Then d = ServerController.getMsToFrames(getDuration, getFPS)
             getMedia.setInfo("duration", d)
@@ -215,6 +211,7 @@ Public Class PlaylistMovieItem
             Dim cmd As New LoadCommand(getChannel, getLayer, getMedia, isLooping, , d)
             If cmd.execute(getController.getCommandConnection).isOK Then
                 showing = True
+                loaded = False
                 logger.log("PlaylistMovieItem.show: Loaded " & getMedia.getName + " to fg " & getChannel() & "-" & getLayer())
             Else
                 showing = False

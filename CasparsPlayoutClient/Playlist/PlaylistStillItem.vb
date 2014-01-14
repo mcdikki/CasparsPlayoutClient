@@ -78,15 +78,16 @@ Public Class PlaylistStillItem
             If getController.containsChannel(getChannel) AndAlso getLayer() > -1 Then
                 ' if the clip is allready loaded to bg, just start, else load & start
                 Dim cmd As AbstractCommand
-                If isLoaded() Or isShowing() Then
+                If isLoaded() Then
                     cmd = New PlayCommand(getChannel, getLayer)
-                    loaded = False
                     logger.log("PlaylistStillItem.playNextItem: Start allready loaded still " & getMedia.getName)
                 Else
                     cmd = New PlayCommand(getChannel, getLayer, getMedia)
                     logger.log("PlaylistStillItem.playNextItem: Load and start still " & getMedia.getName)
                 End If
-                If cmd.execute(getController.getCommandConnection).isOK Then
+                If isShowing() OrElse cmd.execute(getController.getCommandConnection).isOK Then
+                    loaded = False
+                    showing = False
                     playing = True
                     raiseStarted(Me)
                     stopWatch.Restart()
@@ -103,6 +104,8 @@ Public Class PlaylistStillItem
                         timer.Start()
                     End If
                 Else
+                    loaded = False
+                    showing = False
                     playing = False
                     raiseCanceled(Me)
                     logger.err("PlaylistStillItem..playNextItem: Could not start " & media.getFullName & ". ServerMessage was: " & cmd.getResponse.getServerMessage)
@@ -163,14 +166,10 @@ Public Class PlaylistStillItem
 
     Public Overrides Sub show()
         If Not isShowing() Then
-            If isLoaded() Then
-                ' Clear background if we are loaded there allready
-                Dim clear As New ClearCommand(getChannel, getLayer)
-                clear.execute(getController.getCommandConnection)
-            End If
             Dim cmd As New LoadCommand(getChannel, getLayer, getMedia)
             If cmd.execute(getController.getCommandConnection).isOK Then
                 showing = True
+                loaded = False
                 logger.log("PlaylistStillItem.show: Loaded " & getMedia.getName + " to fg " & getChannel() & "-" & getLayer())
             Else
                 showing = False

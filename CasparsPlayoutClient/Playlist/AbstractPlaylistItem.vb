@@ -26,7 +26,7 @@ Public MustInherit Class AbstractPlaylistItem
     Private delay As Long
     Private looping As Boolean
     Private autoStart As Boolean
-    Private autoLoad As Boolean
+    Private autoLoad As Boolean = True
     Private parallel As Boolean
     Private fps As Integer
     Private parent As IPlaylistItem
