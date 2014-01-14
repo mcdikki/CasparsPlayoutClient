@@ -25,6 +25,7 @@ Public Class PlaylistStillItem
     Private timer As System.Timers.Timer
     Private stopWatch As New Stopwatch()
     Private loaded As Boolean = False
+    Private showing As Boolean = False
 
     Public Sub New(ByVal name As String, ByRef controller As ServerController, ByVal still As CasparCGStill, Optional ByVal channel As Integer = -1, Optional ByVal layer As Integer = -1, Optional ByVal duration As Long = -1)
         MyBase.New(name, PlaylistItemTypes.STILL, controller, channel, layer, duration)
@@ -42,6 +43,11 @@ Public Class PlaylistStillItem
     Public Overrides Sub start()
         ' Wait if autostart not checked
         If getChannel() > 0 AndAlso getLayer() > -1 Then
+            If isAutoLoading() Then
+                show()
+            Else
+                load()
+            End If
             ' Wait if autostart not checked
             If Not isAutoStarting() Then
                 raiseWaitForNext(Me)
@@ -72,7 +78,7 @@ Public Class PlaylistStillItem
             If getController.containsChannel(getChannel) AndAlso getLayer() > -1 Then
                 ' if the clip is allready loaded to bg, just start, else load & start
                 Dim cmd As AbstractCommand
-                If isLoaded() Then
+                If isLoaded() Or isShowing() Then
                     cmd = New PlayCommand(getChannel, getLayer)
                     loaded = False
                     logger.log("PlaylistStillItem.playNextItem: Start allready loaded still " & getMedia.getName)
@@ -139,7 +145,7 @@ Public Class PlaylistStillItem
     End Sub
 
     Public Overrides Sub load()
-        If getController.getCommandConnection.isLayerFree(getLayer, getChannel, False, True) Then
+        If getController.getCommandConnection.isLayerFree(getLayer, getChannel, False, True) And Not isLoaded() And Not isShowing() Then
             Dim cmd As New LoadbgCommand(getChannel, getLayer, getMedia)
             If cmd.execute(getController.getCommandConnection).isOK Then
                 loaded = True
@@ -148,8 +154,30 @@ Public Class PlaylistStillItem
                 loaded = False
                 logger.warn("PlaylistStillItem.load: Could not load " & getMedia.getName + " to bg " & getChannel() & "-" & getLayer() & ". Server resonded " & vbNewLine & cmd.getResponse.getServerMessage)
             End If
+        ElseIf isLoaded() Or isShowing() Then
+            logger.log("PlaylistStilItem.load: Won't load allready loaded " & getMedia.getName + " to " & getChannel() & "-" & getLayer())
         Else
-            logger.warn("PlaylistStillItem.load: Can't load background if layer isn't free. Did not load " & getMedia.getName + " to " & getChannel() & "-" & getLayer())
+            logger.warn("PlaylistStilItem.load: Can't load background if layer isn't free. Did not load " & getMedia.getName + " to " & getChannel() & "-" & getLayer())
+        End If
+    End Sub
+
+    Public Overrides Sub show()
+        If Not isShowing() Then
+            If isLoaded() Then
+                ' Clear background if we are loaded there allready
+                Dim clear As New ClearCommand(getChannel, getLayer)
+                clear.execute(getController.getCommandConnection)
+            End If
+            Dim cmd As New LoadCommand(getChannel, getLayer, getMedia)
+            If cmd.execute(getController.getCommandConnection).isOK Then
+                showing = True
+                logger.log("PlaylistStillItem.show: Loaded " & getMedia.getName + " to fg " & getChannel() & "-" & getLayer())
+            Else
+                showing = False
+                logger.warn("PlaylistStillItem.show: Could not load " & getMedia.getName + " to fg " & getChannel() & "-" & getLayer() & ". Server resonded " & vbNewLine & cmd.getResponse.getServerMessage)
+            End If
+        Else
+            logger.log("PlaylistStilItem.load: Won't load allready loaded " & getMedia.getName + " to " & getChannel() & "-" & getLayer())
         End If
     End Sub
 
@@ -180,6 +208,10 @@ Public Class PlaylistStillItem
 
     Public Overrides Function isLoaded() As Boolean
         Return loaded
+    End Function
+
+    Public Overrides Function isShowing() As Boolean
+        Return showing
     End Function
 
     Public Overrides Sub unPause()

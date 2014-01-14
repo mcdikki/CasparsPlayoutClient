@@ -40,6 +40,10 @@ Public Class PlaylistTemplateItem
 
     End Sub
 
+    Public Overrides Sub show()
+
+    End Sub
+
     Public Overrides Sub pause(frames As Long)
 
     End Sub

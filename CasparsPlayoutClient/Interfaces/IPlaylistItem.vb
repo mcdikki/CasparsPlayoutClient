@@ -25,8 +25,10 @@ Public Interface IPlaylistItem
     Function isPlayable() As Boolean
     Function isLooping() As Boolean
     Function isAutoStarting() As Boolean
+    Function isAutoLoading() As Boolean
     Function isParallel() As Boolean
     Function isLoaded() As Boolean
+    Function isShowing() As Boolean
 
     Function getDuration() As Long ' Gesamtlaufzeit in ms
     Function getPosition() As Long ' aktuelle ms
@@ -55,6 +57,7 @@ Public Interface IPlaylistItem
     Sub setChannel(ByVal channel As Integer)
     Sub setLooping(ByVal looping As Boolean)
     Sub setAutoStart(ByVal autoStart As Boolean)
+    Sub setAutoLoad(ByVal autoLoad As Boolean)
     Sub setParallel(ByVal parallel As Boolean)
     Sub setClearAfterPlayback(Optional ByVal active As Boolean = True)
     Sub setDelay(ByVal delay As Long)
@@ -72,6 +75,7 @@ Public Interface IPlaylistItem
 
 
     Sub load() ' lädt wenn möglich item schon im Hintergrund (ACMP loadbg)
+    Sub show() ' load to foreground (ACMP load)
     Sub start()
     Sub playNextItem(Optional ByRef lastPlayed As IPlaylistItem = Nothing)
     Sub abort() ' bricht ausführung ab

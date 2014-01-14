@@ -26,6 +26,7 @@ Public MustInherit Class AbstractPlaylistItem
     Private delay As Long
     Private looping As Boolean
     Private autoStart As Boolean
+    Private autoLoad As Boolean
     Private parallel As Boolean
     Private fps As Integer
     Private parent As IPlaylistItem
@@ -92,6 +93,8 @@ Public MustInherit Class AbstractPlaylistItem
     Public MustOverride Sub stoppedPlaying() Implements IPlaylistItem.stoppedPlaying
 
     Public MustOverride Sub load() Implements IPlaylistItem.load
+
+    Public MustOverride Sub show() Implements IPlaylistItem.show
 
     Public MustOverride Sub pause(ByVal frames As Long) Implements IPlaylistItem.pause
 
@@ -246,6 +249,10 @@ Public MustInherit Class AbstractPlaylistItem
         Return autoStart
     End Function
 
+    Public Function isAutoLoading() As Boolean Implements IPlaylistItem.isAutoLoading
+        Return autoLoad
+    End Function
+
     Public Function isLooping() As Boolean Implements IPlaylistItem.isLooping
         Return looping
     End Function
@@ -354,6 +361,10 @@ Public MustInherit Class AbstractPlaylistItem
         Return False
     End Function
 
+    Public Overridable Function isShowing() As Boolean Implements IPlaylistItem.isShowing
+        Return False
+    End Function
+
     Public Overridable Function ClearAfterPlayback() As Boolean Implements IPlaylistItem.clearAfterPlayback
         Return _clearAfterPlayback
     End Function
@@ -400,6 +411,13 @@ Public MustInherit Class AbstractPlaylistItem
     Public Sub setAutoStart(ByVal autoStart As Boolean) Implements IPlaylistItem.setAutoStart
         If autoStart <> isAutoStarting() Then
             Me.autoStart = autoStart
+            RaiseEvent changed(Me)
+        End If
+    End Sub
+
+    Public Sub setAutoLoad(ByVal autoLoad As Boolean) Implements IPlaylistItem.setAutoLoad
+        If autoLoad <> isAutoLoading() Then
+            Me.autoLoad = autoLoad
             RaiseEvent changed(Me)
         End If
     End Sub

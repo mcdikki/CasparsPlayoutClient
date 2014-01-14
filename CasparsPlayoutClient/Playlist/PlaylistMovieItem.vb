@@ -25,6 +25,7 @@ Public Class PlaylistMovieItem
     Private timer As System.Timers.Timer
     Private stopWatch As New Stopwatch()
     Private loaded As Boolean = False
+    Private showing As Boolean = False
 
     ''' <summary>
     ''' Create a PlaylistMovieItem. If a duration is given and smaller than the original duration of the file, the file will only be played for that long.
@@ -60,6 +61,11 @@ Public Class PlaylistMovieItem
     ''-------------------------------------------------------------------------------------
     Public Overrides Sub start()
         If getChannel() > 0 AndAlso getLayer() > -1 Then
+            If isAutoLoading() Then
+                show()
+            Else
+                load()
+            End If
             ' Wait if autostart not checked
             If Not isAutoStarting() Then
                 raiseWaitForNext(Me)
@@ -89,7 +95,7 @@ Public Class PlaylistMovieItem
             If getController.containsChannel(getChannel) AndAlso getLayer() > -1 Then
                 ' if the clip is allready loaded to bg, just start, else load & start
                 Dim cmd As AbstractCommand
-                If isLoaded() Then
+                If isLoaded() Or isShowing() Then
                     cmd = New PlayCommand(getChannel, getLayer)
                     loaded = False
                     logger.log("PlaylistMovieItem.playNextItem: Start allready loaded clip " & getMedia.getName)
@@ -174,7 +180,7 @@ Public Class PlaylistMovieItem
 
     Public Overrides Sub load()
         ''ToDo
-        If getController.getCommandConnection.isLayerFree(getLayer, getChannel, False, True) Then
+        If getController.getCommandConnection.isLayerFree(getLayer, getChannel, False, True) And Not isLoaded() And Not isShowing() Then
 
             Dim d As Long = getMedia.getInfo("nb-frames")
             If getDuration() < getController.getMediaDuration(getMedia, getChannel) Then d = ServerController.getMsToFrames(getDuration, getFPS)
@@ -188,13 +194,43 @@ Public Class PlaylistMovieItem
                 loaded = False
                 logger.warn("PlaylistMovieItem.load: Could not load " & getMedia.getName + " to bg " & getChannel() & "-" & getLayer() & ". Server resonded " & vbNewLine & cmd.getResponse.getServerMessage)
             End If
+        ElseIf isLoaded() Or isShowing() Then
+            logger.log("PlaylistMovieItem.load: Won't load allready loaded " & getMedia.getName + " to " & getChannel() & "-" & getLayer())
         Else
             logger.warn("PlaylistMovieItem.load: Can't load background if layer isn't free. Did not load " & getMedia.getName + " to " & getChannel() & "-" & getLayer())
         End If
     End Sub
 
+    Public Overrides Sub show()
+        If Not isShowing() Then
+            If isLoaded() Then
+                ' Clear background if we are loaded there allready
+                Dim clear As New ClearCommand(getChannel, getLayer)
+                clear.execute(getController.getCommandConnection)
+            End If
+            Dim d As Long = getMedia.getInfo("nb-frames")
+            If getDuration() < getController.getMediaDuration(getMedia, getChannel) Then d = ServerController.getMsToFrames(getDuration, getFPS)
+            getMedia.setInfo("duration", d)
+
+            Dim cmd As New LoadCommand(getChannel, getLayer, getMedia, isLooping, , d)
+            If cmd.execute(getController.getCommandConnection).isOK Then
+                showing = True
+                logger.log("PlaylistMovieItem.show: Loaded " & getMedia.getName + " to fg " & getChannel() & "-" & getLayer())
+            Else
+                showing = False
+                logger.warn("PlaylistMovieItem.show: Could not load " & getMedia.getName + " to fg " & getChannel() & "-" & getLayer() & ". Server resonded " & vbNewLine & cmd.getResponse.getServerMessage)
+            End If
+        Else
+            logger.log("PlaylistMovieItem.show: Won't load allready loaded " & getMedia.getName + " to " & getChannel() & "-" & getLayer())
+        End If
+    End Sub
+
     Public Overrides Function isLoaded() As Boolean
         Return loaded
+    End Function
+
+    Public Overrides Function isShowing() As Boolean
+        Return showing
     End Function
 
     Public Overrides Function getMedia() As AbstractCasparCGMedia

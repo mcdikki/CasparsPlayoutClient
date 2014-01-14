@@ -88,9 +88,14 @@ Public Class PlaylistBlockItem
         raiseStarted(Me)
 
         ' alle Unteritems starten.
-        ' Wenn parallel, dann wird nicht gewaret und alle starten
+        ' Wenn parallel, dann wird nicht gewartet und alle starten
         ' semi gleichzeitig
         ' Sost startet das nächste erst wenn das vorherige fertig ist.
+        If isAutoLoading() Then
+            show()
+        Else
+            load()
+        End If
         If Not isAutoStarting() Then
             raiseWaitForNext(Me)
             waiting = True
@@ -119,11 +124,6 @@ Public Class PlaylistBlockItem
 
             If isParallel() Then
                 'Stat all subitems
-
-                For Each item In getChildItems()
-                    Application.DoEvents()
-                    item.load()
-                Next
                 For Each item In getChildItems()
                     Application.DoEvents()
                     AddHandler item.stopped, AddressOf itemStopped
@@ -250,6 +250,18 @@ Public Class PlaylistBlockItem
             Next
         Else
             getNextToPlay(Nothing).load()
+        End If
+    End Sub
+
+    Public Overrides Sub show()
+        If isParallel() Then
+            'load all subitems
+            For Each item In getChildItems()
+                Application.DoEvents()
+                item.show()
+            Next
+        Else
+            getNextToPlay(Nothing).show()
         End If
     End Sub
 
