@@ -165,12 +165,20 @@ Public Class PlaylistMovieItem
 
     Public Overrides Sub pause()
         '' cmd an ServerController schicken
-        If isPlaying() And Not isPaused() Then
-            Dim cmd As New PauseCommand(getChannel, getLayer)
-            cmd.execute(getController.getCommandConnection)
-            _paused = True
-            raisePaused(Me)
-            logger.log("PlaylistMovieItem.pause: " & getChannel() & "-" & getLayer() & ": " & getMedia.getName & " paused.")
+        If Not isPaused() Then
+            If isPlaying() Then
+                Dim cmd As New PauseCommand(getChannel, getLayer)
+                cmd.execute(getController.getCommandConnection)
+                _paused = True
+                raisePaused(Me)
+                logger.log("PlaylistMovieItem.pause: " & getChannel() & "-" & getLayer() & ": " & getMedia.getName & " paused.")
+            ElseIf isWaiting() AndAlso getDelay() > 0 Then
+                timer.Stop()
+                stopWatch.Stop()
+                _paused = True
+                raisePaused(Me)
+                logger.log("PlaylistMovieItem.pause: " & getChannel() & "-" & getLayer() & ": " & getMedia.getName & " paused.")
+            End If
         End If
     End Sub
 
@@ -180,25 +188,34 @@ Public Class PlaylistMovieItem
         ' check if a media is loaded to bg, than we need to play me with seek!!
         ' because otherwise it would start the bg clip
         If isPaused() Then
-            If getController.getCommandConnection.isLayerFree(getLayer, getChannel, False, True) Then
-                ' The background is free, so just start will do the job
-                Dim cmd As New PlayCommand(getChannel, getLayer)
-                cmd.execute(getController.getCommandConnection)
+            If isWaiting() And getDelay() > 0 Then
+                timer.Interval = (getDelay() - stopWatch.ElapsedMilliseconds)
+                logger.log(getDelay() - stopWatch.ElapsedMilliseconds & " = " & timer.Interval)
+                timer.Enabled = True
+                stopWatch.Start()
+                _paused = False
+                raiseUnpaused(Me)
+                logger.log("PlaylistMovieItem.unPause: " & getChannel() & "-" & getLayer() & ": " & getMedia.getName & " restarted.")
             Else
-                ' The background is not free, so start would start the next clip, not the paused one actual showing
-                ' We need to seek to the clip ourself
-                Dim d As Long = getMedia.getInfo("nb-frames")
-                If getDuration() < getController.getMediaDuration(getMedia, getChannel) Then d = ServerController.getMsToFrames(getDuration, getFPS)
-                getMedia.setInfo("duration", d)
+                If getController.getCommandConnection.isLayerFree(getLayer, getChannel, False, True) Then
+                    ' The background is free, so just start will do the job
+                    Dim cmd As New PlayCommand(getChannel, getLayer)
+                    cmd.execute(getController.getCommandConnection)
+                Else
+                    ' The background is not free, so start would start the next clip, not the paused one actual showing
+                    ' We need to seek to the clip ourself
+                    Dim d As Long = getMedia.getInfo("nb-frames")
+                    If getDuration() < getController.getMediaDuration(getMedia, getChannel) Then d = ServerController.getMsToFrames(getDuration, getFPS)
+                    getMedia.setInfo("duration", d)
 
-                logger.log("PlaylistMovieItem.unPause: Start playback from frame " + getMedia.getInfo("frame-number"))
-                Dim cmd As New PlayCommand(getChannel(), getLayer(), getMedia, isLooping, getMedia.getInfo("frame-number"), d - Long.Parse(getMedia.getInfo("frame-number")))
-                cmd.execute(getController.getCommandConnection)
+                    logger.log("PlaylistMovieItem.unPause: Start playback from frame " + getMedia.getInfo("frame-number"))
+                    Dim cmd As New PlayCommand(getChannel(), getLayer(), getMedia, isLooping, getMedia.getInfo("frame-number"), d - Long.Parse(getMedia.getInfo("frame-number")))
+                    cmd.execute(getController.getCommandConnection)
+                End If
+                _paused = False
+                raiseUnpaused(Me)
+                logger.log("PlaylistMovieItem.unPause: " & getChannel() & "-" & getLayer() & ": " & getMedia.getName & " restarted.")
             End If
-
-            _paused = False
-            raiseUnpaused(Me)
-            logger.log("PlaylistMovieItem.unPause: " & getChannel() & "-" & getLayer() & ": " & getMedia.getName & " restarted.")
         End If
     End Sub
 
@@ -260,8 +277,8 @@ Public Class PlaylistMovieItem
     Public Overrides Function getPosition() As Long
         If getMedia.containsInfo("frame-number") AndAlso isPlaying() Then 'OrElse hasPlayingParent()) Then
             Return ServerController.getFramesToMS(Long.Parse(getMedia.getInfo("frame-number")), getFPS())
-        ElseIf timer.Enabled Then
-            Return stopWatch.ElapsedMilliseconds - timer.Interval
+        ElseIf isWaiting() AndAlso getDelay() > 0 Then
+            Return stopWatch.ElapsedMilliseconds - getDelay() 'timer.interval
         Else
             Return 0
         End If

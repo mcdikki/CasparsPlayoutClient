@@ -184,17 +184,16 @@ Public Class PlaylistStillItem
 
     Public Overrides Function getPosition() As Long
         If isPlaying() OrElse (hasPlayingParent() AndAlso Not isWaiting()) Then
-            If timer.Enabled And getDuration() > 0 Then
+            If getDuration() > 0 Then
                 ' Normal playing
-                'raiseChanged(Me)
                 Return stopWatch.ElapsedMilliseconds
             Else
                 'raiseChanged(Me)
                 Return 0 - stopWatch.ElapsedMilliseconds
             End If
-        ElseIf isWaiting() AndAlso timer.Enabled Then
+        ElseIf isWaiting() AndAlso getDelay() > 0 Then
             ' Delay countdown
-            Return (0 - timer.Interval) + stopWatch.ElapsedMilliseconds
+            Return (0 - getDelay()) + stopWatch.ElapsedMilliseconds
         Else : Return 0
         End If
     End Function
@@ -217,9 +216,12 @@ Public Class PlaylistStillItem
 
     Public Overrides Sub unPause()
         If isPaused() Then
-            If getDuration() > 0 Then
+            If isWaiting() AndAlso getDelay() > 0 Then
+                timer.Interval = getDelay() - stopWatch.ElapsedMilliseconds
+                timer.Start()
+            ElseIf getDuration() > 0 Then
                 timer.Interval = getDuration() - getPosition()
-                timer.Enabled = True
+                timer.Start()
             End If
             stopWatch.Start()
             _paused = False
@@ -228,8 +230,8 @@ Public Class PlaylistStillItem
     End Sub
 
     Public Overrides Sub pause()
-        If isPlaying() Then
-            If timer.Enabled Then timer.Enabled = False
+        If isPlaying() OrElse isWaiting() Then
+            timer.Stop()
             stopWatch.Stop()
             _paused = True
             raisePaused(Me)

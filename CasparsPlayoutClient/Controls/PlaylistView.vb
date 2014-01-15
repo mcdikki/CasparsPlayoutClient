@@ -460,7 +460,7 @@ Public Class PlaylistView
             If ModifierKeys = Keys.Control Then
                 logger.debug("GUI PlaylistView: HardStop requested at " & Me.txtName.Text)
                 playlist.abort()
-            ElseIf ModifierKeys = Keys.Alt AndAlso playlist.isPlaying AndAlso Not playlist.isPaused Then
+            ElseIf ModifierKeys = Keys.Alt AndAlso (playlist.isPlaying OrElse playlist.isWaiting) AndAlso Not playlist.isPaused Then
                 playlist.pause()
             ElseIf ModifierKeys = Keys.Alt AndAlso playlist.isPaused Then
                 playlist.unPause()

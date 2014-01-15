@@ -61,6 +61,7 @@ Public Class PlaylistBlockItem
         stopWatch.Stop()
         waiting = False
         playing = False
+        _paused = False
         setPosition(0)
         playedItems.Clear()
         For Each item In getChildItems()
@@ -71,6 +72,7 @@ Public Class PlaylistBlockItem
 
     Public Overrides Sub stoppedPlaying()
         playing = False
+        _paused = False
         playedItems.Clear()
         raiseStopped(Me)
         logger.debug("PlaylistItem.stoppedPlaying: Stopped playing " & getName() & " (" & getChannel() & "-" & getLayer() & ")")
@@ -204,8 +206,8 @@ Public Class PlaylistBlockItem
 
     Public Overrides Function getPosition() As Long
 
-        If timer.Enabled Then
-            Return stopWatch.ElapsedMilliseconds - timer.Interval
+        If timer.Enabled OrElse (isPaused() AndAlso isWaiting() AndAlso getDelay() > 0) Then
+            Return stopWatch.ElapsedMilliseconds - getDelay()
         ElseIf IsNothing(getParent) OrElse getParent.isPlaying() OrElse isPlaying() Then
             Dim pos As Long
             For Each child In getChildItems()
@@ -266,9 +268,53 @@ Public Class PlaylistBlockItem
     End Sub
 
     Public Overrides Sub pause()
+        If Not isPaused() Then
+            If isWaiting() AndAlso getDelay() > 0 Then
+                timer.Enabled = False
+                stopWatch.Stop()
+            ElseIf isPlaying() Then
+                If isParallel() Then
+                    For Each item In getChildItems()
+                        Application.DoEvents()
+                        item.pause()
+                    Next
+                Else
+                    Dim playingItem As IPlaylistItem = Nothing
+                    If playedItems.Count > 0 Then playingItem = getNextToPlay(playedItems.Last)
+                    If Not IsNothing(playingItem) Then
+                        playingItem.pause()
+                    End If
+                End If
+            End If
+            _paused = True
+            raisePaused(Me)
+        End If
     End Sub
 
     Public Overrides Sub unPause()
+        If isPaused() Then
+            If isWaiting() AndAlso getDelay() > 0 Then
+                timer.Interval = (getDelay() - stopWatch.ElapsedMilliseconds)
+                logger.log(getDelay() - stopWatch.ElapsedMilliseconds & " = " & timer.Interval)
+                timer.Enabled = True
+                stopWatch.Start()
+            ElseIf isPlaying() Then
+                If isParallel() Then
+                    For Each item In getChildItems()
+                        Application.DoEvents()
+                        item.unPause()
+                    Next
+                Else
+                    Dim playingItem As IPlaylistItem = Nothing
+                    If playedItems.Count > 0 Then playingItem = getNextToPlay(playedItems.Last)
+                    If Not IsNothing(playingItem) AndAlso playingItem.isPaused Then
+                        playingItem.unPause()
+                    End If
+                End If
+            End If
+            _paused = False
+            raiseUnpaused(Me)
+        End If
     End Sub
 
     Public Overrides Sub setDuration(duration As Long)
