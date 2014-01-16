@@ -26,7 +26,7 @@ Public MustInherit Class AbstractPlaylistItem
     Private delay As Long
     Private looping As Boolean
     Private autoStart As Boolean
-    Private autoLoad As Boolean = True
+    Private autoLoad As Boolean
     Private parallel As Boolean
     Private fps As Integer
     Private parent As IPlaylistItem
@@ -146,6 +146,9 @@ Public MustInherit Class AbstractPlaylistItem
         node = configDoc.createElement("autostart")
         node.nodeTypedValue = isAutoStarting()
         pnode.appendChild(node)
+        node = configDoc.createElement("autoload")
+        node.nodeTypedValue = isAutoLoading()
+        pnode.appendChild(node)
         node = configDoc.createElement("parallel")
         node.nodeTypedValue = isParallel()
         pnode.appendChild(node)
@@ -198,17 +201,28 @@ Public MustInherit Class AbstractPlaylistItem
                 Next
 
                 ' read in new settings
-                setName(xmlDoc.firstChild.selectSingleNode("name").nodeTypedValue)
+                If Not IsNothing(xmlDoc.firstChild.selectSingleNode("name")) AndAlso Not IsDBNull(xmlDoc.firstChild.selectSingleNode("name")) Then _
+                    setName(xmlDoc.firstChild.selectSingleNode("name").nodeTypedValue)
 
-                setChannel(xmlDoc.firstChild.selectSingleNode("channel").nodeTypedValue)
-                setLayer(xmlDoc.firstChild.selectSingleNode("layer").nodeTypedValue)
+                If Not IsNothing(xmlDoc.firstChild.selectSingleNode("channel")) AndAlso Not IsDBNull(xmlDoc.firstChild.selectSingleNode("channel")) Then _
+                    setChannel(xmlDoc.firstChild.selectSingleNode("channel").nodeTypedValue)
+                If Not IsNothing(xmlDoc.firstChild.selectSingleNode("layer")) AndAlso Not IsDBNull(xmlDoc.firstChild.selectSingleNode("layer")) Then _
+                    setLayer(xmlDoc.firstChild.selectSingleNode("layer").nodeTypedValue)
 
-                setLooping(xmlDoc.firstChild.selectSingleNode("loop").nodeTypedValue)
-                setAutoStart(xmlDoc.firstChild.selectSingleNode("autostart").nodeTypedValue)
-                setParallel(xmlDoc.firstChild.selectSingleNode("parallel").nodeTypedValue)
-                setClearAfterPlayback(xmlDoc.firstChild.selectSingleNode("clearAfterPlayback").nodeTypedValue)
-                setDelay(xmlDoc.firstChild.selectSingleNode("delay").nodeTypedValue)
-                setDuration(xmlDoc.firstChild.selectSingleNode("duration").nodeTypedValue)
+                If Not IsNothing(xmlDoc.firstChild.selectSingleNode("loop")) AndAlso Not IsDBNull(xmlDoc.firstChild.selectSingleNode("loop")) Then _
+                    setLooping(xmlDoc.firstChild.selectSingleNode("loop").nodeTypedValue)
+                If Not IsNothing(xmlDoc.firstChild.selectSingleNode("autostart")) AndAlso Not IsDBNull(xmlDoc.firstChild.selectSingleNode("autostart")) Then _
+                    setAutoStart(xmlDoc.firstChild.selectSingleNode("autostart").nodeTypedValue)
+                If Not IsNothing(xmlDoc.firstChild.selectSingleNode("autoload")) AndAlso Not IsDBNull(xmlDoc.firstChild.selectSingleNode("autoload")) Then _
+                    setAutoLoad(xmlDoc.firstChild.selectSingleNode("autoload").nodeTypedValue)
+                If Not IsNothing(xmlDoc.firstChild.selectSingleNode("parallel")) AndAlso Not IsDBNull(xmlDoc.firstChild.selectSingleNode("parallel")) Then _
+                    setParallel(xmlDoc.firstChild.selectSingleNode("parallel").nodeTypedValue)
+                If Not IsNothing(xmlDoc.firstChild.selectSingleNode("clearAfterPlayback")) AndAlso Not IsDBNull(xmlDoc.firstChild.selectSingleNode("clearAfterPlayback")) Then _
+                    setClearAfterPlayback(xmlDoc.firstChild.selectSingleNode("clearAfterPlayback").nodeTypedValue)
+                If Not IsNothing(xmlDoc.firstChild.selectSingleNode("delay")) AndAlso Not IsDBNull(xmlDoc.firstChild.selectSingleNode("delay")) Then _
+                    setDelay(xmlDoc.firstChild.selectSingleNode("delay").nodeTypedValue)
+                If Not IsNothing(xmlDoc.firstChild.selectSingleNode("duration")) AndAlso Not IsDBNull(xmlDoc.firstChild.selectSingleNode("duration")) Then _
+                    setDuration(xmlDoc.firstChild.selectSingleNode("duration").nodeTypedValue)
 
                 ' add subplayliss
                 For Each child As MSXML2.IXMLDOMElement In xmlDoc.firstChild.selectNodes("playlist")

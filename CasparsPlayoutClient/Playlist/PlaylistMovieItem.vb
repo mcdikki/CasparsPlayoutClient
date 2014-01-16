@@ -90,7 +90,6 @@ Public Class PlaylistMovieItem
         Else
             timer.Enabled = False
             stopWatch.Reset()
-            waiting = False
 
             If getController.containsChannel(getChannel) AndAlso getLayer() > -1 Then
                 ' if the clip is allready loaded to bg, just start, else load & start
@@ -115,14 +114,17 @@ Public Class PlaylistMovieItem
                         cmd.execute(getController.getCommandConnection)
                     End If
                     playing = True
+                    waiting = False
                     raiseStarted(Me)
                     logger.log("PlaylistMovieItem.playNextItem: " & getChannel() & "-" & getLayer() & ": " & getMedia.getName & " started.")
                 Else
                     playing = False
+                    waiting = False
                     raiseCanceled(Me)
                     logger.err("PlaylistMovieItem..playNextItem: Could not start " & media.getFullName & ". ServerMessage was: " & cmd.getResponse.getServerMessage)
                 End If
             Else
+                waiting = False
                 logger.err("PlaylistMovieItem..playNextItem: Error playing " & getName() & ". The channel " & getChannel() & " does not exist on the server. Aborting start.")
             End If
         End If
@@ -135,6 +137,7 @@ Public Class PlaylistMovieItem
         setPosition(0)
         waiting = False
         playing = False
+        showing = False
         _paused = False
         loaded = False
         timer.Enabled = False
@@ -157,6 +160,7 @@ Public Class PlaylistMovieItem
         timer.Enabled = False
         stopWatch.Stop()
         playing = False
+        showing = False
         _paused = False
         setPosition(0)
         raiseStopped(Me)
@@ -243,7 +247,7 @@ Public Class PlaylistMovieItem
     End Sub
 
     Public Overrides Sub show()
-        If Not isShowing() Then
+        If isAutoLoading() AndAlso Not isShowing() Then
             Dim d As Long = getMedia.getInfo("nb-frames")
             If getDuration() < getController.getMediaDuration(getMedia, getChannel) Then d = ServerController.getMsToFrames(getDuration, getFPS)
             getMedia.setInfo("duration", d)

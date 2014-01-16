@@ -29,7 +29,8 @@ Public Class PlaylistView
     Private warn As Integer = My.Settings.warnTime
     Private lastWidth As Integer = 0
     Private lastHeight As Integer = 0
-    Private menuItemLockMatrix As New Dictionary(Of ToolStripMenuItem, lockType)
+    'Private menuItemLockMatrix As New Dictionary(Of ToolStripMenuItem, lockType)
+    Private menuItemLockMatrix As New Dictionary(Of Object, lockType)
 
     Private updateItems As New Threading.Semaphore(1, 1)
 
@@ -84,6 +85,12 @@ Public Class PlaylistView
                 lblExpand.ImageIndex = 1
                 ckbAuto.Checked = True
                 grpParallel.Visible = False
+
+                menuItemLockMatrix.Add(grpAuto, lockType.lockOnAll)
+                menuItemLockMatrix.Add(grpShow, lockType.lockOnAll)
+                menuItemLockMatrix.Add(grpLoop, lockType.lockOnAll)
+                menuItemLockMatrix.Add(grpClear, lockType.lockOnAll)
+
                 AddHandler txtDuration.GotFocus, AddressOf txtDuration_GotFocus
                 AddHandler txtDuration.LostFocus, AddressOf txtDuration_LostFocus
 
@@ -101,12 +108,19 @@ Public Class PlaylistView
                 lblExpand.ImageIndex = 3
                 ckbAuto.Checked = True
                 grpParallel.Visible = False
+                grpShow.Visible = False
             Case AbstractPlaylistItem.PlaylistItemTypes.STILL
                 ' set default behaviour and view
                 lblExpand.ImageIndex = 2
                 ckbAuto.Checked = True
                 grpParallel.Visible = False
                 grpLoop.Visible = False
+
+                menuItemLockMatrix.Add(grpAuto, lockType.lockOnAll)
+                menuItemLockMatrix.Add(grpShow, lockType.lockOnAll)
+                menuItemLockMatrix.Add(grpLoop, lockType.lockOnAll)
+                menuItemLockMatrix.Add(grpClear, lockType.LockNever)
+
                 AddHandler txtDuration.GotFocus, AddressOf txtDuration_GotFocus
                 AddHandler txtDuration.LostFocus, AddressOf txtDuration_LostFocus
 
@@ -124,6 +138,7 @@ Public Class PlaylistView
                 ' set default behaviour and view
                 lblExpand.ImageIndex = 4
                 grpParallel.Visible = False
+                grpShow.Visible = False
             Case AbstractPlaylistItem.PlaylistItemTypes.COMMAND
                 ' set default behaviour and view
                 lblExpand.ImageIndex = 5
@@ -133,6 +148,7 @@ Public Class PlaylistView
                 grpParallel.Visible = False
                 grpClear.Visible = False
                 grpLoop.Visible = False
+                grpShow.Visible = False
             Case AbstractPlaylistItem.PlaylistItemTypes.BLOCK
                 ' set default behaviour and view
                 lblExpand.ImageIndex = 0
@@ -140,6 +156,11 @@ Public Class PlaylistView
                 txtDuration.BackColor = Color.White
                 txtDuration.TabStop = False
                 grpClear.Visible = False
+
+                menuItemLockMatrix.Add(grpParallel, lockType.lockOnAll)
+                menuItemLockMatrix.Add(grpAuto, lockType.LockNever)
+                menuItemLockMatrix.Add(grpShow, lockType.lockOnAll)
+                menuItemLockMatrix.Add(grpLoop, lockType.LockNever)
 
                 '' BlockItem, schauen ob childs geladen werden können
                 For Each item In playlist.getChildItems(False)
@@ -209,10 +230,14 @@ Public Class PlaylistView
 
         ' Clear
         tooltip.SetToolTip(grpClear, "Check CLEAR if you want the media to be cleared of the layer after playback." & vbNewLine & "If not checked, the last frame will stay at the layer until a new media is loaded.")
-        tooltip.SetToolTip(grpClear, "Check CLEAR if you want the media to be cleared of the layer after playback." & vbNewLine & "If not checked, the last frame will stay at the layer until a new media is loaded.")
+        tooltip.SetToolTip(ckbClear, "Check CLEAR if you want the media to be cleared of the layer after playback." & vbNewLine & "If not checked, the last frame will stay at the layer until a new media is loaded.")
+
+        ' Show
+        tooltip.SetToolTip(grpShow, "Check SHOW if you want the first frame of the media to be shown right after the item is acitve." & vbNewLine & "If set, the first frame will be shown if the playlist is not set to auto and waiting (blue state) or during the delay time.")
+        tooltip.SetToolTip(ckbShow, "Check SHOW if you want the first frame of the media to be shown right after the item is acitve." & vbNewLine & "If set, the first frame will be shown if the playlist is not set to auto and waiting (blue state) or during the delay time.")
 
         ' PlayButton
-        tooltip.SetToolTip(cmbToggleButton, "Click here to start/stop/abort the playlist")
+        tooltip.SetToolTip(cmbToggleButton, "Click here to start/stop/pause/abort the playlist." & vbNewLine & "Press ALT + Click for pause/unpause" & vbNewLine & "Press CTRL + Click to abort any action")
 
         ' Name
         tooltip.SetToolTip(txtName, "Set the playlists name in here." & vbNewLine & "Setting the name has no effect on the CasparCG Server.")
@@ -376,6 +401,7 @@ Public Class PlaylistView
             Me.ckbParallel.Checked = .isParallel
             Me.ckbLoop.Checked = .isLooping
             Me.ckbClear.Checked = .clearAfterPlayback
+            Me.ckbShow.Checked = .isAutoLoading
 
             If playlist.getController.isOpen Then
                 Me.txtPosition.Text = ServerController.getTimeStringOfMS(.getPosition)
@@ -491,7 +517,7 @@ Public Class PlaylistView
             txtName.BackColor = Color.Orange
             layoutContentSplit.Panel1.BackColor = Color.Orange
             cmbToggleButton.ImageIndex = 1
-            layoutButton.Enabled = False
+            'layoutButton.Enabled = False
             nudChannel.Enabled = False
             nudLayer.Enabled = False
             txtName.ReadOnly = True
@@ -511,7 +537,7 @@ Public Class PlaylistView
             txtName.BackColor = Color.LightBlue
             layoutContentSplit.Panel1.BackColor = Color.LightBlue
             cmbToggleButton.ImageIndex = 2
-            layoutButton.Enabled = False
+            'layoutButton.Enabled = False
             nudChannel.Enabled = False
             nudLayer.Enabled = False
             txtName.ReadOnly = True
@@ -531,7 +557,7 @@ Public Class PlaylistView
             txtName.BackColor = Color.LightGreen
             layoutContentSplit.Panel1.BackColor = Color.LightGreen
             cmbToggleButton.ImageIndex = 0
-            layoutButton.Enabled = True
+            'layoutButton.Enabled = True
             nudChannel.Enabled = True
             nudLayer.Enabled = True
             txtName.ReadOnly = False
@@ -562,6 +588,12 @@ Public Class PlaylistView
     Private Sub ckbClear_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ckbClear.CheckedChanged
         If isInit Then
             playlist.setClearAfterPlayback(ckbClear.Checked)
+        End If
+    End Sub
+
+    Private Sub ckbShow_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ckbShow.CheckedChanged
+        If isInit Then
+            playlist.setAutoLoad(ckbShow.Checked)
         End If
     End Sub
 
@@ -790,8 +822,8 @@ Public Class PlaylistView
         ElseIf e.Data.GetDataPresent("FileName") AndAlso DirectCast(e.Data.GetData("FileName"), String()).Length > 0 AndAlso DirectCast(e.Data.GetData("FileName"), String())(0).ToUpper.EndsWith(".XML") Then
             e.Effect = DragDropEffects.Copy
         Else
-                ' Display the no-drop cursor. 
-                e.Effect = DragDropEffects.None
+            ' Display the no-drop cursor. 
+            e.Effect = DragDropEffects.None
         End If
     End Sub
 

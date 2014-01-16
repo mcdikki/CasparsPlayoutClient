@@ -73,7 +73,6 @@ Public Class PlaylistStillItem
             timer.Dispose()
             timer = New Timers.Timer
             stopWatch.Reset()
-            waiting = False
 
             If getController.containsChannel(getChannel) AndAlso getLayer() > -1 Then
                 ' if the clip is allready loaded to bg, just start, else load & start
@@ -89,6 +88,7 @@ Public Class PlaylistStillItem
                     loaded = False
                     showing = False
                     playing = True
+                    waiting = False
                     raiseStarted(Me)
                     stopWatch.Restart()
                     logger.log("PlaylistStillItem.playNextItem: " & getChannel() & "-" & getLayer() & ": " & getMedia.getName & " started.")
@@ -107,10 +107,12 @@ Public Class PlaylistStillItem
                     loaded = False
                     showing = False
                     playing = False
+                    waiting = False
                     raiseCanceled(Me)
                     logger.err("PlaylistStillItem..playNextItem: Could not start " & media.getFullName & ". ServerMessage was: " & cmd.getResponse.getServerMessage)
                 End If
             Else
+                waiting = False
                 logger.err("PlaylistStillItem..playNextItem: Error playing " & getName() & ". The channel " & getChannel() & " does not exist on the server. Aborting start.")
             End If
         End If
@@ -122,6 +124,7 @@ Public Class PlaylistStillItem
         timer = New Timers.Timer()
         stopWatch.Reset()
         playing = False
+        showing = False
         _paused = False
         raiseStopped(Me)
         logger.log("PlaylistStillItem.stoppedPlaying: " & getChannel() & "-" & getLayer() & ": " & getMedia.getName & " stopped playing.")
@@ -129,6 +132,7 @@ Public Class PlaylistStillItem
 
     Public Overrides Sub abort()
         playing = False
+        showing = False
         _paused = False
         waiting = False
         timer.Enabled = False
@@ -167,7 +171,7 @@ Public Class PlaylistStillItem
     End Sub
 
     Public Overrides Sub show()
-        If Not isShowing() Then
+        If isAutoLoading() AndAlso Not isShowing() Then
             Dim cmd As New LoadCommand(getChannel, getLayer, getMedia)
             If cmd.execute(getController.getCommandConnection).isOK Then
                 showing = True
