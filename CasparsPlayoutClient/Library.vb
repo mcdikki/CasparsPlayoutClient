@@ -181,6 +181,23 @@ Public Class Library
                                 newMedia = New CasparCGStill(name)
                         End Select
                         If Not IsNothing(newMedia) Then
+                            ' Get timestamp (2)
+                            newMedia.setInfo("timestamp", values(2))
+
+                            ' CLS provides more infos with v2.0.6, so we parse them if possible
+                            If controller.getTestConnection.getVersionPart(0) > 1 And controller.getTestConnection.getVersionPart(2) > 5 Then
+                                ' FPS (4)
+                                Dim fps() = values(4).Split("/")
+                                If fps.Length = 2 Then
+                                    newMedia.setInfo("fps", Single.Parse(fps(1)) / Integer.Parse(fps(0)))
+                                ElseIf fps.Length = 1 Then
+                                    newMedia.setInfo("fps", fps(0))
+                                End If
+                                ' length in frames (3)
+                                newMedia.setInfo("nb-frames", values(3))
+                                newMedia.setInfo("file-nb-frames", values(3))
+                            End If
+
                             mediaItems.Add(newMedia)
                             RaiseEvent itemUpdated(newMedia)
                         End If

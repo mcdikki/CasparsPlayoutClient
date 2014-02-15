@@ -213,12 +213,9 @@ Public Class ServerController
                 '' These mediatyps doesn't have any durations
                 Return 0
             Case Else
-                If media.containsInfo("file-nb-frames") AndAlso media.containsInfo("fps") AndAlso media.containsInfo("progressive") Then
+                If media.containsInfo("file-nb-frames") AndAlso media.containsInfo("fps") Then
                     Dim fps As Integer = Single.Parse(media.getInfo("fps").Trim.Substring(0, Math.Min(4, media.getInfo("fps").Trim.Length))) * 100
-                    Dim progressive = Boolean.Parse(media.getInfo("progressive"))
-                    'If Not progressive Then
-                    '    fps = fps / 2
-                    'End If
+
                     Return getFramesToMS(media.getInfo("file-nb-frames"), fps)
                 End If
                 logger.err("ServerController.getOriginalMediaDuration: Could not get media duration of " & media.getFullName & "(" & media.getMediaType.ToString & ").")

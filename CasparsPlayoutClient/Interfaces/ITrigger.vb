@@ -66,20 +66,20 @@ Public Interface ITrigger
     ''' </summary>
     ''' <param name="parameter">the parameter</param>
     ''' <returns>the parameters value or ""</returns>
-    Function getCommandParameter(ByVal parameter As String) As String
+    Function getParameter(ByVal parameter As String) As String
 
     ''' <summary>
     ''' Returns all available paramters of this trigger
     ''' </summary>
     ''' <returns>the parameters of this trigger </returns>
-    Function getCommandParameters() As Dictionary(Of String, String)
+    Function getParameters() As Dictionary(Of String, String)
 
     ''' <summary>
     ''' Returns a Description of the given parameter or "" if the parameter is not set.
     ''' </summary>
     ''' <param name="parameter">the parameter</param>
     ''' <returns>a Description</returns>
-    Function getCommandParameterDescription(ByVal parameter As String) As String
+    Function getParameterDescription(ByVal parameter As String) As String
 
     ''' <summary>
     ''' The action a trigger performs in the playlist
@@ -90,15 +90,19 @@ Public Interface ITrigger
         TriggerPlay
         TriggerStop
         TriggerPause
+        TriggerUnpause
         TriggerAbort
 
         ' Template
         TriggerNext
         TriggerUpdate
+        TriggerInvoke
 
         ' Playlists
         TriggerRemove
         TriggerLoad
+        TriggerAdd
+        TriggerSafe
     End Enum
 
 End Interface
