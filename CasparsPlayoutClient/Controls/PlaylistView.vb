@@ -17,6 +17,7 @@
 Imports CasparCGNETConnector
 Imports logger
 
+<Serializable>
 Public Class PlaylistView
 
     Private isInit As Boolean = False
@@ -77,6 +78,7 @@ Public Class PlaylistView
         RaiseEvent dataChanged()
 
         layoutHeaderContentSplit_DoubleClick(Nothing, Nothing)
+        menuItemLockMatrix.Clear()
 
         '' ChildLayout füllen
         Select Case playlist.getItemType
@@ -606,17 +608,6 @@ Public Class PlaylistView
             nudLayer.BackColor = Color.White
         End If
         playlist.setLayer(nudLayer.Value)
-        'End If
-
-        'If isInit Then
-        '    If nudLayer.Value < 0 Then
-        '        nudLayer.BackColor = Color.Red
-        '        playlist.setLayer(-1)
-        '    Else
-        '        nudLayer.BackColor = Color.White
-        '        playlist.setLayer(nudLayer.Value)
-        '    End If
-        'End If
     End Sub
 
     Private Sub nudChannel_ValueChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles nudChannel.ValueChanged
@@ -627,16 +618,6 @@ Public Class PlaylistView
             nudChannel.BackColor = Color.White
         End If
         playlist.setChannel(nudChannel.Value)
-
-        'If isInit Then
-        '    If nudChannel.Value < 1 OrElse Not playlist.getController.containsChannel(nudChannel.Value) Then
-        '        nudChannel.BackColor = Color.Red
-        '        playlist.setChannel(-1)
-        '    Else
-        '        nudChannel.BackColor = Color.White
-        '        playlist.setChannel(nudChannel.Value)
-        '    End If
-        'End If
     End Sub
 
     Private Sub txtDelay_LostFocus(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles txtDelay.LostFocus
@@ -707,6 +688,7 @@ Public Class PlaylistView
     '' DragDrop verarbeiten
     '
     Private Overloads Sub handleDragDrop(ByVal sender As Object, ByVal e As DragEventArgs) Handles Me.DragDrop
+
         If e.Data.GetDataPresent("CasparCGNETConnector.CasparCGMovie") Then
             ''
             '' Neue MediaItems einfügen
@@ -729,7 +711,8 @@ Public Class PlaylistView
             Dim child As IPlaylistItem
             child = New PlaylistTemplateItem(media.getFullName, playlist.getController, media.clone)
             'child = New PlaylistBlockItem("not implemented yet", playlist.getController)
-            'addChild(child)
+            playlist.addItem(child)
+            addChild(child)
         ElseIf e.Data.GetDataPresent("CasparCGNETConnector.CasparCGStill") Then
             ''
             '' Neue MediaItems einfügen
@@ -806,7 +789,7 @@ Public Class PlaylistView
 
     Private Overloads Sub handleDragEnter(ByVal sender As Object, ByVal e As DragEventArgs) Handles Me.DragEnter
         ' Check the format of the data being dropped. 
-        If playlist.getItemType = AbstractPlaylistItem.PlaylistItemTypes.BLOCK AndAlso (e.Data.GetDataPresent("CasparCGNETConnector.CasparCGMovie")) OrElse e.Data.GetDataPresent("CasparCGNETConnector.CasparCGStill") Then 'OrElse e.Data.GetDataPresent("CasparCGNETConnector.CasparCGTemplate") OrElse e.Data.GetDataPresent("CasparCGNETConnector.CasparCGAudio") Then
+        If playlist.getItemType = AbstractPlaylistItem.PlaylistItemTypes.BLOCK AndAlso (e.Data.GetDataPresent("CasparCGNETConnector.CasparCGMovie")) OrElse e.Data.GetDataPresent("CasparCGNETConnector.CasparCGStill") OrElse e.Data.GetDataPresent("CasparCGNETConnector.CasparCGTemplate") Then 'OrElse e.Data.GetDataPresent("CasparCGNETConnector.CasparCGAudio") Then
             ' Display the copy cursor. 
             e.Effect = DragDropEffects.Copy
         ElseIf e.Data.GetDataPresent("CasparsPlayoutClient.PlaylistView") Then
