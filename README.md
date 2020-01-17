@@ -184,11 +184,7 @@ Don't use the clear command to stop media, always use the Start/Stop button of t
 Development
 -----------
 
-CasparsPlayoutClient is still under development and not released yet.  
-But there is a setup project in the repository which will be updated frequentlly.
-Any contributions, no matter if code, bug reports or suggestions, are welcome.  
-I'm sorry, but a lot of the comments in the codebase are in German. I'll try to translate them to English. 
-The first development phase was under high time pressure, so some parts of the code are not or only hardly documented so far.
+CasparsPlayoutClient is no longer under development nor is it maintained.
 
 [1]: https://github.com/CasparCG/Server "CasparCG Server"
 [2]: http://www.gnu.org/licenses/gpl-3.0-standalone.html "Gnu General Public License Version 3"
